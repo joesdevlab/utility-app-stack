@@ -1,57 +1,148 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createClient } from "@/lib/supabase/client";
 import type { LogbookEntry } from "@/types";
 
-const STORAGE_KEY = "apprentice-log-entries";
-
-export function useEntries() {
+export function useEntries(userId: string | undefined) {
   const [entries, setEntries] = useState<LogbookEntry[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const supabase = createClient();
 
-  // Load entries from localStorage on mount
+  // Load entries from Supabase
+  const loadEntries = useCallback(async () => {
+    if (!userId) {
+      setEntries([]);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("apprentice_entries")
+        .select("*")
+        .eq("user_id", userId)
+        .order("date", { ascending: false });
+
+      if (error) throw error;
+
+      // Map database fields to LogbookEntry type
+      const mappedEntries: LogbookEntry[] = (data || []).map((row) => ({
+        id: row.id,
+        date: row.date,
+        rawTranscript: row.raw_transcript,
+        formattedEntry: row.formatted_entry,
+        tasks: row.tasks || [],
+        hours: row.hours,
+        weather: row.weather,
+        siteName: row.site_name,
+        supervisor: row.supervisor,
+        createdAt: row.created_at,
+      }));
+
+      setEntries(mappedEntries);
+    } catch (error) {
+      console.error("Failed to load entries:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userId, supabase]);
+
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
+    loadEntries();
+  }, [loadEntries]);
+
+  const addEntry = useCallback(
+    async (entry: Omit<LogbookEntry, "id" | "createdAt">) => {
+      if (!userId) return null;
+
       try {
-        setEntries(JSON.parse(stored));
-      } catch {
-        console.error("Failed to parse stored entries");
+        const { data, error } = await supabase
+          .from("apprentice_entries")
+          .insert({
+            user_id: userId,
+            date: entry.date,
+            raw_transcript: entry.rawTranscript,
+            formatted_entry: entry.formattedEntry,
+            tasks: entry.tasks,
+            hours: entry.hours,
+            weather: entry.weather,
+            site_name: entry.siteName,
+            supervisor: entry.supervisor,
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        const newEntry: LogbookEntry = {
+          id: data.id,
+          date: data.date,
+          rawTranscript: data.raw_transcript,
+          formattedEntry: data.formatted_entry,
+          tasks: data.tasks || [],
+          hours: data.hours,
+          weather: data.weather,
+          siteName: data.site_name,
+          supervisor: data.supervisor,
+          createdAt: data.created_at,
+        };
+
+        setEntries((prev) => [newEntry, ...prev]);
+        return newEntry;
+      } catch (error) {
+        console.error("Failed to add entry:", error);
+        return null;
       }
+    },
+    [userId, supabase]
+  );
+
+  const removeEntry = useCallback(
+    async (id: string) => {
+      if (!userId) return;
+
+      try {
+        const { error } = await supabase
+          .from("apprentice_entries")
+          .delete()
+          .eq("id", id)
+          .eq("user_id", userId);
+
+        if (error) throw error;
+
+        setEntries((prev) => prev.filter((e) => e.id !== id));
+      } catch (error) {
+        console.error("Failed to remove entry:", error);
+      }
+    },
+    [userId, supabase]
+  );
+
+  const clearEntries = useCallback(async () => {
+    if (!userId) return;
+
+    try {
+      const { error } = await supabase
+        .from("apprentice_entries")
+        .delete()
+        .eq("user_id", userId);
+
+      if (error) throw error;
+
+      setEntries([]);
+    } catch (error) {
+      console.error("Failed to clear entries:", error);
     }
-    setIsLoaded(true);
-  }, []);
-
-  // Save entries to localStorage when they change
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    }
-  }, [entries, isLoaded]);
-
-  const addEntry = useCallback((entry: LogbookEntry) => {
-    const newEntry = {
-      ...entry,
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-    };
-    setEntries((prev) => [newEntry, ...prev]);
-    return newEntry;
-  }, []);
-
-  const removeEntry = useCallback((id: string) => {
-    setEntries((prev) => prev.filter((e) => e.id !== id));
-  }, []);
-
-  const clearEntries = useCallback(() => {
-    setEntries([]);
-  }, []);
+  }, [userId, supabase]);
 
   return {
     entries,
-    isLoaded,
+    isLoading,
     addEntry,
     removeEntry,
     clearEntries,
+    refresh: loadEntries,
   };
 }

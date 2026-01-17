@@ -4,6 +4,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BarcodeScanner } from "@/components/barcode-scanner";
 import { MedicineCard, SavingsCard } from "@/components/medicine-card";
+import { AuthForm } from "@/components/auth-form";
+import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +15,9 @@ import {
   RotateCcw,
   ArrowRight,
   Sparkles,
+  User,
+  LogOut,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { demoBarcodes } from "@/lib/medicine-data";
@@ -21,6 +26,7 @@ import type { MedicineComparison } from "@/types";
 type AppState = "idle" | "scanning" | "loading" | "result";
 
 export default function Home() {
+  const { user, isLoading: authLoading, signOut } = useAuth();
   const [state, setState] = useState<AppState>("idle");
   const [comparison, setComparison] = useState<MedicineComparison | null>(null);
 
@@ -64,10 +70,32 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur safe-area-top">
-        <div className="flex items-center justify-center h-14 px-4">
+        <div className="flex items-center justify-between h-14 px-4">
+          <div className="w-10" /> {/* Spacer for centering */}
           <div className="flex items-center gap-2">
             <Pill className="h-6 w-6 text-emerald-500" />
             <h1 className="text-lg font-semibold">Bio-Swap</h1>
+          </div>
+          <div className="w-10 flex justify-end">
+            {user ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => signOut()}
+                className="h-8 w-8"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setState("idle")}
+                className="h-8 w-8 text-muted-foreground"
+              >
+                <User className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
       </header>

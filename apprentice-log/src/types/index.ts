@@ -24,23 +24,51 @@ export interface LogbookTask {
 export interface LogbookEntry {
   id?: string;
   date: string;
+  rawTranscript?: string;
+  formattedEntry: string;
   tasks: LogbookTask[];
-  totalHours: number;
-  notes: string;
-  safetyObservations: string;
-  transcript?: string;
+  hours?: number;
+  weather?: string;
+  siteName?: string;
+  supervisor?: string;
   createdAt?: string;
+  // Legacy fields for backwards compatibility
+  totalHours?: number;
+  notes?: string;
+  safetyObservations?: string;
 }
 
-// Supabase Database types - generate these with `npx supabase gen types typescript`
-// Replace this with your actual generated types
+// Supabase Database types
 export type Database = {
   public: {
     Tables: {
-      logbook_entries: {
-        Row: LogbookEntry & { id: string; createdAt: string; user_id: string };
-        Insert: Omit<LogbookEntry, "id" | "createdAt"> & { user_id: string };
-        Update: Partial<LogbookEntry>;
+      apprentice_entries: {
+        Row: {
+          id: string;
+          user_id: string;
+          date: string;
+          raw_transcript: string | null;
+          formatted_entry: string;
+          tasks: LogbookTask[] | null;
+          hours: number | null;
+          weather: string | null;
+          site_name: string | null;
+          supervisor: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          date: string;
+          raw_transcript?: string | null;
+          formatted_entry: string;
+          tasks?: LogbookTask[] | null;
+          hours?: number | null;
+          weather?: string | null;
+          site_name?: string | null;
+          supervisor?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["apprentice_entries"]["Insert"]>;
       };
     };
     Views: Record<string, never>;

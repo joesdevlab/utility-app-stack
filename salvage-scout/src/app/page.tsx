@@ -20,7 +20,11 @@ import {
   Loader2,
   Phone,
   MessageCircle,
+  User,
+  LogOut,
 } from "lucide-react";
+import { AuthForm } from "@/components/auth-form";
+import { useAuth } from "@/components/auth-provider";
 import { toast } from "sonner";
 import { useLocation } from "@/hooks/use-location";
 import { useListings } from "@/hooks/use-listings";
@@ -30,6 +34,7 @@ import { CATEGORY_LABELS, CONDITION_LABELS } from "@/types";
 type AppState = "feed" | "capturing" | "analyzing" | "confirming";
 
 export default function Home() {
+  const { user, isLoading: authLoading, signOut } = useAuth();
   const [state, setState] = useState<AppState>("feed");
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<MaterialAnalysis | null>(null);
@@ -41,8 +46,23 @@ export default function Home() {
 
   // Get location on mount
   useEffect(() => {
-    getLocation();
-  }, [getLocation]);
+    if (user) {
+      getLocation();
+    }
+  }, [getLocation, user]);
+
+  // Show auth form if not logged in
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthForm />;
+  }
 
   const handleCapture = async (imageData: string) => {
     setCapturedImage(imageData);
@@ -150,6 +170,14 @@ export default function Home() {
               <RefreshCw
                 className={`h-5 w-5 ${isRefreshing ? "animate-spin" : ""}`}
               />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => signOut()}
+              className="h-8 w-8"
+            >
+              <LogOut className="h-4 w-4" />
             </Button>
           </div>
         </div>
