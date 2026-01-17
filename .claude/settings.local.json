@@ -11,7 +11,15 @@
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
       "Bash(xargs:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: HoldCo utility app stack with 3 PWA apps\n\nBuilt using the \"Golden Template\" strategy:\n- golden-chassis: Base Next.js 15 template with PWA, Supabase, OpenAI integration\n- apprentice-log: Voice-to-logbook for BCITO apprentices \\(Whisper + GPT-4o\\)\n- bio-swap: Generic medicine finder with barcode scanning\n- salvage-scout: Construction material waste exchange \\(Vision API\\)\n\nStack: Next.js 15, TypeScript strict, Tailwind CSS v4, Shadcn/UI, Framer Motion\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(gh auth status:*)",
+      "Bash(gh repo create:*)",
+      "Bash(vercel:*)",
+      "Bash(echo:*)",
+      "Bash(printf '%s' \"$OPENAI_API_KEY\")",
+      "Bash(git push:*)"
     ]
   }
 }
