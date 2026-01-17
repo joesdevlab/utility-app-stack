@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Pill, Loader2, Mail, Lock, User } from "lucide-react";
+import { Pill, Loader2, Mail, Lock, User, CheckCircle2, RefreshCw } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { toast } from "sonner";
 
-type AuthMode = "signin" | "signup";
+type AuthMode = "signin" | "signup" | "forgot" | "verify";
 
 export function AuthForm() {
   const [mode, setMode] = useState<AuthMode>("signin");
@@ -18,14 +18,23 @@ export function AuthForm() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const [isResending, setIsResending] = useState(false);
+  const { signIn, signUp, resetPassword, resendVerification } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      if (mode === "signin") {
+      if (mode === "forgot") {
+        const { error } = await resetPassword(email);
+        if (error) {
+          toast.error(error.message);
+        } else {
+          toast.success("Check your email for a reset link");
+          setMode("signin");
+        }
+      } else if (mode === "signin") {
         const { error } = await signIn(email, password);
         if (error) {
           toast.error(error.message);
@@ -37,16 +46,85 @@ export function AuthForm() {
         if (error) {
           toast.error(error.message);
         } else {
-          toast.success("Account created! You can now sign in.");
-          setMode("signin");
+          toast.success("Check your email to verify your account");
+          setMode("verify");
         }
       }
-    } catch (err) {
+    } catch {
       toast.error("An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
   };
+
+  const handleResendVerification = async () => {
+    if (!email) {
+      toast.error("Please enter your email address");
+      return;
+    }
+    setIsResending(true);
+    try {
+      const { error } = await resendVerification(email);
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Verification email sent!");
+      }
+    } catch {
+      toast.error("Failed to resend verification email");
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  // Verification pending screen
+  if (mode === "verify") {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-sm"
+        >
+          <Card>
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                <CheckCircle2 className="h-6 w-6 text-emerald-500" />
+              </div>
+              <CardTitle>Check your email</CardTitle>
+              <CardDescription>
+                We sent a verification link to <strong>{email}</strong>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground text-center">
+                Click the link in your email to verify your account, then sign in.
+              </p>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleResendVerification}
+                disabled={isResending}
+              >
+                {isResending ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                )}
+                Resend email
+              </Button>
+              <Button
+                className="w-full bg-emerald-500 hover:bg-emerald-600"
+                onClick={() => setMode("signin")}
+              >
+                Back to Sign In
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
@@ -64,7 +142,9 @@ export function AuthForm() {
             <CardDescription>
               {mode === "signin"
                 ? "Sign in to save your scan history"
-                : "Create an account to get started"}
+                : mode === "signup"
+                ? "Create an account to get started"
+                : "Enter your email to reset your password"}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -103,22 +183,36 @@ export function AuthForm() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10"
-                    required
-                    minLength={6}
-                  />
+              {mode !== "forgot" && (
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pl-10"
+                      required
+                      minLength={8}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {mode === "signin" && (
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={() => setMode("forgot")}
+                    className="text-sm text-emerald-500 hover:underline"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              )}
 
               <Button
                 type="submit"
@@ -129,8 +223,10 @@ export function AuthForm() {
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : mode === "signin" ? (
                   "Sign In"
-                ) : (
+                ) : mode === "signup" ? (
                   "Create Account"
+                ) : (
+                  "Send Reset Link"
                 )}
               </Button>
             </form>
@@ -147,9 +243,20 @@ export function AuthForm() {
                     Sign up
                   </button>
                 </p>
-              ) : (
+              ) : mode === "signup" ? (
                 <p className="text-muted-foreground">
                   Already have an account?{" "}
+                  <button
+                    type="button"
+                    onClick={() => setMode("signin")}
+                    className="text-emerald-500 hover:underline"
+                  >
+                    Sign in
+                  </button>
+                </p>
+              ) : (
+                <p className="text-muted-foreground">
+                  Remember your password?{" "}
                   <button
                     type="button"
                     onClick={() => setMode("signin")}

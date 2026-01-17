@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, Square, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface VoiceRecorderProps {
   onRecordingComplete: (audioBlob: Blob) => void;
@@ -93,9 +94,8 @@ export function VoiceRecorder({
       timerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
-    } catch (error) {
-      console.error("Error accessing microphone:", error);
-      alert("Could not access microphone. Please check permissions.");
+    } catch {
+      toast.error("Could not access microphone. Please check permissions.");
     }
   }, [onRecordingComplete, monitorAudioLevel, triggerHaptic]);
 

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getOpenAI } from "@/lib/openai";
+import { withAuth } from "@/lib/api-auth";
 import type { MaterialAnalysis, MaterialCategory, MaterialCondition } from "@/types";
+
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB limit for images
 
 const SYSTEM_PROMPT = `You are an expert at identifying construction and building materials from photos.
 You help people list leftover materials for free pickup by DIYers.
@@ -23,13 +26,23 @@ Respond ONLY with valid JSON in this exact format:
   "tips": ["string"]
 }`;
 
-export async function POST(request: NextRequest) {
+async function handleAnalyze(request: NextRequest) {
   try {
     const { imageData } = await request.json();
 
     if (!imageData) {
       return NextResponse.json(
         { error: "Image data is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate image size (SS-001) - base64 is ~33% larger than binary
+    const base64Data = imageData.split(",")[1] || imageData;
+    const estimatedSize = (base64Data.length * 3) / 4;
+    if (estimatedSize > MAX_IMAGE_SIZE) {
+      return NextResponse.json(
+        { error: "Image exceeds 5MB limit" },
         { status: 400 }
       );
     }
@@ -61,6 +74,7 @@ export async function POST(request: NextRequest) {
         },
       ],
       max_tokens: 1000,
+      response_format: { type: "json_object" },
     });
 
     const content = response.choices[0]?.message?.content;
@@ -69,13 +83,8 @@ export async function POST(request: NextRequest) {
       throw new Error("No response from AI");
     }
 
-    // Parse the JSON response
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error("Invalid response format");
-    }
-
-    const analysis = JSON.parse(jsonMatch[0]) as MaterialAnalysis;
+    // Parse JSON response - using response_format makes this more reliable (SS-002)
+    const analysis = JSON.parse(content) as MaterialAnalysis;
 
     // Validate the category
     const validCategories: MaterialCategory[] = [
@@ -95,8 +104,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(analysis);
   } catch (error) {
-    console.error("Analysis error:", error);
-
     if (error instanceof Error && error.message.includes("OPENAI_API_KEY")) {
       return NextResponse.json(
         { error: "API not configured" },
@@ -110,3 +117,5 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export const POST = withAuth(handleAnalyze);

@@ -41,8 +41,7 @@ export function PhotoCapture({ onCapture, onClose }: PhotoCaptureProps) {
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
       }
-    } catch (err) {
-      console.error("Camera error:", err);
+    } catch {
       setError("Could not access camera. Please check permissions.");
     }
   }, [facingMode, stream]);

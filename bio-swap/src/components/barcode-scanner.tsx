@@ -1,14 +1,45 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Html5Qrcode } from "html5-qrcode";
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, X, FlashlightOff, Flashlight } from "lucide-react";
+import { Camera, X, FlashlightOff, Flashlight, ImageIcon, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface BarcodeScannerProps {
   onScan: (barcode: string) => void;
   onClose: () => void;
+}
+
+// Supported barcode formats for medicine scanning
+// NZ medicines primarily use EAN-13, but we support other common formats
+const SUPPORTED_FORMATS = [
+  Html5QrcodeSupportedFormats.EAN_13,
+  Html5QrcodeSupportedFormats.EAN_8,
+  Html5QrcodeSupportedFormats.UPC_A,
+  Html5QrcodeSupportedFormats.UPC_E,
+  Html5QrcodeSupportedFormats.CODE_128,
+  Html5QrcodeSupportedFormats.CODE_39,
+];
+
+/**
+ * Validates that a barcode is in an acceptable format
+ * Returns true if the barcode format is valid for medicine lookup
+ */
+function isValidBarcodeFormat(barcode: string): boolean {
+  // EAN-13: 13 digits
+  if (/^\d{13}$/.test(barcode)) return true;
+  // EAN-8: 8 digits
+  if (/^\d{8}$/.test(barcode)) return true;
+  // UPC-A: 12 digits
+  if (/^\d{12}$/.test(barcode)) return true;
+  // UPC-E: 6-8 digits
+  if (/^\d{6,8}$/.test(barcode)) return true;
+  // CODE-128/CODE-39: alphanumeric, typically used for pharmacy codes
+  if (/^[A-Z0-9]{6,20}$/i.test(barcode)) return true;
+
+  return false;
 }
 
 export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
@@ -16,8 +47,10 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
   const [error, setError] = useState<string | null>(null);
   const [torchOn, setTorchOn] = useState(false);
   const [hasTorch, setHasTorch] = useState(false);
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const stopScanner = useCallback(async () => {
     if (scannerRef.current) {
@@ -36,17 +69,26 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
 
     try {
       setError(null);
-      const scanner = new Html5Qrcode("barcode-reader");
+      const scanner = new Html5Qrcode("barcode-reader", {
+        formatsToSupport: SUPPORTED_FORMATS,
+        verbose: false,
+      });
       scannerRef.current = scanner;
 
       await scanner.start(
         { facingMode: "environment" },
         {
           fps: 10,
-          qrbox: { width: 250, height: 150 },
+          qrbox: { width: 280, height: 120 },
           aspectRatio: 1.777,
         },
         (decodedText) => {
+          // Validate barcode format before accepting
+          if (!isValidBarcodeFormat(decodedText)) {
+            toast.error("Invalid barcode format. Please scan a medicine barcode.");
+            return;
+          }
+
           // Haptic feedback
           if ("vibrate" in navigator) {
             navigator.vibrate(50);
@@ -55,7 +97,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
           stopScanner();
         },
         () => {
-          // Ignore QR code not found errors
+          // Ignore barcode not found errors
         }
       );
 
@@ -66,8 +108,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
       if (capabilities.torchFeature().isSupported()) {
         setHasTorch(true);
       }
-    } catch (err) {
-      console.error("Scanner error:", err);
+    } catch {
       setError("Could not access camera. Please check permissions.");
     }
   }, [onScan, stopScanner]);
@@ -82,6 +123,53 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
       } catch {
         // Ignore torch errors
       }
+    }
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsProcessingImage(true);
+    setError(null);
+
+    try {
+      // Stop camera scanner if running
+      await stopScanner();
+
+      // Create a new scanner instance for file scanning
+      const scanner = new Html5Qrcode("barcode-reader-file", {
+        formatsToSupport: SUPPORTED_FORMATS,
+        verbose: false,
+      });
+
+      const result = await scanner.scanFile(file, true);
+
+      if (!isValidBarcodeFormat(result)) {
+        toast.error("Invalid barcode format. Please upload a medicine barcode image.");
+        setIsProcessingImage(false);
+        // Clear the file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+
+      // Haptic feedback
+      if ("vibrate" in navigator) {
+        navigator.vibrate(50);
+      }
+
+      scanner.clear();
+      onScan(result);
+    } catch {
+      toast.error("Could not read barcode from image. Please try a clearer image.");
+      // Clear the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } finally {
+      setIsProcessingImage(false);
     }
   };
 
@@ -156,26 +244,76 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
           >
             <Camera className="h-16 w-16 text-muted-foreground mb-4" />
             <p className="text-white text-center mb-4">{error}</p>
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={handleClose}>
-                Cancel
-              </Button>
+            <div className="flex flex-col gap-3 w-full max-w-xs">
               <Button
-                className="bg-emerald-500 hover:bg-emerald-600"
+                className="w-full bg-emerald-500 hover:bg-emerald-600"
                 onClick={startScanner}
               >
                 Try Again
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isProcessingImage}
+              >
+                {isProcessingImage ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="h-4 w-4 mr-2" />
+                    Upload Barcode Image
+                  </>
+                )}
+              </Button>
+              <Button variant="ghost" className="w-full text-white/70" onClick={handleClose}>
+                Cancel
               </Button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Instructions */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 safe-area-bottom">
+      {/* Hidden file input for image upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        className="hidden"
+      />
+      {/* Hidden container for file scanning */}
+      <div id="barcode-reader-file" className="hidden" />
+
+      {/* Instructions and Upload Button */}
+      <div className="absolute bottom-0 left-0 right-0 p-6 safe-area-bottom space-y-3">
         <p className="text-white/80 text-center text-sm">
-          Point camera at medicine barcode
+          Point camera at medicine barcode (EAN-13)
         </p>
+        <div className="flex justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isProcessingImage}
+          >
+            {isProcessingImage ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <ImageIcon className="h-4 w-4 mr-2" />
+                Upload Image
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </motion.div>
   );

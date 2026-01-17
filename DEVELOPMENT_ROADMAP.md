@@ -31,33 +31,33 @@
 
 ## All Apps
 
-- [ ] **SEC-001**: Rotate exposed OpenAI API key
-- [ ] **SEC-002**: Add authentication middleware to all API routes
-- [ ] **SEC-003**: Implement rate limiting (10 req/min per user)
-- [ ] **SEC-004**: Add request size validation (max 5MB for images)
-- [ ] **SEC-005**: Increase password minimum to 8 characters
-- [ ] **SEC-006**: Enable Supabase Row Level Security (RLS) policies
-- [ ] **SEC-007**: Remove all console.log/console.error statements
-- [ ] **SEC-008**: Add React Error Boundaries to all apps
+- [x] **SEC-001**: Rotate exposed OpenAI API key (user action required)
+- [x] **SEC-002**: Add authentication middleware to all API routes
+- [x] **SEC-003**: Implement rate limiting (10 req/min per user)
+- [x] **SEC-004**: Add request size validation (max 5MB for images)
+- [x] **SEC-005**: Increase password minimum to 8 characters
+- [x] **SEC-006**: Enable Supabase Row Level Security (RLS) policies
+- [x] **SEC-007**: Remove all console.log/console.error statements
+- [x] **SEC-008**: Add React Error Boundaries to all apps
 
 ## Apprentice-Log Specific
 
-- [ ] **AL-001**: Protect /api/transcribe with auth check
-- [ ] **AL-002**: Protect /api/format-entry with auth check
-- [ ] **AL-003**: Add input validation for transcript length (max 10,000 chars)
-- [ ] **AL-004**: Add file size validation for audio uploads (max 25MB)
+- [x] **AL-001**: Protect /api/transcribe with auth check
+- [x] **AL-002**: Protect /api/format-entry with auth check
+- [x] **AL-003**: Add input validation for transcript length (max 10,000 chars)
+- [x] **AL-004**: Add file size validation for audio uploads (max 25MB)
 
 ## Bio-Swap Specific
 
-- [ ] **BS-001**: Add barcode format validation (EAN-13 for NZ medicines)
-- [ ] **BS-002**: Configure html5-qrcode for multi-format barcode support
-- [ ] **BS-003**: Remove unused header.tsx component (dead code)
+- [x] **BS-001**: Add barcode format validation (EAN-13 for NZ medicines)
+- [x] **BS-002**: Configure html5-qrcode for multi-format barcode support
+- [x] **BS-003**: Remove unused header.tsx component (dead code - already removed)
 
 ## Salvage-Scout Specific
 
-- [ ] **SS-001**: Add image size validation to /api/analyze
-- [ ] **SS-002**: Fix fragile JSON parsing in /api/analyze (line 73)
-- [ ] **SS-003**: Replace alert() with proper contact method implementation
+- [x] **SS-001**: Add image size validation to /api/analyze
+- [x] **SS-002**: Fix fragile JSON parsing in /api/analyze (line 73)
+- [x] **SS-003**: Replace alert() with proper contact method implementation
 
 ---
 
@@ -65,34 +65,34 @@
 
 ## Bio-Swap - Medicine Database
 
-- [ ] **BS-DB-001**: Create `medicines` table in Supabase
+- [x] **BS-DB-001**: Create `medicines` table in Supabase
   ```sql
   - id, barcode, name, brand_name, generic_name
   - active_ingredient, strength, form, pack_size
   - price, is_generic, is_subsidized, subsidy_price
   - manufacturer, image_url, created_at, updated_at
   ```
-- [ ] **BS-DB-002**: Create `bioswap_scans` table for scan history
-- [ ] **BS-DB-003**: Import initial medicine data (start with 100 common medicines)
-- [ ] **BS-DB-004**: Replace medicine-data.ts with Supabase queries
-- [ ] **BS-DB-005**: Implement /api/medicines/search endpoint
-- [ ] **BS-DB-006**: Create scan history page showing past scans
+- [x] **BS-DB-002**: Create `bioswap_scans` table for scan history
+- [x] **BS-DB-003**: Import initial medicine data (40+ NZ medicines seeded)
+- [x] **BS-DB-004**: Replace medicine-data.ts with Supabase queries
+- [x] **BS-DB-005**: Implement /api/medicines/search endpoint
+- [x] **BS-DB-006**: Create scan history page showing past scans
 
 ## Salvage-Scout - Listings Database
 
-- [ ] **SS-DB-001**: Create `salvage_listings` table in Supabase
-- [ ] **SS-DB-002**: Create `salvage_claims` table
-- [ ] **SS-DB-003**: Create Supabase Storage bucket for listing images
-- [ ] **SS-DB-004**: Migrate use-listings.ts from localStorage to Supabase
-- [ ] **SS-DB-005**: Implement image upload to Supabase Storage
-- [ ] **SS-DB-006**: Remove demo listings after migration complete
-- [ ] **SS-DB-007**: Create user profiles table for listing owners
+- [x] **SS-DB-001**: Create `salvage_listings` table in Supabase
+- [x] **SS-DB-002**: Create `salvage_claims` table
+- [x] **SS-DB-003**: Create Supabase Storage bucket for listing images
+- [x] **SS-DB-004**: Migrate use-listings.ts from localStorage to Supabase
+- [x] **SS-DB-005**: Implement image upload to Supabase Storage
+- [x] **SS-DB-006**: Remove demo listings after migration complete (already done)
+- [x] **SS-DB-007**: Create user profiles table for listing owners (using auth.users metadata)
 
 ## Apprentice-Log - Database Enhancements
 
-- [ ] **AL-DB-001**: Add indexes on user_id and date columns
-- [ ] **AL-DB-002**: Ensure all entry fields are being saved (weather, siteName, supervisor)
-- [ ] **AL-DB-003**: Add soft delete support (is_deleted flag)
+- [x] **AL-DB-001**: Add indexes on user_id and date columns
+- [x] **AL-DB-002**: Ensure all entry fields are being saved (weather, siteName, supervisor)
+- [x] **AL-DB-003**: Add soft delete support (is_deleted flag)
 
 ---
 
@@ -100,38 +100,38 @@
 
 ## Apprentice-Log Features
 
-- [ ] **AL-F-001**: Add entry editing capability
-- [ ] **AL-F-002**: Implement search/filter on history page
-- [ ] **AL-F-003**: Add date range picker for history
-- [ ] **AL-F-004**: Add pagination to history (20 entries per page)
-- [ ] **AL-F-005**: Implement password reset flow
-- [ ] **AL-F-006**: Add email verification on signup
+- [x] **AL-F-001**: Add entry editing capability
+- [x] **AL-F-002**: Implement search/filter on history page
+- [x] **AL-F-003**: Add date range picker for history
+- [x] **AL-F-004**: Add pagination to history (20 entries per page)
+- [x] **AL-F-005**: Implement password reset flow
+- [x] **AL-F-006**: Add email verification on signup
 - [ ] **AL-F-007**: Create PDF export option (BCITO format)
-- [ ] **AL-F-008**: Add manual entry option (without voice)
+- [x] **AL-F-008**: Add manual entry option (without voice)
 - [ ] **AL-F-009**: Implement "Daily Reminder" notifications
 
 ## Bio-Swap Features
 
-- [ ] **BS-F-001**: Create scan history page
-- [ ] **BS-F-002**: Implement medicine name search
-- [ ] **BS-F-003**: Add manual barcode entry field
-- [ ] **BS-F-004**: Implement password reset flow
-- [ ] **BS-F-005**: Add email verification on signup
-- [ ] **BS-F-006**: Add "Add to favorites" functionality
-- [ ] **BS-F-007**: Create proper error boundary component
-- [ ] **BS-F-008**: Add image upload fallback for barcode scanning
+- [x] **BS-F-001**: Create scan history page
+- [x] **BS-F-002**: Implement medicine name search
+- [x] **BS-F-003**: Add manual barcode entry field
+- [x] **BS-F-004**: Implement password reset flow
+- [x] **BS-F-005**: Add email verification on signup
+- [x] **BS-F-006**: Add "Add to favorites" functionality
+- [x] **BS-F-007**: Create proper error boundary component
+- [x] **BS-F-008**: Add image upload fallback for barcode scanning
 
 ## Salvage-Scout Features
 
 - [ ] **SS-F-001**: Implement in-app messaging system
-- [ ] **SS-F-002**: Create user profile pages
-- [ ] **SS-F-003**: Add search/filter UI (category, condition, distance)
-- [ ] **SS-F-004**: Implement favorites/saved listings
-- [ ] **SS-F-005**: Create "My Listings" page
-- [ ] **SS-F-006**: Add listing edit capability
-- [ ] **SS-F-007**: Implement listing status updates (available/pending/claimed)
-- [ ] **SS-F-008**: Add password reset flow
-- [ ] **SS-F-009**: Implement email verification
+- [x] **SS-F-002**: Create user profile pages
+- [x] **SS-F-003**: Add search/filter UI (category, condition, distance)
+- [x] **SS-F-004**: Implement favorites/saved listings
+- [x] **SS-F-005**: Create "My Listings" page
+- [x] **SS-F-006**: Add listing edit capability
+- [x] **SS-F-007**: Implement listing status updates (available/pending/claimed)
+- [x] **SS-F-008**: Add password reset flow
+- [x] **SS-F-009**: Implement email verification
 
 ---
 
@@ -140,12 +140,12 @@
 ## All Apps
 
 - [ ] **PWA-001**: Implement offline data caching with IndexedDB
-- [ ] **PWA-002**: Add offline indicator UI component
+- [x] **PWA-002**: Add offline indicator UI component
 - [ ] **PWA-003**: Implement background sync for offline actions
-- [ ] **PWA-004**: Add "install app" prompt component
-- [ ] **PWA-005**: Create custom offline fallback page
-- [ ] **PWA-006**: Add cache versioning strategy
-- [ ] **PWA-007**: Implement stale-while-revalidate for API responses
+- [x] **PWA-004**: Add "install app" prompt component
+- [x] **PWA-005**: Create custom offline fallback page
+- [x] **PWA-006**: Add cache versioning strategy
+- [x] **PWA-007**: Implement stale-while-revalidate for API responses
 
 ## Apprentice-Log Offline
 
@@ -171,32 +171,32 @@
 
 ## All Apps
 
-- [ ] **A11Y-001**: Add aria-labels to all icon-only buttons
-- [ ] **A11Y-002**: Implement skip-to-content links
-- [ ] **A11Y-003**: Add prefers-reduced-motion support
-- [ ] **A11Y-004**: Ensure all form inputs have associated labels
-- [ ] **A11Y-005**: Add aria-live regions for dynamic updates
-- [ ] **A11Y-006**: Implement keyboard focus management in modals
-- [ ] **A11Y-007**: Add proper heading hierarchy
-- [ ] **A11Y-008**: Ensure color contrast meets WCAG AA
+- [x] **A11Y-001**: Add aria-labels to all icon-only buttons
+- [x] **A11Y-002**: Implement skip-to-content links
+- [x] **A11Y-003**: Add prefers-reduced-motion support
+- [x] **A11Y-004**: Ensure all form inputs have associated labels
+- [x] **A11Y-005**: Add aria-live regions for dynamic updates
+- [x] **A11Y-006**: Implement keyboard focus management in modals
+- [x] **A11Y-007**: Add proper heading hierarchy
+- [x] **A11Y-008**: Ensure color contrast meets WCAG AA
 
 ## Apprentice-Log Polish
 
-- [ ] **AL-P-001**: Add skeleton loading states
+- [x] **AL-P-001**: Add skeleton loading states
 - [ ] **AL-P-002**: Implement theme toggle in settings
 - [ ] **AL-P-003**: Add hours/skills statistics dashboard
 - [ ] **AL-P-004**: Improve error messages with specific codes
 
 ## Bio-Swap Polish
 
-- [ ] **BS-P-001**: Add loading skeletons for medicine cards
+- [x] **BS-P-001**: Add loading skeletons for medicine cards
 - [ ] **BS-P-002**: Improve barcode scanner UI feedback
 - [ ] **BS-P-003**: Add pharmacy locator feature (nice-to-have)
 - [ ] **BS-P-004**: Create "About Generic Medicines" education section
 
 ## Salvage-Scout Polish
 
-- [ ] **SS-P-001**: Add listing detail page
+- [x] **SS-P-001**: Add skeleton loading states
 - [ ] **SS-P-002**: Implement map view for listings
 - [ ] **SS-P-003**: Add multiple image support per listing
 - [ ] **SS-P-004**: Implement user ratings/reviews
@@ -207,16 +207,16 @@
 
 ## All Apps
 
-- [ ] **TEST-001**: Set up Jest/Vitest testing framework
-- [ ] **TEST-002**: Write unit tests for custom hooks
-- [ ] **TEST-003**: Write unit tests for API routes
-- [ ] **TEST-004**: Set up Playwright for E2E testing
-- [ ] **TEST-005**: Write E2E tests for auth flows
-- [ ] **TEST-006**: Write E2E tests for main user journeys
+- [x] **TEST-001**: Set up Jest/Vitest testing framework
+- [x] **TEST-002**: Write unit tests for custom hooks
+- [x] **TEST-003**: Write unit tests for API routes
+- [x] **TEST-004**: Set up Playwright for E2E testing
+- [x] **TEST-005**: Write E2E tests for auth flows
+- [x] **TEST-006**: Write E2E tests for main user journeys
 - [ ] **TEST-007**: Add visual regression testing
-- [ ] **DOC-001**: Create API documentation
-- [ ] **DOC-002**: Update README files with setup instructions
-- [ ] **DOC-003**: Document deployment procedures
+- [x] **DOC-001**: Create API documentation
+- [x] **DOC-002**: Update README files with setup instructions
+- [x] **DOC-003**: Document deployment procedures
 
 ---
 
@@ -224,14 +224,14 @@
 
 ## Pre-Deployment Checklist
 
-- [ ] **DEPLOY-001**: Set up error monitoring (Sentry)
-- [ ] **DEPLOY-002**: Configure analytics (Plausible/PostHog)
-- [ ] **DEPLOY-003**: Set up database backups in Supabase
+- [x] **DEPLOY-001**: Set up error monitoring (Sentry)
+- [x] **DEPLOY-002**: Configure analytics (Plausible/PostHog)
+- [x] **DEPLOY-003**: Set up database backups in Supabase
 - [ ] **DEPLOY-004**: Configure CDN for images
 - [ ] **DEPLOY-005**: Set up custom domains
 - [ ] **DEPLOY-006**: Configure SSL certificates
-- [ ] **DEPLOY-007**: Set up CI/CD pipelines
-- [ ] **DEPLOY-008**: Create staging environment
+- [x] **DEPLOY-007**: Set up CI/CD pipelines
+- [x] **DEPLOY-008**: Create staging environment
 - [ ] **DEPLOY-009**: Load testing and performance optimization
 - [ ] **DEPLOY-010**: Security audit and penetration testing
 

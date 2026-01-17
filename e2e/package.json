@@ -1,0 +1,19 @@
+{
+  "name": "e2e-tests",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:apprentice-log": "playwright test --project=apprentice-log",
+    "test:bio-swap": "playwright test --project=bio-swap",
+    "test:salvage-scout": "playwright test --project=salvage-scout",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^20.0.0"
+  }
+}

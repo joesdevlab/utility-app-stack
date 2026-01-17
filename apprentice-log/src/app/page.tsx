@@ -3,24 +3,29 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { VoiceRecorder } from "@/components/voice-recorder";
+import { ManualEntryForm } from "@/components/manual-entry-form";
 import { LogbookEntryCard } from "@/components/logbook-entry-card";
 import { AuthForm } from "@/components/auth-form";
 import { AppShell } from "@/components/app-shell";
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mic, RotateCcw, Save, CheckCircle2, Loader2 } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Mic, PenLine, RotateCcw, Save, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useEntries } from "@/hooks";
 import type { LogbookEntry } from "@/types";
 
 type AppState = "idle" | "processing" | "result" | "saved";
+type EntryMode = "voice" | "manual";
 
 export default function Home() {
   const { user, isLoading: authLoading } = useAuth();
   const [state, setState] = useState<AppState>("idle");
+  const [entryMode, setEntryMode] = useState<EntryMode>("voice");
   const [entry, setEntry] = useState<LogbookEntry | null>(null);
   const [transcript, setTranscript] = useState<string>("");
+  const [isManualProcessing, setIsManualProcessing] = useState(false);
   const { addEntry } = useEntries(user?.id);
 
   // Show loading while checking auth
@@ -73,8 +78,7 @@ export default function Home() {
       setEntry(logbookEntry);
       setState("result");
       toast.success("Entry created!");
-    } catch (error) {
-      console.error("Error processing recording:", error);
+    } catch {
       toast.error("Something went wrong. Please try again.");
       setState("idle");
     }
@@ -92,6 +96,21 @@ export default function Home() {
     }
   };
 
+  const handleManualSubmit = async (entryData: Omit<LogbookEntry, "id" | "createdAt">) => {
+    setIsManualProcessing(true);
+    try {
+      const saved = await addEntry(entryData);
+      if (saved) {
+        setState("saved");
+        toast.success("Entry saved!");
+      } else {
+        toast.error("Failed to save entry");
+      }
+    } finally {
+      setIsManualProcessing(false);
+    }
+  };
+
   const handleReset = () => {
     setState("idle");
     setEntry(null);
@@ -102,7 +121,7 @@ export default function Home() {
     <AppShell>
       <div className="px-4 py-6">
         <AnimatePresence mode="wait">
-          {/* Idle State - Ready to Record */}
+          {/* Idle State - Ready to Record or Manual Entry */}
           {state === "idle" && (
             <motion.div
               key="idle"
@@ -111,31 +130,56 @@ export default function Home() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="flex flex-col items-center"
             >
-              <Card className="w-full max-w-md">
-                <CardContent className="flex flex-col items-center py-12 px-6">
-                  <VoiceRecorder
-                    onRecordingComplete={handleRecordingComplete}
-                    isProcessing={false}
-                  />
+              {/* Mode Toggle */}
+              <Tabs
+                value={entryMode}
+                onValueChange={(v) => setEntryMode(v as EntryMode)}
+                className="w-full max-w-md mb-4"
+              >
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="voice" className="gap-2">
+                    <Mic className="h-4 w-4" />
+                    Voice
+                  </TabsTrigger>
+                  <TabsTrigger value="manual" className="gap-2">
+                    <PenLine className="h-4 w-4" />
+                    Manual
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="mt-10 text-center"
-                  >
-                    <p className="text-sm font-medium text-muted-foreground mb-3">
-                      Try saying something like:
-                    </p>
-                    <div className="bg-muted/50 rounded-lg p-4">
-                      <p className="text-sm italic text-muted-foreground leading-relaxed">
-                        "Did framing all day, about 6 hours. Used the nail gun and circular saw.
-                        Helped with roofing for 2 hours. Wore my hard hat and safety glasses."
+              {entryMode === "voice" ? (
+                <Card className="w-full max-w-md">
+                  <CardContent className="flex flex-col items-center py-12 px-6">
+                    <VoiceRecorder
+                      onRecordingComplete={handleRecordingComplete}
+                      isProcessing={false}
+                    />
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="mt-10 text-center"
+                    >
+                      <p className="text-sm font-medium text-muted-foreground mb-3">
+                        Try saying something like:
                       </p>
-                    </div>
-                  </motion.div>
-                </CardContent>
-              </Card>
+                      <div className="bg-muted/50 rounded-lg p-4">
+                        <p className="text-sm italic text-muted-foreground leading-relaxed">
+                          "Did framing all day, about 6 hours. Used the nail gun and circular saw.
+                          Helped with roofing for 2 hours. Wore my hard hat and safety glasses."
+                        </p>
+                      </div>
+                    </motion.div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <ManualEntryForm
+                  onSubmit={handleManualSubmit}
+                  isProcessing={isManualProcessing}
+                />
+              )}
             </motion.div>
           )}
 

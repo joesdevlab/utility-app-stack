@@ -39,6 +39,21 @@ export interface MedicineComparison {
   subsidyAvailable: boolean;
 }
 
+export interface ScanHistoryItem {
+  id: string;
+  medicineId: string;
+  barcode: string;
+  scannedAt: string;
+  medicine?: Medicine;
+}
+
+export interface FavoriteMedicine {
+  id: string;
+  medicineId: string;
+  createdAt: string;
+  medicine?: Medicine;
+}
+
 // Supabase Database types - generate these with `npx supabase gen types typescript`
 export type Database = {
   public: {

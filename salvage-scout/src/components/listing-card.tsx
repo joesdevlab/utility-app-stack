@@ -1,16 +1,19 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MapPin, Clock, Phone, MessageCircle } from "lucide-react";
+import { MapPin, Clock, Phone, MessageCircle, Bookmark } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import type { Material, MaterialCategory, MaterialCondition } from "@/types";
 import { CATEGORY_LABELS, CONDITION_LABELS } from "@/types";
 
 interface ListingCardProps {
   material: Material;
   delay?: number;
+  isSaved?: boolean;
+  onSaveToggle?: (listingId: string, isSaved: boolean) => void;
 }
 
 const categoryColors: Record<MaterialCategory, string> = {
@@ -52,13 +55,17 @@ function formatTimeAgo(dateString: string): string {
   }
 }
 
-export function ListingCard({ material, delay = 0 }: ListingCardProps) {
+export function ListingCard({ material, delay = 0, isSaved = false, onSaveToggle }: ListingCardProps) {
   const handleContact = () => {
     if ("vibrate" in navigator) {
       navigator.vibrate(30);
     }
-    // In a real app, this would open messaging or phone
-    alert(`Contact method: ${material.contactMethod}`);
+    // TODO: Implement in-app messaging (Phase 3 feature SS-F-001)
+    if (material.contactMethod === "call") {
+      toast.info("Calling feature coming soon! For now, contact the poster directly.");
+    } else {
+      toast.info("In-app messaging coming soon! For now, contact the poster directly.");
+    }
   };
 
   return (
@@ -87,6 +94,23 @@ export function ListingCard({ material, delay = 0 }: ListingCardProps) {
               {CONDITION_LABELS[material.condition]}
             </Badge>
           </div>
+
+          {/* Save button */}
+          {onSaveToggle && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`absolute top-3 right-3 h-8 w-8 bg-black/50 hover:bg-black/70 ${
+                isSaved ? "text-amber-500" : "text-white"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSaveToggle(material.id, isSaved);
+              }}
+            >
+              <Bookmark className={`h-4 w-4 ${isSaved ? "fill-current" : ""}`} />
+            </Button>
+          )}
 
           {/* Distance on image */}
           {material.distance !== undefined && (

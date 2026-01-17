@@ -3,7 +3,8 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Pill, DollarSign, BadgeCheck, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Pill, DollarSign, BadgeCheck, AlertCircle, Heart } from "lucide-react";
 import type { Medicine } from "@/types";
 
 interface MedicineCardProps {
@@ -11,6 +12,8 @@ interface MedicineCardProps {
   isScanned?: boolean;
   isCheapest?: boolean;
   delay?: number;
+  isFavorite?: boolean;
+  onFavoriteToggle?: (medicineId: string, isFavorite: boolean) => void;
 }
 
 export function MedicineCard({
@@ -18,6 +21,8 @@ export function MedicineCard({
   isScanned = false,
   isCheapest = false,
   delay = 0,
+  isFavorite = false,
+  onFavoriteToggle,
 }: MedicineCardProps) {
   return (
     <motion.div
@@ -101,14 +106,30 @@ export function MedicineCard({
                   </span>
                 </div>
 
-                {medicine.isSubsidized && (
-                  <div className="flex items-center gap-1 text-emerald-600">
-                    <BadgeCheck className="h-4 w-4" />
-                    <span className="text-sm font-medium">
-                      ${medicine.subsidyPrice?.toFixed(2)} with prescription
-                    </span>
-                  </div>
-                )}
+                <div className="flex items-center gap-2">
+                  {medicine.isSubsidized && (
+                    <div className="flex items-center gap-1 text-emerald-600">
+                      <BadgeCheck className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        ${medicine.subsidyPrice?.toFixed(2)} with prescription
+                      </span>
+                    </div>
+                  )}
+
+                  {onFavoriteToggle && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`h-8 w-8 ${isFavorite ? "text-red-500" : "text-muted-foreground"}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onFavoriteToggle(medicine.id, isFavorite);
+                      }}
+                    >
+                      <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </div>

@@ -1,90 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createClient } from "@/lib/supabase/client";
 import type { Material } from "@/types";
 import { calculateDistance } from "./use-location";
-
-const STORAGE_KEY = "salvage-scout-listings";
-
-// Demo listings for testing
-const DEMO_LISTINGS: Material[] = [
-  {
-    id: "demo-1",
-    title: "Leftover Pine Framing Timber",
-    description: "About 15 lengths of 90x45mm pine framing timber, 2.4m long. Left over from garage build. Some minor marks but structurally sound.",
-    category: "timber",
-    condition: "good",
-    quantity: "~15 lengths",
-    imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=450&fit=crop",
-    location: { latitude: -36.878, longitude: 174.764, suburb: "Mt Eden" },
-    postedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-    expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-    contactMethod: "message",
-    status: "available",
-  },
-  {
-    id: "demo-2",
-    title: "Double Glazed Window Unit",
-    description: "1200x900mm double glazed aluminum window, removed during renovation. Glass is perfect, frame has minor scratches.",
-    category: "windows",
-    condition: "good",
-    quantity: "1 unit",
-    imageUrl: "https://images.unsplash.com/photo-1558618047-8b8e2cc66e75?w=800&h=450&fit=crop",
-    location: { latitude: -36.853, longitude: 174.743, suburb: "Ponsonby" },
-    postedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
-    expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-    contactMethod: "call",
-    status: "available",
-  },
-  {
-    id: "demo-3",
-    title: "Concrete Pavers - Grey",
-    description: "Approx 50 square pavers, 400x400mm, grey color. Lifted from old patio. Good condition, some have moss which can be pressure washed off.",
-    category: "landscaping",
-    condition: "fair",
-    quantity: "~50 pavers",
-    imageUrl: "https://images.unsplash.com/photo-1558618140-514a16c5b5e3?w=800&h=450&fit=crop",
-    location: { latitude: -36.890, longitude: 174.718, suburb: "Mt Albert" },
-    postedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    contactMethod: "message",
-    status: "available",
-  },
-  {
-    id: "demo-4",
-    title: "Interior Door with Handle",
-    description: "Standard hollow core interior door, white painted, 1980x810mm. Includes handle and hinges. Perfect working condition.",
-    category: "doors",
-    condition: "good",
-    quantity: "1 door",
-    imageUrl: "https://images.unsplash.com/photo-1558618044-c67d43c4c8a3?w=800&h=450&fit=crop",
-    location: { latitude: -36.870, longitude: 174.778, suburb: "Newmarket" },
-    postedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 mins ago
-    expiresAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-    contactMethod: "message",
-    status: "available",
-  },
-  {
-    id: "demo-5",
-    title: "Pink Batts Insulation Offcuts",
-    description: "Various offcuts from ceiling insulation job. R3.2 rating. Enough to do a small room or patch job. Must take all.",
-    category: "insulation",
-    condition: "new",
-    quantity: "~5 sqm total",
-    imageUrl: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=450&fit=crop",
-    location: { latitude: -36.874, longitude: 174.802, suburb: "Remuera" },
-    postedAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(), // 8 hours ago
-    expiresAt: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
-    contactMethod: "call",
-    status: "available",
-  },
-];
 
 interface UseListingsReturn {
   listings: Material[];
   isLoading: boolean;
-  addListing: (listing: Material) => void;
-  removeListing: (id: string) => void;
+  addListing: (listing: Omit<Material, "id" | "postedAt">, imageData: string) => Promise<Material | null>;
+  removeListing: (id: string) => Promise<void>;
   refreshListings: () => void;
 }
 
@@ -93,29 +18,48 @@ export function useListings(
 ): UseListingsReturn {
   const [listings, setListings] = useState<Material[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const supabase = createClient();
 
-  const loadListings = useCallback(() => {
+  const loadListings = useCallback(async () => {
+    if (!supabase) {
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      let allListings = stored ? JSON.parse(stored) : [];
+      const { data, error } = await supabase
+        .from("salvage_listings")
+        .select("*")
+        .eq("status", "available")
+        .gt("expires_at", new Date().toISOString())
+        .order("posted_at", { ascending: false });
 
-      // Add demo listings if no stored listings
-      if (allListings.length === 0) {
-        allListings = DEMO_LISTINGS;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(allListings));
-      }
+      if (error) throw error;
 
-      // Filter out expired listings
-      const now = new Date();
-      allListings = allListings.filter(
-        (listing: Material) => new Date(listing.expiresAt) > now
-      );
+      let mappedListings: Material[] = (data || []).map((row) => ({
+        id: row.id,
+        title: row.title,
+        description: row.description,
+        category: row.category,
+        condition: row.condition,
+        quantity: row.quantity || "",
+        imageUrl: row.image_url,
+        location: {
+          latitude: Number(row.latitude),
+          longitude: Number(row.longitude),
+          suburb: row.suburb,
+        },
+        postedAt: row.posted_at,
+        expiresAt: row.expires_at,
+        contactMethod: row.contact_method,
+        status: row.status,
+      }));
 
       // Calculate distances if user location is available
       if (userLocation) {
-        allListings = allListings.map((listing: Material) => ({
+        mappedListings = mappedListings.map((listing) => ({
           ...listing,
           distance: calculateDistance(
             userLocation.latitude,
@@ -126,45 +70,145 @@ export function useListings(
         }));
 
         // Sort by distance
-        allListings.sort((a: Material, b: Material) =>
+        mappedListings.sort((a, b) =>
           (a.distance ?? Infinity) - (b.distance ?? Infinity)
-        );
-      } else {
-        // Sort by posted time (newest first)
-        allListings.sort(
-          (a: Material, b: Material) =>
-            new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime()
         );
       }
 
-      setListings(allListings);
-    } catch (error) {
-      console.error("Failed to load listings:", error);
-      setListings(DEMO_LISTINGS);
+      setListings(mappedListings);
+    } catch {
+      // On error, show empty state
+      setListings([]);
     }
 
     setIsLoading(false);
-  }, [userLocation]);
+  }, [userLocation, supabase]);
 
   useEffect(() => {
     loadListings();
   }, [loadListings]);
 
-  const addListing = useCallback((listing: Material) => {
-    setListings((prev) => {
-      const updated = [listing, ...prev];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
+  const uploadImage = async (imageData: string, userId: string): Promise<string | null> => {
+    if (!supabase) return null;
 
-  const removeListing = useCallback((id: string) => {
-    setListings((prev) => {
-      const updated = prev.filter((l) => l.id !== id);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
+    try {
+      // Convert base64 to blob
+      const base64Data = imageData.split(",")[1];
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: "image/jpeg" });
+
+      // Generate unique filename
+      const filename = `${userId}/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+
+      const { error } = await supabase.storage
+        .from("listing-images")
+        .upload(filename, blob, {
+          contentType: "image/jpeg",
+          upsert: false,
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from("listing-images")
+        .getPublicUrl(filename);
+
+      return urlData.publicUrl;
+    } catch {
+      return null;
+    }
+  };
+
+  const addListing = useCallback(
+    async (listing: Omit<Material, "id" | "postedAt">, imageData: string): Promise<Material | null> => {
+      if (!supabase) return null;
+
+      try {
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return null;
+
+        // Upload image first
+        const imageUrl = await uploadImage(imageData, user.id);
+        if (!imageUrl) {
+          return null;
+        }
+
+        const { data, error } = await supabase
+          .from("salvage_listings")
+          .insert({
+            user_id: user.id,
+            title: listing.title,
+            description: listing.description,
+            category: listing.category,
+            condition: listing.condition,
+            quantity: listing.quantity,
+            image_url: imageUrl,
+            latitude: listing.location.latitude,
+            longitude: listing.location.longitude,
+            suburb: listing.location.suburb,
+            contact_method: listing.contactMethod,
+            status: listing.status,
+            expires_at: listing.expiresAt,
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        const newListing: Material = {
+          id: data.id,
+          title: data.title,
+          description: data.description,
+          category: data.category,
+          condition: data.condition,
+          quantity: data.quantity || "",
+          imageUrl: data.image_url,
+          location: {
+            latitude: Number(data.latitude),
+            longitude: Number(data.longitude),
+            suburb: data.suburb,
+          },
+          postedAt: data.posted_at,
+          expiresAt: data.expires_at,
+          contactMethod: data.contact_method,
+          status: data.status,
+        };
+
+        setListings((prev) => [newListing, ...prev]);
+        return newListing;
+      } catch {
+        return null;
+      }
+    },
+    [supabase]
+  );
+
+  const removeListing = useCallback(
+    async (id: string) => {
+      if (!supabase) return;
+
+      try {
+        const { error } = await supabase
+          .from("salvage_listings")
+          .delete()
+          .eq("id", id);
+
+        if (error) throw error;
+
+        setListings((prev) => prev.filter((l) => l.id !== id));
+      } catch {
+        // Silently fail - listing remains in UI
+      }
+    },
+    [supabase]
+  );
 
   return {
     listings,

@@ -59,7 +59,7 @@
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: oklch(0.45 0 0); /* Adjusted for WCAG AA 4.5:1 contrast */
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -210,4 +210,51 @@ body {
 
 .border-amber {
   border-color: #d97706;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus visible styles for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border: oklch(0 0 0);
+    --muted-foreground: oklch(0.4 0 0);
+  }
+  .dark {
+    --border: oklch(1 0 0);
+    --muted-foreground: oklch(0.8 0 0);
+  }
+}
+
+/* WCAG AA compliant text utilities */
+/* Use darker shades for text to ensure 4.5:1 contrast ratio */
+/* Amber-600 (#d97706) has 3.77:1 on white - use amber-700 for small text */
+.text-amber-700 {
+  color: #b45309; /* Better contrast for text */
+}
+
+/* Ensure placeholder text has sufficient contrast */
+::placeholder {
+  color: oklch(0.5 0 0);
+  opacity: 1;
+}
+
+.dark ::placeholder {
+  color: oklch(0.65 0 0);
 }

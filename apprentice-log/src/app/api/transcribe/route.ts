@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
 import { toFile } from "openai";
+import { withAuth } from "@/lib/api-auth";
 
-export async function POST(request: NextRequest) {
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB limit for audio files
+
+async function handleTranscribe(request: NextRequest) {
   try {
     const formData = await request.formData();
     const audioFile = formData.get("audio") as File;
@@ -10,6 +13,14 @@ export async function POST(request: NextRequest) {
     if (!audioFile) {
       return NextResponse.json(
         { error: "No audio file provided" },
+        { status: 400 }
+      );
+    }
+
+    // Validate file size (AL-004)
+    if (audioFile.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: "Audio file exceeds 25MB limit" },
         { status: 400 }
       );
     }
@@ -29,11 +40,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       text: transcription.text,
     });
-  } catch (error) {
-    console.error("Transcription error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to transcribe audio" },
       { status: 500 }
     );
   }
 }
+
+export const POST = withAuth(handleTranscribe);

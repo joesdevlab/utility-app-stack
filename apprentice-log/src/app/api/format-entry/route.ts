@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
+import { withAuth } from "@/lib/api-auth";
+
+const MAX_TRANSCRIPT_LENGTH = 10000; // 10,000 character limit
 
 const SYSTEM_PROMPT = `You are an assistant that helps BCITO (Building and Construction Industry Training Organisation) apprentices fill out their daily logbook entries.
 
@@ -30,13 +33,21 @@ Guidelines:
 - Keep descriptions professional and concise
 - If the transcript is unclear, make reasonable assumptions and note them`;
 
-export async function POST(request: NextRequest) {
+async function handleFormatEntry(request: NextRequest) {
   try {
     const { transcript, date } = await request.json();
 
     if (!transcript) {
       return NextResponse.json(
         { error: "No transcript provided" },
+        { status: 400 }
+      );
+    }
+
+    // Validate transcript length (AL-003)
+    if (transcript.length > MAX_TRANSCRIPT_LENGTH) {
+      return NextResponse.json(
+        { error: "Transcript exceeds 10,000 character limit" },
         { status: 400 }
       );
     }
@@ -64,11 +75,12 @@ export async function POST(request: NextRequest) {
     const entry = JSON.parse(content);
 
     return NextResponse.json(entry);
-  } catch (error) {
-    console.error("Format entry error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to format logbook entry" },
       { status: 500 }
     );
   }
 }
+
+export const POST = withAuth(handleFormatEntry);

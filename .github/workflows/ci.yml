@@ -1,0 +1,183 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  # Detect which apps have changed
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      apprentice-log: ${{ steps.filter.outputs.apprentice-log }}
+      bio-swap: ${{ steps.filter.outputs.bio-swap }}
+      salvage-scout: ${{ steps.filter.outputs.salvage-scout }}
+      e2e: ${{ steps.filter.outputs.e2e }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            apprentice-log:
+              - 'apprentice-log/**'
+            bio-swap:
+              - 'bio-swap/**'
+            salvage-scout:
+              - 'salvage-scout/**'
+            e2e:
+              - 'e2e/**'
+
+  # Lint and type check for Apprentice Log
+  apprentice-log:
+    needs: changes
+    if: ${{ needs.changes.outputs.apprentice-log == 'true' || github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apprentice-log
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: apprentice-log/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Run tests
+        run: npm run test:run
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+  # Lint and type check for Bio-Swap
+  bio-swap:
+    needs: changes
+    if: ${{ needs.changes.outputs.bio-swap == 'true' || github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bio-swap
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: bio-swap/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Run tests
+        run: npm run test:run
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+  # Lint and type check for Salvage Scout
+  salvage-scout:
+    needs: changes
+    if: ${{ needs.changes.outputs.salvage-scout == 'true' || github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: salvage-scout
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: salvage-scout/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Run tests
+        run: npm run test:run
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+  # E2E tests (run on push to main only)
+  e2e:
+    needs: [apprentice-log, bio-swap, salvage-scout]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: e2e
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Playwright browsers
+        run: |
+          npm ci
+          npx playwright install --with-deps
+
+      - name: Install app dependencies
+        run: |
+          cd ../apprentice-log && npm ci
+          cd ../bio-swap && npm ci
+          cd ../salvage-scout && npm ci
+
+      - name: Run E2E tests
+        run: npm run test
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 7
