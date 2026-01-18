@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Material } from "@/types";
+import type { Material, MaterialCategory, MaterialCondition } from "@/types";
 import { calculateDistance } from "./use-location";
 
 interface SalvageListingRow {
@@ -60,8 +60,8 @@ export function useListings(
         id: row.id,
         title: row.title,
         description: row.description,
-        category: row.category,
-        condition: row.condition,
+        category: row.category as MaterialCategory,
+        condition: row.condition as MaterialCondition,
         quantity: row.quantity || "",
         imageUrl: row.image_url,
         location: {
@@ -71,8 +71,8 @@ export function useListings(
         },
         postedAt: row.posted_at,
         expiresAt: row.expires_at,
-        contactMethod: row.contact_method,
-        status: row.status,
+        contactMethod: row.contact_method as "message" | "call",
+        status: row.status as "available" | "pending" | "claimed",
       }));
 
       // Calculate distances if user location is available
