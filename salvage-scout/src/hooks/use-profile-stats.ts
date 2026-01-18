@@ -3,6 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+interface ListingStatusRow {
+  id: string;
+  status: string;
+}
+
 export interface ProfileStats {
   totalListings: number;
   activeListings: number;
@@ -54,7 +59,7 @@ export function useProfileStats(userId: string | undefined) {
       const memberSince = userData?.user?.created_at || "";
 
       // Calculate stats
-      const allListings = listings || [];
+      const allListings = (listings || []) as ListingStatusRow[];
       const active = allListings.filter((l) => l.status === "available").length;
       const pending = allListings.filter((l) => l.status === "pending").length;
       const claimed = allListings.filter((l) => l.status === "claimed").length;
