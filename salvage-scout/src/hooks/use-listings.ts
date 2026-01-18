@@ -5,6 +5,24 @@ import { createClient } from "@/lib/supabase/client";
 import type { Material } from "@/types";
 import { calculateDistance } from "./use-location";
 
+interface SalvageListingRow {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  condition: string;
+  quantity: string | null;
+  image_url: string;
+  latitude: number;
+  longitude: number;
+  suburb: string;
+  posted_at: string;
+  expires_at: string;
+  contact_method: string;
+  status: string;
+  user_id: string;
+}
+
 interface UseListingsReturn {
   listings: Material[];
   isLoading: boolean;
@@ -38,7 +56,7 @@ export function useListings(
 
       if (error) throw error;
 
-      let mappedListings: Material[] = (data || []).map((row) => ({
+      let mappedListings: Material[] = ((data || []) as SalvageListingRow[]).map((row) => ({
         id: row.id,
         title: row.title,
         description: row.description,
