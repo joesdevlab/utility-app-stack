@@ -2,7 +2,25 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Material } from "@/types";
+import type { Material, MaterialCategory, MaterialCondition } from "@/types";
+
+interface SalvageListingRow {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  condition: string;
+  quantity: string | null;
+  image_url: string;
+  latitude: number;
+  longitude: number;
+  suburb: string;
+  posted_at: string;
+  expires_at: string;
+  contact_method: string;
+  status: string;
+  user_id: string;
+}
 
 interface UseMyListingsReturn {
   listings: Material[];
@@ -35,12 +53,12 @@ export function useMyListings(userId: string | undefined): UseMyListingsReturn {
 
       if (error) throw error;
 
-      const mappedListings: Material[] = (data || []).map((row) => ({
+      const mappedListings: Material[] = ((data || []) as SalvageListingRow[]).map((row) => ({
         id: row.id,
         title: row.title,
         description: row.description,
-        category: row.category,
-        condition: row.condition,
+        category: row.category as MaterialCategory,
+        condition: row.condition as MaterialCondition,
         quantity: row.quantity || "",
         imageUrl: row.image_url,
         location: {
@@ -50,8 +68,8 @@ export function useMyListings(userId: string | undefined): UseMyListingsReturn {
         },
         postedAt: row.posted_at,
         expiresAt: row.expires_at,
-        contactMethod: row.contact_method,
-        status: row.status,
+        contactMethod: row.contact_method as "message" | "call",
+        status: row.status as "available" | "pending" | "claimed",
       }));
 
       setListings(mappedListings);
@@ -89,23 +107,24 @@ export function useMyListings(userId: string | undefined): UseMyListingsReturn {
 
         if (error) throw error;
 
+        const row = data as SalvageListingRow;
         const updatedListing: Material = {
-          id: data.id,
-          title: data.title,
-          description: data.description,
-          category: data.category,
-          condition: data.condition,
-          quantity: data.quantity || "",
-          imageUrl: data.image_url,
+          id: row.id,
+          title: row.title,
+          description: row.description,
+          category: row.category as MaterialCategory,
+          condition: row.condition as MaterialCondition,
+          quantity: row.quantity || "",
+          imageUrl: row.image_url,
           location: {
-            latitude: Number(data.latitude),
-            longitude: Number(data.longitude),
-            suburb: data.suburb,
+            latitude: Number(row.latitude),
+            longitude: Number(row.longitude),
+            suburb: row.suburb,
           },
-          postedAt: data.posted_at,
-          expiresAt: data.expires_at,
-          contactMethod: data.contact_method,
-          status: data.status,
+          postedAt: row.posted_at,
+          expiresAt: row.expires_at,
+          contactMethod: row.contact_method as "message" | "call",
+          status: row.status as "available" | "pending" | "claimed",
         };
 
         setListings((prev) =>
