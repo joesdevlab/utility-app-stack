@@ -21,7 +21,8 @@
       "Bash(printf '%s' \"$OPENAI_API_KEY\")",
       "Bash(git push:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd Vercel project configs and update gitignore\n\n- Added .vercel to gitignore for all apps\n- Vercel project linking configs\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(curl:*)"
     ]
   }
 }
