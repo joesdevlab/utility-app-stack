@@ -73,6 +73,11 @@ export function VoiceRecorder({
 
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
+        console.log("Recording complete:", {
+          size: audioBlob.size,
+          type: audioBlob.type,
+          chunks: chunksRef.current.length,
+        });
         onRecordingComplete(audioBlob);
 
         // Cleanup
@@ -94,8 +99,16 @@ export function VoiceRecorder({
       timerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
-    } catch {
-      toast.error("Could not access microphone. Please check permissions.");
+    } catch (error) {
+      console.error("Microphone access error:", error);
+      const message = error instanceof Error ? error.message : "Unknown error";
+      if (message.includes("Permission") || message.includes("NotAllowed")) {
+        toast.error("Microphone permission denied. Please allow access in your browser settings.");
+      } else if (message.includes("NotFound")) {
+        toast.error("No microphone found. Please connect a microphone.");
+      } else {
+        toast.error(`Could not access microphone: ${message}`);
+      }
     }
   }, [onRecordingComplete, monitorAudioLevel, triggerHaptic]);
 

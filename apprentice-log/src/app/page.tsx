@@ -56,7 +56,9 @@ export default function Home() {
       });
 
       if (!transcribeResponse.ok) {
-        throw new Error("Failed to transcribe audio");
+        const errorData = await transcribeResponse.json().catch(() => ({}));
+        console.error("Transcription failed:", transcribeResponse.status, errorData);
+        throw new Error(errorData.error || `Transcription failed (${transcribeResponse.status})`);
       }
 
       const { text } = await transcribeResponse.json();
@@ -78,8 +80,10 @@ export default function Home() {
       setEntry(logbookEntry);
       setState("result");
       toast.success("Entry created!");
-    } catch {
-      toast.error("Something went wrong. Please try again.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Something went wrong";
+      console.error("Recording processing error:", error);
+      toast.error(message);
       setState("idle");
     }
   };

@@ -40,9 +40,19 @@ async function handleTranscribe(request: NextRequest) {
     return NextResponse.json({
       text: transcription.text,
     });
-  } catch {
+  } catch (error) {
+    console.error("Transcription error:", error);
+
+    // Provide more specific error messages
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const isOpenAIError = errorMessage.includes("OpenAI") || errorMessage.includes("API");
+
     return NextResponse.json(
-      { error: "Failed to transcribe audio" },
+      {
+        error: "Failed to transcribe audio",
+        details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+        code: isOpenAIError ? "OPENAI_ERROR" : "TRANSCRIPTION_ERROR"
+      },
       { status: 500 }
     );
   }
