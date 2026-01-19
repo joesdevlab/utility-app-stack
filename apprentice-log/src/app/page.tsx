@@ -72,10 +72,24 @@ export default function Home() {
       });
 
       if (!formatResponse.ok) {
-        throw new Error("Failed to format entry");
+        const errorData = await formatResponse.json().catch(() => ({}));
+        console.error("Format failed:", formatResponse.status, errorData);
+        throw new Error(errorData.error || `Failed to format entry (${formatResponse.status})`);
       }
 
       const logbookEntry = await formatResponse.json();
+
+      // Validate required fields
+      if (!logbookEntry.tasks || !Array.isArray(logbookEntry.tasks)) {
+        console.error("Invalid response format:", logbookEntry);
+        throw new Error("Invalid entry format received from AI");
+      }
+
+      // Ensure formattedEntry has a value
+      if (!logbookEntry.formattedEntry) {
+        logbookEntry.formattedEntry = "";
+      }
+
       logbookEntry.rawTranscript = text;
       setEntry(logbookEntry);
       setState("result");

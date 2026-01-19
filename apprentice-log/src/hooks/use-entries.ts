@@ -47,8 +47,9 @@ export function useEntries(userId: string | undefined) {
       }));
 
       setEntries(mappedEntries);
-    } catch {
-      // Silently fail on load errors - UI shows empty state
+    } catch (error) {
+      console.error("Failed to load entries:", error);
+      // UI shows empty state on error
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +108,8 @@ export function useEntries(userId: string | undefined) {
 
         setEntries((prev) => [newEntry, ...prev]);
         return newEntry;
-      } catch {
+      } catch (error) {
+        console.error("Failed to add entry:", error);
         return null;
       }
     },
@@ -168,7 +170,8 @@ export function useEntries(userId: string | undefined) {
         );
 
         return updatedEntry;
-      } catch {
+      } catch (error) {
+        console.error("Failed to update entry:", error);
         return null;
       }
     },
@@ -190,8 +193,9 @@ export function useEntries(userId: string | undefined) {
         if (error) throw error;
 
         setEntries((prev) => prev.filter((e) => e.id !== id));
-      } catch {
-        // Silently fail - entry remains in UI
+      } catch (error) {
+        console.error("Failed to remove entry:", error);
+        // Entry remains in UI on error
       }
     },
     [userId, supabase]
@@ -213,8 +217,8 @@ export function useEntries(userId: string | undefined) {
 
         // Refresh to get the restored entry
         await loadEntries();
-      } catch {
-        // Silently fail
+      } catch (error) {
+        console.error("Failed to restore entry:", error);
       }
     },
     [userId, supabase, loadEntries]
@@ -234,8 +238,8 @@ export function useEntries(userId: string | undefined) {
       if (error) throw error;
 
       setEntries([]);
-    } catch {
-      // Silently fail
+    } catch (error) {
+      console.error("Failed to clear entries:", error);
     }
   }, [userId, supabase]);
 
@@ -251,8 +255,8 @@ export function useEntries(userId: string | undefined) {
         .eq("is_deleted", true);
 
       if (error) throw error;
-    } catch {
-      // Silently fail
+    } catch (error) {
+      console.error("Failed to clear deleted entries:", error);
     }
   }, [userId, supabase]);
 

@@ -11,6 +11,7 @@ Given a voice transcript of what the apprentice did today, extract and format th
 You must respond with valid JSON in this exact format:
 {
   "date": "YYYY-MM-DD",
+  "formattedEntry": "A well-written paragraph summarizing the day's work in a professional logbook style",
   "tasks": [
     {
       "description": "Brief description of the task",
@@ -26,6 +27,7 @@ You must respond with valid JSON in this exact format:
 
 Guidelines:
 - Use today's date if not specified
+- Write a professional formattedEntry that summarizes the day's work in 2-3 sentences
 - Estimate hours based on context (full day is usually 8-9 hours)
 - Extract specific tools mentioned (nail gun, circular saw, level, etc.)
 - Map tasks to relevant BCITO skills where possible (framing, roofing, foundations, etc.)
@@ -55,7 +57,7 @@ async function handleFormatEntry(request: NextRequest) {
     const today = date || new Date().toISOString().split("T")[0];
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         {
@@ -75,9 +77,20 @@ async function handleFormatEntry(request: NextRequest) {
     const entry = JSON.parse(content);
 
     return NextResponse.json(entry);
-  } catch {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("Format entry error:", errorMessage, error);
+
+    // Check for specific error types
+    if (errorMessage.includes("JSON")) {
+      return NextResponse.json(
+        { error: "Failed to parse AI response", details: errorMessage },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to format logbook entry" },
+      { error: "Failed to format logbook entry", details: errorMessage },
       { status: 500 }
     );
   }

@@ -70,10 +70,19 @@ export function ManualEntryForm({ onSubmit, isProcessing }: ManualEntryFormProps
 
     const totalHours = validTasks.reduce((sum, t) => sum + (t.hours || 0), 0);
 
+    // Generate a formatted entry summary from tasks
+    const taskSummaries = validTasks.map((t) => {
+      const hours = t.hours ? ` (${t.hours}h)` : "";
+      return `${t.description}${hours}`;
+    });
+    const formattedEntry = `Completed ${totalHours} hours of work: ${taskSummaries.join("; ")}.${
+      safetyObservations ? ` Safety: ${safetyObservations}.` : ""
+    }`;
+
     const entry: Omit<LogbookEntry, "id" | "createdAt"> = {
       date,
       tasks: validTasks,
-      formattedEntry: "",
+      formattedEntry,
       totalHours,
       notes: notes || undefined,
       safetyObservations: safetyObservations || undefined,

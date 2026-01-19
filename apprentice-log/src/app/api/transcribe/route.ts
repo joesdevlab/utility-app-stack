@@ -6,6 +6,17 @@ import { withAuth } from "@/lib/api-auth";
 const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB limit for audio files
 
 async function handleTranscribe(request: NextRequest) {
+  // Check if API key is available
+  const apiKeyExists = !!process.env.OPENAI_API_KEY;
+
+  if (!apiKeyExists) {
+    console.error("OPENAI_API_KEY environment variable is not set");
+    return NextResponse.json(
+      { error: "OpenAI API key not configured" },
+      { status: 500 }
+    );
+  }
+
   try {
     const formData = await request.formData();
     const audioFile = formData.get("audio") as File;

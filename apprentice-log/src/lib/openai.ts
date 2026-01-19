@@ -1,18 +1,17 @@
 import OpenAI from "openai";
 
-// Lazy initialization to avoid build-time errors
-let _openai: OpenAI | null = null;
-
+// Create a new OpenAI client for each request to ensure env vars are fresh
 export function getOpenAI(): OpenAI {
-  if (!_openai) {
-    if (!process.env.OPENAI_API_KEY) {
-      throw new Error("OPENAI_API_KEY environment variable is not set");
-    }
-    _openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+  const apiKey = process.env.OPENAI_API_KEY;
+
+  if (!apiKey) {
+    console.error("OPENAI_API_KEY environment variable is not set");
+    throw new Error("OPENAI_API_KEY environment variable is not set");
   }
-  return _openai;
+
+  return new OpenAI({
+    apiKey: apiKey,
+  });
 }
 
 // Legacy export for backwards compatibility
@@ -39,7 +38,7 @@ export async function generateText(
   messages.push({ role: "user", content: prompt });
 
   const response = await client.chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-4o-mini",
     messages,
   });
 
@@ -66,7 +65,7 @@ export async function analyzeImage(
 ): Promise<string> {
   const client = getOpenAI();
   const response = await client.chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-4o-mini",
     messages: [
       {
         role: "user",
