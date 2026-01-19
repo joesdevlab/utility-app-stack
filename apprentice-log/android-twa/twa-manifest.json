@@ -1,0 +1,57 @@
+{
+  "packageId": "app.apprenticelog.twa",
+  "host": "apprentice-log.vercel.app",
+  "name": "Apprentice Log",
+  "launcherName": "AppLog",
+  "display": "standalone",
+  "themeColor": "#3b82f6",
+  "navigationColor": "#0a0a0a",
+  "navigationColorDark": "#0a0a0a",
+  "navigationDividerColor": "#1f2937",
+  "navigationDividerColorDark": "#1f2937",
+  "backgroundColor": "#0a0a0a",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://apprentice-log.vercel.app/icons/icon-512x512.png",
+  "maskableIconUrl": "https://apprentice-log.vercel.app/icons/maskable-512x512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "apprentice-log"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "shortcuts": [
+    {
+      "name": "New Voice Entry",
+      "shortName": "Record",
+      "url": "/?mode=voice",
+      "iconUrl": "https://apprentice-log.vercel.app/icons/icon-96x96.png"
+    },
+    {
+      "name": "View History",
+      "shortName": "History",
+      "url": "/history",
+      "iconUrl": "https://apprentice-log.vercel.app/icons/icon-96x96.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://apprentice-log.vercel.app/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": false
+    },
+    "playBilling": {
+      "enabled": false
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "orientation": "portrait",
+  "fingerprints": []
+}
