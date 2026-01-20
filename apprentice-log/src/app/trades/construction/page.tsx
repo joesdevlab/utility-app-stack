@@ -4,31 +4,15 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Mic, ArrowRight, CheckCircle, HardHat, Clock, FileText,
-  Smartphone, Shield, Building2, Truck, Users
+  Shield, Building2, Truck, Users
 } from "lucide-react";
 import Link from "next/link";
+import { MarketingHeader } from "@/components/landing/marketing-header";
 
 export default function ConstructionPage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/landing" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/20">
-                <HardHat className="h-5 w-5 text-white" />
-              </div>
-              <span className="font-bold text-xl text-gray-900">Apprentice Log</span>
-            </Link>
-            <Link href="/">
-              <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-                Get Started Free
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <MarketingHeader />
 
       {/* Hero */}
       <section className="relative py-20 overflow-hidden">
