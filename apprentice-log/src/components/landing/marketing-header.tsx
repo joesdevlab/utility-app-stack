@@ -109,6 +109,12 @@ export function MarketingHeader() {
             >
               FAQ
             </button>
+            <button
+              onClick={() => scrollToSection("download")}
+              className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
+            >
+              Download
+            </button>
             <Link
               href="/employer-landing"
               className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
@@ -194,6 +200,12 @@ export function MarketingHeader() {
               className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all"
             >
               FAQ
+            </button>
+            <button
+              onClick={() => scrollToSection("download")}
+              className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all"
+            >
+              Download
             </button>
             <Link
               href="/employer-landing"
