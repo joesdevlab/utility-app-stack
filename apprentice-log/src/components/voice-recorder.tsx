@@ -147,60 +147,67 @@ export function VoiceRecorder({
 
   if (isProcessing) {
     return (
-      <div className="flex flex-col items-center gap-6">
+      <div className="flex flex-col items-center gap-8">
         <div className="relative">
           {/* Animated processing rings */}
           <motion.div
-            className="absolute inset-0 rounded-full bg-orange-500/20"
-            animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.2, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-400/30 to-orange-600/30"
+            animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0.2, 0.6] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           />
           <motion.div
-            className="absolute inset-0 rounded-full bg-orange-500/10"
-            animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.1, 0.3] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
+            className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-400/20 to-orange-600/20"
+            animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.1, 0.4] }}
+            transition={{ duration: 1.5, repeat: Infinity, delay: 0.2, ease: "easeInOut" }}
           />
-          <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-orange-600">
-            <Loader2 className="h-12 w-12 animate-spin text-white" />
+          <div className="relative flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 shadow-xl shadow-orange-500/30">
+            <Loader2 className="h-14 w-14 animate-spin text-white" />
           </div>
         </div>
-        <div className="text-center">
-          <p className="font-medium text-foreground">Processing...</p>
-          <p className="text-sm text-muted-foreground">Transcribing your voice</p>
+        <div className="text-center space-y-1">
+          <p className="text-lg font-semibold text-gray-900">Processing...</p>
+          <p className="text-sm text-muted-foreground">AI is transcribing your voice</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex flex-col items-center gap-8">
       <div className="relative">
+        {/* Glow effect */}
+        <div className={`absolute inset-0 rounded-full blur-2xl transition-opacity duration-300 ${
+          isRecording
+            ? "bg-red-500/30 opacity-100"
+            : "bg-orange-500/20 opacity-60"
+        }`} />
+
         {/* Pulse rings when recording */}
         <AnimatePresence>
           {isRecording && (
             <>
               <motion.div
                 initial={{ scale: 1, opacity: 0.6 }}
-                animate={{ scale: 1.5, opacity: 0 }}
+                animate={{ scale: 1.6, opacity: 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 1.5, repeat: Infinity }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: "easeOut" }}
                 className="absolute inset-0 rounded-full bg-red-500"
               />
               <motion.div
                 initial={{ scale: 1, opacity: 0.4 }}
-                animate={{ scale: 1.8, opacity: 0 }}
+                animate={{ scale: 2, opacity: 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
+                transition={{ duration: 1.2, repeat: Infinity, delay: 0.4, ease: "easeOut" }}
                 className="absolute inset-0 rounded-full bg-red-500"
               />
               {/* Audio level indicator ring */}
               <motion.div
                 className="absolute inset-0 rounded-full border-4 border-red-400"
                 animate={{
-                  scale: 1 + audioLevel * 0.3,
-                  opacity: 0.5 + audioLevel * 0.5,
+                  scale: 1 + audioLevel * 0.35,
+                  opacity: 0.6 + audioLevel * 0.4,
                 }}
-                transition={{ duration: 0.1 }}
+                transition={{ duration: 0.05 }}
               />
             </>
           )}
@@ -208,12 +215,13 @@ export function VoiceRecorder({
 
         {/* Main button */}
         <motion.button
-          whileTap={{ scale: 0.95 }}
+          whileTap={{ scale: 0.92 }}
+          whileHover={{ scale: 1.02 }}
           onClick={isRecording ? stopRecording : startRecording}
-          className={`relative flex h-28 w-28 items-center justify-center rounded-full shadow-lg transition-colors ${
+          className={`relative flex h-32 w-32 items-center justify-center rounded-full shadow-2xl transition-all duration-300 ${
             isRecording
-              ? "bg-gradient-to-br from-red-400 to-red-600"
-              : "bg-gradient-to-br from-orange-400 to-orange-600"
+              ? "bg-gradient-to-br from-red-500 to-red-600 shadow-red-500/40"
+              : "bg-gradient-to-br from-orange-500 to-orange-600 shadow-orange-500/40"
           }`}
         >
           <AnimatePresence mode="wait">
@@ -225,7 +233,7 @@ export function VoiceRecorder({
                 exit={{ scale: 0, rotate: 90 }}
                 transition={{ duration: 0.2 }}
               >
-                <Square className="h-10 w-10 text-white fill-white" />
+                <Square className="h-12 w-12 text-white fill-white" />
               </motion.div>
             ) : (
               <motion.div
@@ -235,7 +243,7 @@ export function VoiceRecorder({
                 exit={{ scale: 0, rotate: -90 }}
                 transition={{ duration: 0.2 }}
               >
-                <Mic className="h-12 w-12 text-white" />
+                <Mic className="h-14 w-14 text-white" strokeWidth={2} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -250,19 +258,19 @@ export function VoiceRecorder({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="flex flex-col items-center gap-1"
+            className="flex flex-col items-center gap-2"
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 bg-red-50 px-4 py-2 rounded-full">
               <motion.div
-                className="h-2 w-2 rounded-full bg-red-500"
-                animate={{ opacity: [1, 0.5, 1] }}
-                transition={{ duration: 1, repeat: Infinity }}
+                className="h-3 w-3 rounded-full bg-red-500"
+                animate={{ scale: [1, 1.2, 1], opacity: [1, 0.7, 1] }}
+                transition={{ duration: 0.8, repeat: Infinity }}
               />
-              <span className="text-2xl font-bold tabular-nums text-foreground">
+              <span className="text-2xl font-bold tabular-nums text-red-600">
                 {formatTime(recordingTime)}
               </span>
             </div>
-            <p className="text-sm text-muted-foreground">Tap to stop recording</p>
+            <p className="text-sm text-muted-foreground font-medium">Tap to stop recording</p>
           </motion.div>
         ) : (
           <motion.div
@@ -270,11 +278,11 @@ export function VoiceRecorder({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="text-center"
+            className="text-center space-y-2"
           >
-            <p className="font-medium text-foreground">Tap to record</p>
-            <p className="text-sm text-muted-foreground">
-              Describe what you did today
+            <p className="text-lg font-semibold text-gray-900">Tap to record</p>
+            <p className="text-sm text-muted-foreground max-w-[240px]">
+              Describe your work tasks, hours, tools used, and skills learned
             </p>
           </motion.div>
         )}

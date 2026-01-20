@@ -137,29 +137,35 @@ export default function Home() {
 
   return (
     <AppShell>
-      <div className="px-4 py-6">
+      <div className="px-4 py-4 max-w-lg mx-auto">
         <AnimatePresence mode="wait">
           {/* Idle State - Ready to Record or Manual Entry */}
           {state === "idle" && (
             <motion.div
               key="idle"
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
+              exit={{ opacity: 0, scale: 0.98 }}
               className="flex flex-col items-center"
             >
               {/* Mode Toggle */}
               <Tabs
                 value={entryMode}
                 onValueChange={(v) => setEntryMode(v as EntryMode)}
-                className="w-full max-w-md mb-4"
+                className="w-full mb-4"
               >
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="voice" className="gap-2">
+                <TabsList className="grid w-full grid-cols-2 h-12 p-1 bg-gray-100/80 rounded-xl">
+                  <TabsTrigger
+                    value="voice"
+                    className="gap-2 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-orange-600 font-medium"
+                  >
                     <Mic className="h-4 w-4" />
                     Voice
                   </TabsTrigger>
-                  <TabsTrigger value="manual" className="gap-2">
+                  <TabsTrigger
+                    value="manual"
+                    className="gap-2 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-orange-600 font-medium"
+                  >
                     <PenLine className="h-4 w-4" />
                     Manual
                   </TabsTrigger>
@@ -167,8 +173,8 @@ export default function Home() {
               </Tabs>
 
               {entryMode === "voice" ? (
-                <Card className="w-full max-w-md">
-                  <CardContent className="flex flex-col items-center py-12 px-6">
+                <Card className="w-full border-gray-200 shadow-lg">
+                  <CardContent className="flex flex-col items-center py-10 px-6">
                     <VoiceRecorder
                       onRecordingComplete={handleRecordingComplete}
                       isProcessing={false}
@@ -177,14 +183,14 @@ export default function Home() {
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="mt-10 text-center"
+                      transition={{ delay: 0.3 }}
+                      className="mt-8 text-center w-full"
                     >
-                      <p className="text-sm font-medium text-muted-foreground mb-3">
-                        Try saying something like:
+                      <p className="text-sm font-semibold text-gray-500 mb-3">
+                        Example of what to say:
                       </p>
-                      <div className="bg-muted/50 rounded-lg p-4">
-                        <p className="text-sm italic text-muted-foreground leading-relaxed">
+                      <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100 rounded-xl p-4">
+                        <p className="text-sm text-gray-600 leading-relaxed">
                           "Did framing all day, about 6 hours. Used the nail gun and circular saw.
                           Helped with roofing for 2 hours. Wore my hard hat and safety glasses."
                         </p>
@@ -205,12 +211,12 @@ export default function Home() {
           {state === "processing" && (
             <motion.div
               key="processing"
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
+              exit={{ opacity: 0, scale: 0.98 }}
               className="flex flex-col items-center"
             >
-              <Card className="w-full max-w-md">
+              <Card className="w-full border-gray-200 shadow-lg">
                 <CardContent className="flex flex-col items-center py-16">
                   <VoiceRecorder
                     onRecordingComplete={handleRecordingComplete}
@@ -228,8 +234,20 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="space-y-4 max-w-md mx-auto"
+              className="space-y-4"
             >
+              {/* Success header */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center mb-2"
+              >
+                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Entry created from your voice
+                </span>
+              </motion.div>
+
               <LogbookEntryCard entry={entry} />
 
               {/* Transcript */}
@@ -238,13 +256,18 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
               >
-                <Card>
-                  <CardContent className="py-4">
-                    <div className="flex items-start gap-3">
-                      <Mic className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                      <p className="text-sm text-muted-foreground italic leading-relaxed">
-                        "{transcript}"
-                      </p>
+                <Card className="border-gray-200">
+                  <CardContent className="py-3 px-4">
+                    <div className="flex items-start gap-2.5">
+                      <div className="w-6 h-6 rounded-lg bg-orange-100 flex items-center justify-center shrink-0 mt-0.5">
+                        <Mic className="h-3.5 w-3.5 text-orange-600" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500 mb-1">What you said:</p>
+                        <p className="text-sm text-gray-600 leading-relaxed">
+                          "{transcript}"
+                        </p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -255,18 +278,18 @@ export default function Home() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="flex gap-3"
+                className="flex gap-3 pt-2"
               >
                 <Button
                   variant="outline"
-                  className="flex-1"
+                  className="flex-1 h-12 rounded-xl border-gray-200 hover:bg-gray-50"
                   onClick={handleReset}
                 >
                   <RotateCcw className="h-4 w-4 mr-2" />
                   Redo
                 </Button>
                 <Button
-                  className="flex-1 bg-blue-500 hover:bg-blue-600"
+                  className="flex-1 h-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg shadow-orange-500/25"
                   onClick={handleSave}
                 >
                   <Save className="h-4 w-4 mr-2" />
@@ -280,31 +303,34 @@ export default function Home() {
           {state === "saved" && (
             <motion.div
               key="saved"
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="flex flex-col items-center max-w-md mx-auto"
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="flex flex-col items-center"
             >
-              <Card className="w-full">
+              <Card className="w-full border-gray-200 shadow-lg">
                 <CardContent className="flex flex-col items-center py-12 text-center">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className="flex h-20 w-20 items-center justify-center rounded-full bg-green-500/10 mb-4"
+                    className="relative mb-6"
                   >
-                    <CheckCircle2 className="h-10 w-10 text-green-500" />
+                    <div className="absolute inset-0 rounded-full bg-green-500/20 blur-xl" />
+                    <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 shadow-xl shadow-green-500/30">
+                      <CheckCircle2 className="h-12 w-12 text-white" />
+                    </div>
                   </motion.div>
-                  <h2 className="text-xl font-semibold mb-2">Entry Saved!</h2>
-                  <p className="text-muted-foreground mb-6">
-                    Your logbook entry has been saved to the cloud.
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Entry Saved!</h2>
+                  <p className="text-muted-foreground mb-8 max-w-xs">
+                    Your logbook entry has been saved and synced to the cloud.
                   </p>
                   <Button
-                    className="w-full bg-blue-500 hover:bg-blue-600"
+                    className="w-full h-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg shadow-orange-500/25"
                     onClick={handleReset}
                   >
                     <Mic className="h-4 w-4 mr-2" />
-                    Record Another Day
+                    Record Another Entry
                   </Button>
                 </CardContent>
               </Card>
