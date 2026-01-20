@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useAuth } from "@/components/auth-provider";
 import { useOrgMembers } from "@/hooks/use-organization";
 import { InviteModal } from "@/components/employer/invite-modal";
@@ -88,7 +89,7 @@ export default function TeamPage() {
         <Skeleton className="h-8 w-48" />
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
-            <Skeleton key={i} className="h-20" />
+            <Skeleton key={i} className="h-20 rounded-xl" />
           ))}
         </div>
       </div>
@@ -101,152 +102,192 @@ export default function TeamPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      >
         <div>
-          <h1 className="text-2xl font-bold">Team Management</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Team Management</h1>
           <p className="text-muted-foreground">
             Manage your organization's members and roles
           </p>
         </div>
-        <Button onClick={() => setInviteModalOpen(true)}>
+        <Button
+          onClick={() => setInviteModalOpen(true)}
+          className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md shadow-orange-500/20"
+        >
           <UserPlus className="h-4 w-4 mr-2" />
           Invite Member
         </Button>
-      </div>
+      </motion.div>
 
       {/* Seat Usage */}
-      <Card>
-        <CardContent className="py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Users className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="font-medium">
-                  {activeMembers.length} of {organization?.max_seats || 5} seats used
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {(organization?.max_seats || 5) - activeMembers.length} seats available
-                </p>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <Card className="hover:shadow-lg hover:border-orange-200 transition-all">
+          <CardContent className="py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center">
+                  <Users className="h-5 w-5 text-orange-600" />
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">
+                    {activeMembers.length} of {organization?.max_seats || 5} seats used
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {(organization?.max_seats || 5) - activeMembers.length} seats available
+                  </p>
+                </div>
               </div>
+              {activeMembers.length >= (organization?.max_seats || 5) && (
+                <Link href="/employer/billing">
+                  <Button variant="outline" size="sm" className="border-orange-200 hover:bg-orange-50 hover:text-orange-600">
+                    Upgrade Plan
+                  </Button>
+                </Link>
+              )}
             </div>
-            {activeMembers.length >= (organization?.max_seats || 5) && (
-              <Link href="/employer/billing">
-                <Button variant="outline" size="sm">
-                  Upgrade Plan
-                </Button>
-              </Link>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Pending Invites */}
       {pendingMembers.length > 0 && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2">
-              <Mail className="h-5 w-5" />
-              Pending Invitations ({pendingMembers.length})
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Card className="border-amber-200 bg-amber-50/30">
+            <CardHeader className="pb-3 border-b bg-gradient-to-r from-amber-50/50 to-transparent">
+              <CardTitle className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
+                  <Mail className="h-4 w-4 text-amber-600" />
+                </div>
+                <span className="text-gray-900">Pending Invitations ({pendingMembers.length})</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-4">
+              {pendingMembers.map((member, index) => (
+                <motion.div
+                  key={member.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="flex items-center justify-between p-3 rounded-xl bg-white border border-amber-100"
+                >
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10 ring-2 ring-amber-100">
+                      <AvatarFallback className="bg-gradient-to-br from-amber-100 to-amber-50 text-amber-600 font-semibold">
+                        {getInitials(member)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium text-gray-900">{member.email}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Invited as {roleLabels[member.role as OrganizationRole]}
+                      </p>
+                    </div>
+                  </div>
+                  <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-200">Pending</Badge>
+                </motion.div>
+              ))}
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* Active Members */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="pb-3 border-b bg-gradient-to-r from-orange-50/50 to-transparent">
+            <CardTitle className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center">
+                <Users className="h-4 w-4 text-orange-600" />
+              </div>
+              <span className="text-gray-900">Active Members ({activeMembers.length})</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {pendingMembers.map((member) => (
-              <div
+          <CardContent className="space-y-3 pt-4">
+            {activeMembers.map((member, index) => (
+              <motion.div
                 key={member.id}
-                className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="flex items-center justify-between p-3 rounded-xl border hover:border-orange-200 hover:shadow-md transition-all"
               >
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-amber-500/10 text-amber-600">
+                  <Avatar className="h-10 w-10 ring-2 ring-orange-100">
+                    <AvatarFallback className="bg-gradient-to-br from-orange-100 to-orange-50 text-orange-600 font-semibold">
                       {getInitials(member)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-medium">{member.email}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Invited as {roleLabels[member.role as OrganizationRole]}
+                    <p className="font-medium text-gray-900">
+                      {member.user?.full_name || member.email}
                     </p>
+                    {member.user?.full_name && (
+                      <p className="text-sm text-muted-foreground">{member.email}</p>
+                    )}
                   </div>
                 </div>
-                <Badge variant="secondary">Pending</Badge>
-              </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="gap-1.5 border-orange-200 text-orange-700">
+                    {roleIcons[member.role as OrganizationRole]}
+                    {roleLabels[member.role as OrganizationRole]}
+                  </Badge>
+                  {member.role !== "owner" && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="hover:bg-orange-50">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem
+                          onClick={() => handleRoleChange(member.id, "admin")}
+                          disabled={member.role === "admin"}
+                        >
+                          Make Admin
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleRoleChange(member.id, "supervisor")}
+                          disabled={member.role === "supervisor"}
+                        >
+                          Make Supervisor
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleRoleChange(member.id, "apprentice")}
+                          disabled={member.role === "apprentice"}
+                        >
+                          Make Apprentice
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => handleRemoveMember(member.id)}
+                          className="text-red-600 focus:text-red-600"
+                        >
+                          Remove Member
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </div>
+              </motion.div>
             ))}
           </CardContent>
         </Card>
-      )}
-
-      {/* Active Members */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Active Members ({activeMembers.length})</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {activeMembers.map((member) => (
-            <div
-              key={member.id}
-              className="flex items-center justify-between p-3 rounded-lg border"
-            >
-              <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback className="bg-primary/10 text-primary">
-                    {getInitials(member)}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">
-                    {member.user?.full_name || member.email}
-                  </p>
-                  {member.user?.full_name && (
-                    <p className="text-sm text-muted-foreground">{member.email}</p>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="gap-1.5">
-                  {roleIcons[member.role as OrganizationRole]}
-                  {roleLabels[member.role as OrganizationRole]}
-                </Badge>
-                {member.role !== "owner" && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() => handleRoleChange(member.id, "admin")}
-                        disabled={member.role === "admin"}
-                      >
-                        Make Admin
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleRoleChange(member.id, "supervisor")}
-                        disabled={member.role === "supervisor"}
-                      >
-                        Make Supervisor
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleRoleChange(member.id, "apprentice")}
-                        disabled={member.role === "apprentice"}
-                      >
-                        Make Apprentice
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => handleRemoveMember(member.id)}
-                        className="text-red-600"
-                      >
-                        Remove Member
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+      </motion.div>
 
       <InviteModal
         open={inviteModalOpen}

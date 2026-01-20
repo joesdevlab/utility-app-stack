@@ -3,8 +3,9 @@
 import { useAuth } from "@/components/auth-provider";
 import { redirect } from "next/navigation";
 import { EmployerNav, EmployerMobileNav } from "./employer-nav";
-import { Building2 } from "lucide-react";
+import { Building2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 interface EmployerLayoutProps {
   children: React.ReactNode;
@@ -16,8 +17,24 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
   // Show loading state
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-orange-50/50 to-background">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-4"
+        >
+          <div className="relative">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/20">
+              <Building2 className="h-8 w-8 text-white" />
+            </div>
+            <motion.div
+              className="absolute inset-0 rounded-2xl bg-orange-500/20"
+              animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </motion.div>
       </div>
     );
   }
@@ -28,18 +45,18 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50/30 to-background">
       {/* Desktop Sidebar */}
       <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
-        <div className="flex flex-col flex-grow border-r bg-card pt-5 overflow-y-auto">
-          <div className="flex items-center gap-2 px-4 mb-6">
-            <div className="rounded-lg bg-primary p-2">
-              <Building2 className="h-5 w-5 text-primary-foreground" />
+        <div className="flex flex-col flex-grow border-r bg-card/50 backdrop-blur-sm pt-5 overflow-y-auto">
+          <div className="flex items-center gap-3 px-4 mb-8">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/20">
+              <Building2 className="h-5 w-5 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="font-semibold">Employer Portal</span>
+              <span className="font-bold text-gray-900">Employer Portal</span>
               {organization && (
-                <span className="text-xs text-muted-foreground truncate max-w-[180px]">
+                <span className="text-xs text-muted-foreground truncate max-w-[160px]">
                   {organization.name}
                 </span>
               )}
@@ -53,8 +70,9 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
           <div className="p-4 border-t">
             <Link
               href="/"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-orange-600 transition-colors"
             >
+              <ArrowLeft className="h-4 w-4" />
               Back to App
             </Link>
           </div>
@@ -63,12 +81,12 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
 
       {/* Mobile Header */}
       <div className="sticky top-0 z-40 md:hidden">
-        <div className="flex items-center gap-3 border-b bg-background/80 backdrop-blur-lg px-4 py-3">
-          <div className="rounded-lg bg-primary p-2">
-            <Building2 className="h-4 w-4 text-primary-foreground" />
+        <div className="flex items-center gap-3 border-b bg-background/95 backdrop-blur-lg px-4 py-3 safe-area-top">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-md shadow-orange-500/20">
+            <Building2 className="h-4 w-4 text-white" />
           </div>
           <div className="flex-1">
-            <span className="font-semibold text-sm">Employer Portal</span>
+            <span className="font-bold text-sm">Employer Portal</span>
             {organization && (
               <p className="text-xs text-muted-foreground truncate">
                 {organization.name}
@@ -80,7 +98,14 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
 
       {/* Main Content */}
       <main className="md:pl-64">
-        <div className="p-4 md:p-8 pb-24 md:pb-8">{children}</div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="p-4 md:p-8 pb-24 md:pb-8"
+        >
+          {children}
+        </motion.div>
       </main>
 
       {/* Mobile Navigation */}

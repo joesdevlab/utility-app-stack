@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/auth-provider";
 import { useOrganization } from "@/hooks/use-organization";
@@ -15,9 +16,11 @@ import {
   ArrowRight,
   ExternalLink,
   CheckCircle2,
+  HelpCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ORG_PLANS } from "@/lib/stripe";
+import { cn } from "@/lib/utils";
 import type { OrganizationPlan } from "@/types";
 
 const plans: Array<{
@@ -110,7 +113,7 @@ export default function BillingPage() {
         <Skeleton className="h-8 w-48" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
-            <Skeleton key={i} className="h-96" />
+            <Skeleton key={i} className="h-96 rounded-xl" />
           ))}
         </div>
       </div>
@@ -123,140 +126,184 @@ export default function BillingPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">Billing & Plans</h1>
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Billing & Plans</h1>
         <p className="text-muted-foreground">
           Manage your subscription and billing information
         </p>
-      </div>
+      </motion.div>
 
       {/* Current Plan */}
       {hasSubscription && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5" />
-              Current Plan
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="rounded-lg bg-primary/10 p-3">
-                  <Users className="h-6 w-6 text-primary" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card className="hover:shadow-lg hover:border-orange-200 transition-all">
+            <CardHeader className="pb-3 border-b bg-gradient-to-r from-orange-50/50 to-transparent">
+              <CardTitle className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-md shadow-orange-500/20">
+                  <CreditCard className="h-5 w-5 text-white" />
                 </div>
-                <div>
-                  <p className="text-lg font-semibold capitalize">{currentPlan}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {organization?.max_seats || 5} seats • ${ORG_PLANS[currentPlan as keyof typeof ORG_PLANS]?.price || 29}/month
-                  </p>
+                <span className="text-gray-900">Current Plan</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="rounded-xl bg-gradient-to-br from-orange-100 to-orange-50 p-3">
+                    <Users className="h-6 w-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-lg font-semibold text-gray-900 capitalize">{currentPlan}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {organization?.max_seats || 5} seats • ${ORG_PLANS[currentPlan as keyof typeof ORG_PLANS]?.price || 29}/month
+                    </p>
+                  </div>
                 </div>
+                <Button variant="outline" onClick={handleManageBilling} className="border-orange-200 hover:bg-orange-50 hover:text-orange-600">
+                  Manage Billing
+                  <ExternalLink className="h-4 w-4 ml-2" />
+                </Button>
               </div>
-              <Button variant="outline" onClick={handleManageBilling}>
-                Manage Billing
-                <ExternalLink className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </motion.div>
       )}
 
       {/* Plans */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {plans.map((plan) => {
+        {plans.map((plan, index) => {
           const isCurrentPlan = currentPlan === plan.id;
           const isUpgrade = plans.findIndex((p) => p.id === plan.id) >
             plans.findIndex((p) => p.id === currentPlan);
 
           return (
-            <Card
+            <motion.div
               key={plan.id}
-              className={`relative ${plan.popular ? "border-primary shadow-lg" : ""} ${
-                isCurrentPlan ? "bg-muted/50" : ""
-              }`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + index * 0.1 }}
             >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-primary">Most Popular</Badge>
-                </div>
-              )}
-              <CardHeader>
-                <CardTitle>{plan.name}</CardTitle>
-                <CardDescription>{plan.seats}</CardDescription>
-                <div className="pt-2">
-                  <span className="text-4xl font-bold">${plan.price}</span>
-                  <span className="text-muted-foreground">/month</span>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-2">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm">
-                      <Check className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                {isCurrentPlan ? (
-                  <Button disabled className="w-full">
-                    <CheckCircle2 className="h-4 w-4 mr-2" />
-                    Current Plan
-                  </Button>
-                ) : hasSubscription ? (
-                  <Button
-                    variant={isUpgrade ? "default" : "outline"}
-                    className="w-full"
-                    onClick={handleManageBilling}
-                  >
-                    {isUpgrade ? "Upgrade" : "Downgrade"}
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
-                ) : (
-                  <Button
-                    variant={plan.popular ? "default" : "outline"}
-                    className="w-full"
-                    onClick={() => handleSubscribe(plan.id)}
-                    disabled={processingPlan !== null}
-                  >
-                    {processingPlan === plan.id ? "Processing..." : "Get Started"}
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
+              <Card
+                className={cn(
+                  "relative h-full transition-all",
+                  plan.popular
+                    ? "border-orange-500 shadow-lg shadow-orange-500/10"
+                    : "hover:border-orange-200 hover:shadow-lg",
+                  isCurrentPlan && "bg-orange-50/30"
                 )}
-              </CardContent>
-            </Card>
+              >
+                {plan.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md">Most Popular</Badge>
+                  </div>
+                )}
+                <CardHeader>
+                  <CardTitle className="text-gray-900">{plan.name}</CardTitle>
+                  <CardDescription>{plan.seats}</CardDescription>
+                  <div className="pt-2">
+                    <span className="text-4xl font-bold text-gray-900">${plan.price}</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="space-y-2">
+                    {plan.features.map((feature, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm">
+                        <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center mt-0.5 shrink-0">
+                          <Check className="h-3 w-3 text-green-600" />
+                        </div>
+                        <span className="text-gray-600">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {isCurrentPlan ? (
+                    <Button disabled className="w-full bg-orange-100 text-orange-700 hover:bg-orange-100">
+                      <CheckCircle2 className="h-4 w-4 mr-2" />
+                      Current Plan
+                    </Button>
+                  ) : hasSubscription ? (
+                    <Button
+                      variant={isUpgrade ? "default" : "outline"}
+                      className={cn(
+                        "w-full",
+                        isUpgrade
+                          ? "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md shadow-orange-500/20"
+                          : "border-orange-200 hover:bg-orange-50 hover:text-orange-600"
+                      )}
+                      onClick={handleManageBilling}
+                    >
+                      {isUpgrade ? "Upgrade" : "Downgrade"}
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  ) : (
+                    <Button
+                      variant={plan.popular ? "default" : "outline"}
+                      className={cn(
+                        "w-full",
+                        plan.popular
+                          ? "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md shadow-orange-500/20"
+                          : "border-orange-200 hover:bg-orange-50 hover:text-orange-600"
+                      )}
+                      onClick={() => handleSubscribe(plan.id)}
+                      disabled={processingPlan !== null}
+                    >
+                      {processingPlan === plan.id ? "Processing..." : "Get Started"}
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
           );
         })}
       </div>
 
       {/* FAQ */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Frequently Asked Questions</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <h4 className="font-medium">Can I change plans at any time?</h4>
-            <p className="text-sm text-muted-foreground">
-              Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately,
-              and we'll prorate your billing.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-medium">What happens if I exceed my seat limit?</h4>
-            <p className="text-sm text-muted-foreground">
-              You won't be able to invite new apprentices until you upgrade your plan or remove
-              existing members.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-medium">Do you offer annual billing?</h4>
-            <p className="text-sm text-muted-foreground">
-              Contact us for annual billing options with discounted rates for larger organizations.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="border-b bg-gradient-to-r from-orange-50/50 to-transparent">
+            <CardTitle className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center">
+                <HelpCircle className="h-4 w-4 text-orange-600" />
+              </div>
+              <span className="text-gray-900">Frequently Asked Questions</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-6">
+            <div className="p-4 rounded-xl bg-gray-50/50">
+              <h4 className="font-medium text-gray-900">Can I change plans at any time?</h4>
+              <p className="text-sm text-muted-foreground mt-1">
+                Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately,
+                and we'll prorate your billing.
+              </p>
+            </div>
+            <div className="p-4 rounded-xl bg-gray-50/50">
+              <h4 className="font-medium text-gray-900">What happens if I exceed my seat limit?</h4>
+              <p className="text-sm text-muted-foreground mt-1">
+                You won't be able to invite new apprentices until you upgrade your plan or remove
+                existing members.
+              </p>
+            </div>
+            <div className="p-4 rounded-xl bg-gray-50/50">
+              <h4 className="font-medium text-gray-900">Do you offer annual billing?</h4>
+              <p className="text-sm text-muted-foreground mt-1">
+                Contact us for annual billing options with discounted rates for larger organizations.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 }
