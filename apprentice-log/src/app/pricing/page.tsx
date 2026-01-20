@@ -5,11 +5,11 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
-  Check, X, HardHat, Mic, ArrowLeft, Crown, Zap, Loader2
+  Check, X, Mic, Crown, Zap, Loader2
 } from "lucide-react";
-import Link from "next/link";
 import { useSubscription } from "@/hooks";
 import { useSearchParams } from "next/navigation";
+import { MarketingHeader } from "@/components/landing/marketing-header";
 
 export default function PricingPage() {
   const [billingInterval, setBillingInterval] = useState<"monthly" | "yearly">("yearly");
@@ -71,25 +71,7 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/20">
-                <HardHat className="h-5 w-5 text-white" />
-              </div>
-              <span className="font-bold text-xl text-gray-900">Apprentice Log</span>
-            </Link>
-            <Link href="/">
-              <Button variant="ghost" className="text-gray-600">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to App
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <MarketingHeader />
 
       {/* Content */}
       <main className="max-w-5xl mx-auto px-4 py-12">
