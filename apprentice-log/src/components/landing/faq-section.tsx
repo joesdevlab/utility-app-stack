@@ -7,44 +7,44 @@ import { ChevronDown, HelpCircle } from "lucide-react";
 
 const faqs = [
   {
-    question: "Is this actually free?",
+    question: "Is this service free to use?",
     answer:
-      "Yep, 100% free. We're building this for NZ apprentices and want everyone to have access. No credit card needed, no hidden fees, no catch.",
+      "Yes, Apprentice Log is completely free for all New Zealand apprentices. Our mission is to support the trade industry by making documentation accessible to everyone. No credit card required, no hidden fees.",
   },
   {
-    question: "Will my boss or BCITO accept these entries?",
+    question: "Will BCITO and employers accept these entries?",
     answer:
-      "Absolutely. The entries are formatted to match BCITO standards with tasks, hours, tools, and skills clearly documented. Many apprentices have told us their supervisors are impressed with the quality.",
+      "Absolutely. Our entries are formatted to meet BCITO documentation standards, including structured task descriptions, hours tracking, tools and equipment used, and skills demonstrated. Many employers have reported improved documentation quality from apprentices using our platform.",
   },
   {
-    question: "What if I don't have internet on site?",
+    question: "How does the voice recording work without internet?",
     answer:
-      "No worries! The app works offline. Record your entries without signal and they'll sync automatically when you get back online. Perfect for remote sites.",
+      "The application stores your voice recordings locally on your device. When you regain internet connectivity, entries are automatically processed and synced to our secure cloud. This ensures you never lose work, even on remote construction sites.",
   },
   {
-    question: "How accurate is the voice recognition?",
+    question: "How accurate is the speech recognition for trade terminology?",
     answer:
-      "We use the same AI that powers ChatGPT. It's really good at understanding Kiwi accents and trade terminology. If it gets something wrong, you can easily edit before saving.",
+      "We utilise advanced AI trained on construction and trade vocabulary. The system accurately recognises industry-specific terms, tool names, and technical descriptions. Any minor corrections can be made before saving your entry.",
   },
   {
-    question: "Is my data private and secure?",
+    question: "Is my data secure and private?",
     answer:
-      "100%. Your data is encrypted both in transit and at rest. We use enterprise-grade security from Supabase. Only you can access your entries, and we never share or sell your data.",
+      "Security is paramount. We employ enterprise-grade encryption for all data, both in transit and at rest. Your information is stored on ISO 27001 certified infrastructure, and only you can access your logbook entries.",
   },
   {
-    question: "Can I use this on iPhone and Android?",
+    question: "Can I use this on both iPhone and Android?",
     answer:
-      "Yes! It works on any phone with a web browser. You can also install it as an app on your home screen for quick access. We're also launching on the Play Store soon.",
+      "Yes, Apprentice Log works on any modern smartphone with a web browser. You can also install it directly to your home screen for quick access, providing a native app experience. An Android app is coming to the Play Store soon.",
   },
   {
-    question: "What if I'm not doing construction?",
+    question: "What trades are supported?",
     answer:
-      "While we built this with BCITO apprentices in mind, it works for any trade apprenticeship - electrical, plumbing, automotive, you name it. The AI adapts to whatever work you describe.",
+      "While designed with BCITO building and construction apprentices in mind, our platform supports all trade apprenticeships including carpentry, electrical, plumbing, automotive, and more. The AI adapts to your specific industry terminology.",
   },
   {
-    question: "How do I export my entries for BCITO?",
+    question: "How can I export my entries for submission?",
     answer:
-      "You can view all your entries in the History section and export them anytime. We're also working on direct BCITO integration - stay tuned!",
+      "Your complete entry history is accessible through the History section. You can view, search, and export your documentation at any time. We're also developing direct integration with BCITO systems for seamless submission.",
   },
 ];
 
@@ -58,7 +58,7 @@ export function FAQSection() {
   };
 
   return (
-    <section ref={ref} className="py-24 bg-slate-900 relative overflow-hidden">
+    <section ref={ref} className="py-24 bg-gray-50 relative overflow-hidden">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section header */}
         <motion.div
@@ -67,15 +67,15 @@ export function FAQSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-full px-4 py-2 mb-6">
-            <HelpCircle className="h-4 w-4 text-slate-400" />
-            <span className="text-slate-400 text-sm font-medium">Got Questions?</span>
+          <div className="inline-flex items-center gap-2 bg-gray-200 border border-gray-300 rounded-full px-4 py-2 mb-6">
+            <HelpCircle className="h-4 w-4 text-gray-600" />
+            <span className="text-gray-700 text-sm font-semibold">Frequently Asked Questions</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Frequently Asked Questions
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            Common Questions
           </h2>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            Everything you need to know about Apprentice Log
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Everything you need to know about implementing Apprentice Log
           </p>
         </motion.div>
 
@@ -90,16 +90,16 @@ export function FAQSection() {
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-5 text-left hover:border-slate-600 transition-colors duration-200"
+                className="w-full bg-white border border-gray-200 rounded-xl p-5 text-left hover:border-orange-200 hover:shadow-sm transition-all duration-200"
               >
                 <div className="flex items-center justify-between gap-4">
-                  <h3 className="font-semibold text-white text-lg">{faq.question}</h3>
+                  <h3 className="font-semibold text-gray-900 text-lg">{faq.question}</h3>
                   <motion.div
                     animate={{ rotate: openIndex === index ? 180 : 0 }}
                     transition={{ duration: 0.2 }}
                     className="flex-shrink-0"
                   >
-                    <ChevronDown className="h-5 w-5 text-slate-400" />
+                    <ChevronDown className="h-5 w-5 text-gray-500" />
                   </motion.div>
                 </div>
 
@@ -113,7 +113,7 @@ export function FAQSection() {
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <p className="text-slate-400 leading-relaxed">{faq.answer}</p>
+                  <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
                 </motion.div>
               </button>
             </motion.div>
@@ -127,12 +127,12 @@ export function FAQSection() {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="mt-12 text-center"
         >
-          <p className="text-slate-400 mb-2">Still have questions?</p>
+          <p className="text-gray-600 mb-2">Have additional questions?</p>
           <a
             href="mailto:support@apprenticelog.app"
-            className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+            className="text-orange-600 hover:text-orange-700 font-semibold transition-colors"
           >
-            Get in touch with us →
+            Contact our support team →
           </a>
         </motion.div>
       </div>

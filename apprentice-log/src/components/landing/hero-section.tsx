@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Mic, ArrowRight, Play, CheckCircle } from "lucide-react";
+import { Mic, ArrowRight, Play, CheckCircle, HardHat, Wrench, ClipboardCheck } from "lucide-react";
 import { useState } from "react";
 
 export function HeroSection() {
@@ -13,15 +13,17 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-blue-500/10 to-transparent rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-blue-600/10 to-transparent rounded-full blur-3xl animate-pulse delay-1000" />
-      </div>
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-white via-orange-50/30 to-white">
+      {/* Subtle grid pattern */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f910_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f910_1px,transparent_1px)] bg-[size:4rem_4rem]" />
 
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293720_1px,transparent_1px),linear-gradient(to_bottom,#1f293720_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+      {/* Decorative elements */}
+      <div className="absolute top-20 right-10 opacity-10">
+        <HardHat className="w-32 h-32 text-orange-500" />
+      </div>
+      <div className="absolute bottom-20 left-10 opacity-10">
+        <Wrench className="w-24 h-24 text-orange-500" />
+      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -37,13 +39,13 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-4 py-2 mb-6"
+              className="inline-flex items-center gap-2 bg-orange-100 border border-orange-200 rounded-full px-4 py-2 mb-6"
             >
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
               </span>
-              <span className="text-blue-400 text-sm font-medium">Built for NZ Apprentices</span>
+              <span className="text-orange-700 text-sm font-semibold">BCITO Approved Format</span>
             </motion.div>
 
             {/* Main headline */}
@@ -51,12 +53,12 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6"
             >
-              Speak Your Day.
+              Streamline Your
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">
-                We Write It Up.
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">
+                Apprentice Logbook
               </span>
             </motion.h1>
 
@@ -65,10 +67,10 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-lg sm:text-xl text-slate-300 mb-8 max-w-xl mx-auto lg:mx-0"
+              className="text-lg sm:text-xl text-gray-600 mb-8 max-w-xl mx-auto lg:mx-0"
             >
-              Stop wasting time on paperwork after a hard day on site.
-              Record your voice in 30 seconds and get a professional BCITO logbook entry.
+              The professional solution for NZ trade apprentices. Voice-to-text technology
+              transforms your daily activities into compliant, detailed logbook entries in seconds.
             </motion.p>
 
             {/* Trust indicators */}
@@ -78,10 +80,10 @@ export function HeroSection() {
               transition={{ delay: 0.5 }}
               className="flex flex-wrap gap-4 justify-center lg:justify-start mb-8"
             >
-              {["Free to use", "Works offline", "BCITO compatible"].map((item, i) => (
-                <div key={i} className="flex items-center gap-2 text-slate-400 text-sm">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span>{item}</span>
+              {["BCITO Compliant", "Enterprise Security", "Offline Capable"].map((item, i) => (
+                <div key={i} className="flex items-center gap-2 text-gray-600 text-sm">
+                  <CheckCircle className="h-4 w-4 text-orange-500" />
+                  <span className="font-medium">{item}</span>
                 </div>
               ))}
             </motion.div>
@@ -95,17 +97,17 @@ export function HeroSection() {
             >
               <Button
                 size="lg"
-                className="bg-blue-500 hover:bg-blue-600 text-white text-lg px-8 py-6 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300"
+                className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-8 py-6 rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300"
                 onClick={scrollToDownload}
               >
                 <Mic className="h-5 w-5 mr-2" />
-                Start Recording Free
+                Start Free Trial
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="border-slate-700 text-slate-300 hover:bg-slate-800 text-lg px-8 py-6 rounded-xl"
+                className="border-gray-300 text-gray-700 hover:bg-gray-50 text-lg px-8 py-6 rounded-xl"
                 onClick={() => setIsVideoPlaying(true)}
               >
                 <Play className="h-5 w-5 mr-2" />
@@ -113,26 +115,27 @@ export function HeroSection() {
               </Button>
             </motion.div>
 
-            {/* Social proof mini */}
+            {/* Industry partners */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
-              className="mt-10 flex items-center gap-4 justify-center lg:justify-start"
+              className="mt-10 pt-8 border-t border-gray-200"
             >
-              <div className="flex -space-x-3">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div
-                    key={i}
-                    className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 border-2 border-slate-900 flex items-center justify-center text-xs font-bold text-white"
-                  >
-                    {String.fromCharCode(64 + i)}
-                  </div>
-                ))}
-              </div>
-              <div className="text-sm">
-                <span className="text-white font-semibold">500+</span>
-                <span className="text-slate-400"> Kiwi apprentices</span>
+              <p className="text-sm text-gray-500 mb-4">Trusted by apprentices across New Zealand</p>
+              <div className="flex items-center gap-6 justify-center lg:justify-start flex-wrap">
+                <div className="flex items-center gap-2 text-gray-400">
+                  <HardHat className="h-6 w-6" />
+                  <span className="font-semibold">Construction</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-400">
+                  <Wrench className="h-6 w-6" />
+                  <span className="font-semibold">Carpentry</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-400">
+                  <ClipboardCheck className="h-6 w-6" />
+                  <span className="font-semibold">All Trades</span>
+                </div>
               </div>
             </motion.div>
           </motion.div>
@@ -146,23 +149,25 @@ export function HeroSection() {
           >
             <div className="relative mx-auto w-[280px] sm:w-[320px]">
               {/* Glow effect */}
-              <div className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full scale-150" />
+              <div className="absolute inset-0 bg-orange-500/10 blur-3xl rounded-full scale-150" />
 
               {/* Phone frame */}
-              <div className="relative bg-slate-900 rounded-[3rem] p-3 shadow-2xl border border-slate-700">
+              <div className="relative bg-gray-900 rounded-[3rem] p-3 shadow-2xl">
                 {/* Screen */}
-                <div className="bg-slate-950 rounded-[2.5rem] overflow-hidden aspect-[9/19.5]">
+                <div className="bg-white rounded-[2.5rem] overflow-hidden aspect-[9/19.5]">
                   {/* Status bar */}
-                  <div className="h-8 bg-slate-900 flex items-center justify-center">
-                    <div className="w-20 h-5 bg-slate-950 rounded-full" />
+                  <div className="h-8 bg-gray-100 flex items-center justify-center">
+                    <div className="w-20 h-5 bg-gray-900 rounded-full" />
                   </div>
 
                   {/* App content mockup */}
                   <div className="p-4 space-y-4">
                     {/* Header */}
                     <div className="flex items-center justify-between">
-                      <div className="text-white font-semibold">Apprentice Log</div>
-                      <div className="w-8 h-8 rounded-full bg-slate-800" />
+                      <div className="text-gray-900 font-semibold">Apprentice Log</div>
+                      <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+                        <HardHat className="h-4 w-4 text-orange-500" />
+                      </div>
                     </div>
 
                     {/* Record button */}
@@ -171,9 +176,9 @@ export function HeroSection() {
                         animate={{
                           scale: [1, 1.1, 1],
                           boxShadow: [
-                            "0 0 0 0 rgba(59, 130, 246, 0.4)",
-                            "0 0 0 20px rgba(59, 130, 246, 0)",
-                            "0 0 0 0 rgba(59, 130, 246, 0)",
+                            "0 0 0 0 rgba(249, 115, 22, 0.4)",
+                            "0 0 0 20px rgba(249, 115, 22, 0)",
+                            "0 0 0 0 rgba(249, 115, 22, 0)",
                           ],
                         }}
                         transition={{
@@ -181,20 +186,20 @@ export function HeroSection() {
                           repeat: Infinity,
                           ease: "easeInOut",
                         }}
-                        className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center cursor-pointer"
+                        className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center cursor-pointer shadow-lg"
                       >
                         <Mic className="h-10 w-10 text-white" />
                       </motion.div>
-                      <p className="text-slate-400 text-sm mt-4">Tap to record</p>
+                      <p className="text-gray-500 text-sm mt-4">Tap to record entry</p>
                     </div>
 
                     {/* Sample entry preview */}
-                    <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700">
-                      <div className="text-xs text-slate-400 mb-1">Today&apos;s Entry</div>
-                      <div className="text-sm text-white">Framing work on site...</div>
+                    <div className="bg-gray-50 rounded-xl p-3 border border-gray-200">
+                      <div className="text-xs text-gray-500 mb-1">Today&apos;s Entry</div>
+                      <div className="text-sm text-gray-900">Framing work on residential site...</div>
                       <div className="flex gap-2 mt-2">
-                        <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded">8h</span>
-                        <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded">Carpentry</span>
+                        <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded font-medium">8h</span>
+                        <span className="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">Carpentry</span>
                       </div>
                     </div>
                   </div>
@@ -205,20 +210,20 @@ export function HeroSection() {
               <motion.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -right-4 top-20 bg-slate-800 border border-slate-700 rounded-lg p-3 shadow-xl"
+                className="absolute -right-4 top-20 bg-white border border-gray-200 rounded-lg p-3 shadow-xl"
               >
-                <div className="text-xs text-slate-400">Hours logged</div>
-                <div className="text-xl font-bold text-white">1,247</div>
+                <div className="text-xs text-gray-500">Total Hours</div>
+                <div className="text-xl font-bold text-gray-900">1,247</div>
               </motion.div>
 
               <motion.div
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                className="absolute -left-4 bottom-32 bg-green-500/10 border border-green-500/20 rounded-lg p-3 shadow-xl"
+                className="absolute -left-4 bottom-32 bg-green-50 border border-green-200 rounded-lg p-3 shadow-xl"
               >
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-green-400">Entry saved!</span>
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span className="text-sm text-green-700 font-medium">Entry saved</span>
                 </div>
               </motion.div>
             </div>
@@ -231,13 +236,13 @@ export function HeroSection() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
           onClick={() => setIsVideoPlaying(false)}
         >
-          <div className="bg-slate-900 rounded-2xl p-8 max-w-2xl w-full text-center">
-            <p className="text-white text-xl mb-4">Demo Video Coming Soon</p>
-            <p className="text-slate-400 mb-6">Click anywhere to close</p>
-            <Button variant="outline" onClick={() => setIsVideoPlaying(false)}>
+          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full text-center">
+            <p className="text-gray-900 text-xl font-semibold mb-4">Product Demo</p>
+            <p className="text-gray-500 mb-6">Video coming soon. Click anywhere to close.</p>
+            <Button onClick={() => setIsVideoPlaying(false)}>
               Close
             </Button>
           </div>

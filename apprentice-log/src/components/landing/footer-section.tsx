@@ -1,35 +1,35 @@
 "use client";
 
-import { BookOpen } from "lucide-react";
+import { HardHat } from "lucide-react";
 import Link from "next/link";
 
 export function FooterSection() {
   return (
-    <footer className="py-12 bg-slate-950 border-t border-slate-800">
+    <footer className="py-12 bg-white border-t border-gray-200">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-              <BookOpen className="h-5 w-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/25">
+              <HardHat className="h-5 w-5 text-white" />
             </div>
             <div>
-              <div className="font-semibold text-white">Apprentice Log</div>
-              <div className="text-xs text-slate-500">Built in Aotearoa 🇳🇿</div>
+              <div className="font-semibold text-gray-900">Apprentice Log</div>
+              <div className="text-xs text-gray-500">Built in Aotearoa, New Zealand</div>
             </div>
           </div>
 
           {/* Links */}
           <nav className="flex flex-wrap justify-center gap-6">
-            <Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">
+            <Link href="/privacy" className="text-gray-600 hover:text-orange-600 text-sm transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="text-slate-400 hover:text-white text-sm transition-colors">
+            <Link href="/terms" className="text-gray-600 hover:text-orange-600 text-sm transition-colors">
               Terms of Service
             </Link>
             <a
               href="mailto:support@apprenticelog.app"
-              className="text-slate-400 hover:text-white text-sm transition-colors"
+              className="text-gray-600 hover:text-orange-600 text-sm transition-colors"
             >
               Contact
             </a>
@@ -41,7 +41,7 @@ export function FooterSection() {
               href="https://instagram.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+              className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:text-orange-600 hover:bg-orange-50 transition-colors"
               aria-label="Instagram"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@ export function FooterSection() {
               href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+              className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:text-orange-600 hover:bg-orange-50 transition-colors"
               aria-label="Facebook"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -63,7 +63,7 @@ export function FooterSection() {
               href="https://tiktok.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+              className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:text-orange-600 hover:bg-orange-50 transition-colors"
               aria-label="TikTok"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -74,9 +74,9 @@ export function FooterSection() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-8 pt-8 border-t border-slate-800 text-center">
-          <p className="text-sm text-slate-500">
-            © {new Date().getFullYear()} Apprentice Log. Made with ❤️ for NZ apprentices.
+        <div className="mt-8 pt-8 border-t border-gray-200 text-center">
+          <p className="text-sm text-gray-500">
+            © {new Date().getFullYear()} Apprentice Log. Supporting New Zealand&apos;s trade industry.
           </p>
         </div>
       </div>

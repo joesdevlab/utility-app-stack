@@ -11,73 +11,51 @@ import {
   Clock,
   Smartphone,
   CheckCircle2,
-  Zap,
+  ArrowRight,
 } from "lucide-react";
 
 const features = [
   {
     icon: Mic,
-    title: "Voice Recording",
-    description: "Just talk about your day like you're telling a mate. 30 seconds is all it takes.",
-    color: "blue",
+    title: "Voice-to-Text Entry",
+    description: "Simply describe your day verbally. Our advanced speech recognition captures every detail accurately.",
+    color: "orange",
   },
   {
     icon: Sparkles,
     title: "AI-Powered Formatting",
-    description: "Our AI turns your voice into a professional BCITO-style entry with tasks, hours, and skills.",
-    color: "purple",
+    description: "Intelligent processing transforms your voice notes into structured, BCITO-compliant logbook entries.",
+    color: "amber",
   },
   {
     icon: Cloud,
-    title: "Cloud Sync",
-    description: "Your entries are backed up automatically. Access from any device, anytime.",
-    color: "cyan",
+    title: "Secure Cloud Storage",
+    description: "Enterprise-grade infrastructure ensures your documentation is always backed up and accessible.",
+    color: "orange",
   },
   {
     icon: Shield,
-    title: "Privacy First",
-    description: "Your data is encrypted and only you can access it. We don't share or sell anything.",
-    color: "green",
+    title: "Data Protection",
+    description: "Bank-level encryption protects your information. Your data remains private and secure.",
+    color: "amber",
   },
   {
     icon: Clock,
-    title: "Track Your Hours",
-    description: "See your total hours, skills progress, and complete history at a glance.",
+    title: "Progress Tracking",
+    description: "Monitor accumulated hours, skills development, and qualification progress at a glance.",
     color: "orange",
   },
   {
     icon: Smartphone,
-    title: "Works Offline",
-    description: "No signal on site? No worries. Record offline and sync when you're back online.",
-    color: "pink",
+    title: "Offline Capability",
+    description: "Record entries without internet connection. Automatic sync when connectivity is restored.",
+    color: "amber",
   },
 ];
 
 const colorClasses = {
-  blue: "from-blue-500 to-blue-600 shadow-blue-500/25",
-  purple: "from-purple-500 to-purple-600 shadow-purple-500/25",
-  cyan: "from-cyan-500 to-cyan-600 shadow-cyan-500/25",
-  green: "from-green-500 to-green-600 shadow-green-500/25",
   orange: "from-orange-500 to-orange-600 shadow-orange-500/25",
-  pink: "from-pink-500 to-pink-600 shadow-pink-500/25",
-};
-
-const bgColorClasses = {
-  blue: "bg-blue-500/10 border-blue-500/20",
-  purple: "bg-purple-500/10 border-purple-500/20",
-  cyan: "bg-cyan-500/10 border-cyan-500/20",
-  green: "bg-green-500/10 border-green-500/20",
-  orange: "bg-orange-500/10 border-orange-500/20",
-  pink: "bg-pink-500/10 border-pink-500/20",
-};
-
-const textColorClasses = {
-  blue: "text-blue-400",
-  purple: "text-purple-400",
-  cyan: "text-cyan-400",
-  green: "text-green-400",
-  orange: "text-orange-400",
-  pink: "text-pink-400",
+  amber: "from-amber-500 to-amber-600 shadow-amber-500/25",
 };
 
 export function FeaturesSection() {
@@ -85,10 +63,10 @@ export function FeaturesSection() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="py-24 bg-slate-900 relative overflow-hidden">
+    <section ref={ref} className="py-24 bg-white relative overflow-hidden">
       {/* Background decorations */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-100/50 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-100/50 rounded-full blur-3xl" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section header */}
@@ -98,20 +76,20 @@ export function FeaturesSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-2 mb-6">
-            <CheckCircle2 className="h-4 w-4 text-green-400" />
-            <span className="text-green-400 text-sm font-medium">The Better Way</span>
+          <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-200 rounded-full px-4 py-2 mb-6">
+            <CheckCircle2 className="h-4 w-4 text-orange-600" />
+            <span className="text-orange-700 text-sm font-semibold">Professional Solution</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Everything You Need,
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            Purpose-Built for the
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-              Nothing You Don&apos;t
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">
+              Trade Industry
             </span>
           </h2>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            We built this for busy tradies who want to get their paperwork done
-            and get back to their lives.
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            A comprehensive digital solution designed specifically for the unique requirements
+            of New Zealand&apos;s trade apprenticeship programmes.
           </p>
         </motion.div>
 
@@ -125,7 +103,7 @@ export function FeaturesSection() {
               transition={{ duration: 0.6, delay: 0.1 + index * 0.1 }}
               className="group"
             >
-              <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 h-full hover:border-slate-600 transition-all duration-300 hover:transform hover:-translate-y-1">
+              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 h-full hover:border-orange-200 hover:bg-orange-50/30 transition-all duration-300 hover:shadow-lg">
                 {/* Icon */}
                 <div
                   className={`w-14 h-14 rounded-xl bg-gradient-to-br ${colorClasses[feature.color as keyof typeof colorClasses]} shadow-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
@@ -134,10 +112,10 @@ export function FeaturesSection() {
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-semibold text-white mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-slate-400 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed">
                   {feature.description}
                 </p>
               </div>
@@ -145,15 +123,15 @@ export function FeaturesSection() {
           ))}
         </div>
 
-        {/* How it works mini-section */}
+        {/* How it works */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.8 }}
           className="mt-20"
         >
-          <h3 className="text-2xl font-bold text-white text-center mb-12">
-            How It Works
+          <h3 className="text-2xl font-bold text-gray-900 text-center mb-12">
+            Simple Three-Step Process
           </h3>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -161,20 +139,17 @@ export function FeaturesSection() {
               {
                 step: "1",
                 title: "Record",
-                description: "Tap the mic and talk about your day. What you did, how long, what tools you used.",
-                icon: Mic,
+                description: "Tap the microphone and describe your day's activities, tools used, and skills applied.",
               },
               {
                 step: "2",
                 title: "Review",
-                description: "AI formats your entry in seconds. Check it looks good and make any tweaks.",
-                icon: Sparkles,
+                description: "AI instantly formats your entry to BCITO standards. Review and make any adjustments.",
               },
               {
                 step: "3",
-                title: "Done",
-                description: "Hit save. Your BCITO-ready entry is stored safely in the cloud. That's it!",
-                icon: Zap,
+                title: "Submit",
+                description: "Save your compliant entry to the secure cloud. Access your complete history anytime.",
               },
             ].map((item, index) => (
               <motion.div
@@ -186,16 +161,19 @@ export function FeaturesSection() {
               >
                 {/* Connector line */}
                 {index < 2 && (
-                  <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-slate-700 to-slate-800" />
+                  <div className="hidden md:flex absolute top-8 left-[60%] w-[80%] items-center">
+                    <div className="flex-1 h-0.5 bg-gradient-to-r from-orange-300 to-orange-100" />
+                    <ArrowRight className="h-4 w-4 text-orange-300 -ml-1" />
+                  </div>
                 )}
 
                 {/* Step number */}
-                <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white text-2xl font-bold mb-4 shadow-lg shadow-blue-500/25">
+                <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-white text-2xl font-bold mb-4 shadow-lg shadow-orange-500/25">
                   {item.step}
                 </div>
 
-                <h4 className="text-xl font-semibold text-white mb-2">{item.title}</h4>
-                <p className="text-slate-400">{item.description}</p>
+                <h4 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h4>
+                <p className="text-gray-600">{item.description}</p>
               </motion.div>
             ))}
           </div>
