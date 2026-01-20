@@ -38,7 +38,20 @@
       "Bash(set +a)",
       "Bash(npx tsx:*)",
       "Bash(git stash:*)",
-      "Bash(npx supabase db push:*)"
+      "Bash(npx supabase db push:*)",
+      "Bash(npx cap init:*)",
+      "Bash(npx cap sync android)",
+      "Bash(./gradlew assembleDebug:*)",
+      "Bash(yes:*)",
+      "Bash(cmdline-tools/latest/bin/sdkmanager.bat --licenses)",
+      "Bash(cmdline-tools/latest/bin/sdkmanager.bat \"platform-tools\" \"build-tools;34.0.0\" \"platforms;android-34\")",
+      "Bash(java -version:*)",
+      "Bash(where:*)",
+      "Bash(\"/c/Program Files/Android/Android Studio/jbr/bin/java.exe\" -version)",
+      "Bash(./gradlew assembleRelease:*)",
+      "Bash(ls:*)",
+      "Bash(keytool:*)",
+      "Bash(jarsigner:*)"
     ]
   }
 }

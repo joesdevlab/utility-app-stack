@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HardHat, Loader2, Mail, Lock, User, CheckCircle2, RefreshCw } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
+import { MFAVerify } from "@/components/mfa-verify";
 import { toast } from "sonner";
 
-type AuthMode = "signin" | "signup" | "forgot" | "verify";
+type AuthMode = "signin" | "signup" | "forgot" | "verify" | "mfa";
 
 export function AuthForm() {
   const [mode, setMode] = useState<AuthMode>("signin");
@@ -27,9 +28,11 @@ export function AuthForm() {
 
     try {
       if (mode === "signin") {
-        const { error } = await signIn(email, password);
+        const { error, mfaRequired } = await signIn(email, password);
         if (error) {
           toast.error(error.message);
+        } else if (mfaRequired) {
+          setMode("mfa");
         } else {
           toast.success("Welcome back!");
         }
@@ -76,6 +79,22 @@ export function AuthForm() {
       setIsResending(false);
     }
   };
+
+  // MFA verification screen
+  if (mode === "mfa") {
+    return (
+      <MFAVerify
+        onSuccess={() => {
+          toast.success("Welcome back!");
+          // The auth state change will handle the redirect
+        }}
+        onCancel={() => {
+          setMode("signin");
+          setPassword("");
+        }}
+      />
+    );
+  }
 
   // Verification pending screen
   if (mode === "verify") {

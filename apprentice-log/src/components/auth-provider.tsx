@@ -1,9 +1,19 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { User, Session } from "@supabase/supabase-js";
+import { User, Session, AuthMFAEnrollResponse, Factor } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import type { OrganizationWithRole } from "@/types";
+
+interface MFAEnrollmentData {
+  id: string;
+  type: "totp";
+  totp: {
+    qr_code: string;
+    secret: string;
+    uri: string;
+  };
+}
 
 interface AuthContextType {
   user: User | null;
@@ -12,13 +22,21 @@ interface AuthContextType {
   organization: OrganizationWithRole | null;
   isEmployer: boolean;
   orgLoading: boolean;
+  mfaEnabled: boolean;
+  mfaRequired: boolean;
   refreshOrganization: () => Promise<void>;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null; mfaRequired?: boolean }>;
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
   updatePassword: (newPassword: string) => Promise<{ error: Error | null }>;
   resendVerification: (email: string) => Promise<{ error: Error | null }>;
+  // MFA methods
+  enrollMFA: () => Promise<{ data: MFAEnrollmentData | null; error: Error | null }>;
+  verifyMFAEnrollment: (factorId: string, code: string) => Promise<{ error: Error | null }>;
+  verifyMFAChallenge: (code: string) => Promise<{ error: Error | null }>;
+  unenrollMFA: (factorId: string) => Promise<{ error: Error | null }>;
+  getMFAFactors: () => Promise<{ factors: Factor[]; error: Error | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,6 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [organization, setOrganization] = useState<OrganizationWithRole | null>(null);
   const [orgLoading, setOrgLoading] = useState(false);
+  const [mfaEnabled, setMfaEnabled] = useState(false);
+  const [mfaRequired, setMfaRequired] = useState(false);
   const supabase = createClient();
 
   const fetchOrganization = useCallback(async () => {
@@ -48,6 +68,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const checkMFAStatus = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.auth.mfa.listFactors();
+      if (error) {
+        console.error("Error checking MFA status:", error);
+        return;
+      }
+      const verifiedFactors = data.totp.filter(f => f.status === "verified");
+      setMfaEnabled(verifiedFactors.length > 0);
+    } catch (err) {
+      console.error("Error in checkMFAStatus:", err);
+    }
+  }, [supabase.auth.mfa]);
+
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -56,6 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
       if (session?.user) {
         fetchOrganization();
+        checkMFAStatus();
       }
     });
 
@@ -67,21 +102,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
         if (session?.user) {
           fetchOrganization();
+          checkMFAStatus();
         } else {
           setOrganization(null);
+          setMfaEnabled(false);
+          setMfaRequired(false);
         }
       }
     );
 
     return () => subscription.unsubscribe();
-  }, [supabase.auth, fetchOrganization]);
+  }, [supabase.auth, fetchOrganization, checkMFAStatus]);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    return { error: error as Error | null };
+
+    if (error) {
+      return { error: error as Error | null, mfaRequired: false };
+    }
+
+    // Check if MFA verification is required
+    if (data.session) {
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal?.currentLevel === "aal1" && aal?.nextLevel === "aal2") {
+        setMfaRequired(true);
+        return { error: null, mfaRequired: true };
+      }
+    }
+
+    await checkMFAStatus();
+    return { error: null, mfaRequired: false };
   };
 
   const signUp = async (email: string, password: string, fullName?: string) => {
@@ -123,6 +176,96 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error: error as Error | null };
   };
 
+  // MFA Methods
+  const enrollMFA = async () => {
+    const { data, error } = await supabase.auth.mfa.enroll({
+      factorType: "totp",
+      friendlyName: "Authenticator App",
+    });
+
+    if (error) {
+      return { data: null, error: error as Error };
+    }
+
+    return {
+      data: data as MFAEnrollmentData,
+      error: null,
+    };
+  };
+
+  const verifyMFAEnrollment = async (factorId: string, code: string) => {
+    const { data: challengeData, error: challengeError } =
+      await supabase.auth.mfa.challenge({ factorId });
+
+    if (challengeError) {
+      return { error: challengeError as Error };
+    }
+
+    const { error: verifyError } = await supabase.auth.mfa.verify({
+      factorId,
+      challengeId: challengeData.id,
+      code,
+    });
+
+    if (verifyError) {
+      return { error: verifyError as Error };
+    }
+
+    setMfaEnabled(true);
+    setMfaRequired(false);
+    return { error: null };
+  };
+
+  const verifyMFAChallenge = async (code: string) => {
+    const { data: factorsData, error: factorsError } =
+      await supabase.auth.mfa.listFactors();
+
+    if (factorsError) {
+      return { error: factorsError as Error };
+    }
+
+    const verifiedFactor = factorsData.totp.find(f => f.status === "verified");
+    if (!verifiedFactor) {
+      return { error: new Error("No verified MFA factor found") };
+    }
+
+    const { data: challengeData, error: challengeError } =
+      await supabase.auth.mfa.challenge({ factorId: verifiedFactor.id });
+
+    if (challengeError) {
+      return { error: challengeError as Error };
+    }
+
+    const { error: verifyError } = await supabase.auth.mfa.verify({
+      factorId: verifiedFactor.id,
+      challengeId: challengeData.id,
+      code,
+    });
+
+    if (verifyError) {
+      return { error: verifyError as Error };
+    }
+
+    setMfaRequired(false);
+    return { error: null };
+  };
+
+  const unenrollMFA = async (factorId: string) => {
+    const { error } = await supabase.auth.mfa.unenroll({ factorId });
+    if (!error) {
+      setMfaEnabled(false);
+    }
+    return { error: error as Error | null };
+  };
+
+  const getMFAFactors = async () => {
+    const { data, error } = await supabase.auth.mfa.listFactors();
+    if (error) {
+      return { factors: [], error: error as Error };
+    }
+    return { factors: data.totp, error: null };
+  };
+
   const isEmployer = organization !== null;
 
   return (
@@ -134,6 +277,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         organization,
         isEmployer,
         orgLoading,
+        mfaEnabled,
+        mfaRequired,
         refreshOrganization: fetchOrganization,
         signIn,
         signUp,
@@ -141,6 +286,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         resetPassword,
         updatePassword,
         resendVerification,
+        enrollMFA,
+        verifyMFAEnrollment,
+        verifyMFAChallenge,
+        unenrollMFA,
+        getMFAFactors,
       }}
     >
       {children}
