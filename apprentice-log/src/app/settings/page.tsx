@@ -7,9 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2 } from "lucide-react";
+import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Crown, CreditCard, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { useSubscription } from "@/hooks";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 interface SettingItem {
   icon: LucideIcon;
@@ -29,12 +32,15 @@ interface SettingsGroup {
 
 export default function SettingsPage() {
   const { user, isLoading: authLoading, signOut } = useAuth();
+  const { subscription, isLoading: subLoading, openPortal } = useSubscription();
   const supabase = createClient();
+  const searchParams = useSearchParams();
+  const success = searchParams.get("success");
 
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
       </div>
     );
   }
@@ -42,6 +48,14 @@ export default function SettingsPage() {
   if (!user) {
     return <AuthForm />;
   }
+
+  const handleManageSubscription = async () => {
+    try {
+      await openPortal();
+    } catch {
+      toast.error("Failed to open billing portal");
+    }
+  };
 
   const handleExport = async () => {
     try {
@@ -134,7 +148,114 @@ export default function SettingsPage() {
           </p>
         </div>
 
+        {/* Success message */}
+        {success && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl"
+          >
+            <p className="text-green-800 font-medium flex items-center gap-2">
+              <Crown className="h-5 w-5" />
+              Welcome to Premium! You now have unlimited entries.
+            </p>
+          </motion.div>
+        )}
+
         <div className="space-y-6">
+          {/* Subscription Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Card className={subscription.isPremium ? "border-orange-200 bg-gradient-to-br from-orange-50 to-white" : ""}>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  {subscription.isPremium ? (
+                    <Crown className="h-4 w-4 text-orange-500" />
+                  ) : (
+                    <Zap className="h-4 w-4" />
+                  )}
+                  Subscription
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {subLoading ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm text-muted-foreground">Loading...</span>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-lg">
+                            {subscription.isPremium ? "Premium" : "Free"}
+                          </span>
+                          {subscription.isPremium && (
+                            <Badge className="bg-orange-500 text-white">Active</Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {subscription.isPremium
+                            ? "Unlimited entries"
+                            : `${subscription.entriesRemaining} of 10 entries remaining this month`}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Progress bar for free users */}
+                    {!subscription.isPremium && (
+                      <div className="space-y-2">
+                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-orange-500 transition-all"
+                            style={{
+                              width: `${(subscription.entriesThisMonth / 10) * 100}%`,
+                            }}
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {subscription.entriesThisMonth} entries used this month
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Cancel notice */}
+                    {subscription.cancelAtPeriodEnd && subscription.currentPeriodEnd && (
+                      <p className="text-sm text-amber-600">
+                        Your subscription will end on{" "}
+                        {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+                      </p>
+                    )}
+
+                    {/* Action buttons */}
+                    <div className="flex gap-2">
+                      {subscription.isPremium ? (
+                        <Button
+                          variant="outline"
+                          onClick={handleManageSubscription}
+                          className="flex-1"
+                        >
+                          <CreditCard className="h-4 w-4 mr-2" />
+                          Manage Billing
+                        </Button>
+                      ) : (
+                        <Link href="/pricing" className="flex-1">
+                          <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+                            <Crown className="h-4 w-4 mr-2" />
+                            Upgrade to Premium
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
           {settingsGroups.map((group, groupIndex) => (
             <motion.div
               key={group.title}
