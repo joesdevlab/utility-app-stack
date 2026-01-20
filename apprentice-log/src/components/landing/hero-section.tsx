@@ -2,13 +2,34 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Mic, ArrowRight, Play, CheckCircle, HardHat, Wrench, ClipboardCheck, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Mic, ArrowRight, Play, CheckCircle, HardHat, Wrench, Menu, X, Zap, Droplets, Car, ChevronDown, Building2 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 
 export function HeroSection() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isTradesOpen, setIsTradesOpen] = useState(false);
+  const tradesDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (tradesDropdownRef.current && !tradesDropdownRef.current.contains(event.target as Node)) {
+        setIsTradesOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const trades = [
+    { name: "Construction", href: "/trades/construction", icon: Building2, color: "text-orange-500" },
+    { name: "Carpentry", href: "/trades/carpentry", icon: Wrench, color: "text-amber-600" },
+    { name: "Electrical", href: "/trades/electrical", icon: Zap, color: "text-yellow-500" },
+    { name: "Plumbing", href: "/trades/plumbing", icon: Droplets, color: "text-blue-500" },
+    { name: "Automotive", href: "/trades/automotive", icon: Car, color: "text-red-500" },
+  ];
 
   const scrollToDownload = () => {
     document.getElementById("download")?.scrollIntoView({ behavior: "smooth" });
@@ -44,6 +65,35 @@ export function HeroSection() {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-1">
+              {/* Trades Dropdown */}
+              <div className="relative" ref={tradesDropdownRef}>
+                <button
+                  onClick={() => setIsTradesOpen(!isTradesOpen)}
+                  className="flex items-center gap-1 px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
+                >
+                  Trades
+                  <ChevronDown className={`h-4 w-4 transition-transform ${isTradesOpen ? "rotate-180" : ""}`} />
+                </button>
+                {isTradesOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute top-full left-0 mt-1 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50"
+                  >
+                    {trades.map((trade) => (
+                      <Link
+                        key={trade.href}
+                        href={trade.href}
+                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-orange-50 transition-colors"
+                        onClick={() => setIsTradesOpen(false)}
+                      >
+                        <trade.icon className={`h-5 w-5 ${trade.color}`} />
+                        <span className="text-gray-700 font-medium">{trade.name}</span>
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </div>
               <button
                 onClick={() => scrollToSection("features")}
                 className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
@@ -113,6 +163,23 @@ export function HeroSection() {
             className="lg:hidden border-t border-gray-100 bg-white"
           >
             <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
+              {/* Trades section */}
+              <div className="pb-3 mb-3 border-b border-gray-100">
+                <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Trades</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {trades.map((trade) => (
+                    <Link
+                      key={trade.href}
+                      href={trade.href}
+                      className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <trade.icon className={`h-4 w-4 ${trade.color}`} />
+                      <span className="text-sm font-medium">{trade.name}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
               <button
                 onClick={() => scrollToSection("features")}
                 className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all"
@@ -259,25 +326,19 @@ export function HeroSection() {
               className="mt-10 pt-8 border-t border-gray-200"
             >
               <p className="text-sm text-gray-500 mb-4">
-                Trusted by 500+ apprentices across New Zealand
+                Built for every trade — find your industry:
               </p>
-              <div className="flex items-center gap-4 justify-center lg:justify-start flex-wrap">
-                <Link href="/trades/construction" className="flex items-center gap-2 text-gray-400 hover:text-orange-500 transition-colors">
-                  <HardHat className="h-5 w-5" />
-                  <span className="font-medium text-sm">Construction</span>
-                </Link>
-                <Link href="/trades/carpentry" className="flex items-center gap-2 text-gray-400 hover:text-orange-500 transition-colors">
-                  <Wrench className="h-5 w-5" />
-                  <span className="font-medium text-sm">Carpentry</span>
-                </Link>
-                <Link href="/trades/electrical" className="flex items-center gap-2 text-gray-400 hover:text-orange-500 transition-colors">
-                  <ClipboardCheck className="h-5 w-5" />
-                  <span className="font-medium text-sm">Electrical</span>
-                </Link>
-                <Link href="/trades/plumbing" className="flex items-center gap-2 text-gray-400 hover:text-orange-500 transition-colors">
-                  <ClipboardCheck className="h-5 w-5" />
-                  <span className="font-medium text-sm">Plumbing</span>
-                </Link>
+              <div className="flex items-center gap-2 justify-center lg:justify-start flex-wrap">
+                {trades.map((trade) => (
+                  <Link
+                    key={trade.href}
+                    href={trade.href}
+                    className="flex items-center gap-2 px-3 py-2 bg-gray-50 hover:bg-orange-50 border border-gray-200 hover:border-orange-200 rounded-lg transition-all group"
+                  >
+                    <trade.icon className={`h-4 w-4 ${trade.color}`} />
+                    <span className="font-medium text-sm text-gray-700 group-hover:text-orange-600">{trade.name}</span>
+                  </Link>
+                ))}
               </div>
             </motion.div>
           </motion.div>
