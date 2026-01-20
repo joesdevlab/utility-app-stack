@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Mic, ArrowRight, Play, CheckCircle, HardHat, Wrench, ClipboardCheck } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 
 export function HeroSection() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
@@ -12,20 +13,64 @@ export function HeroSection() {
     document.getElementById("download")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-white via-orange-50/30 to-white">
-      {/* Subtle grid pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f910_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f910_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+    <section className="relative min-h-screen flex flex-col overflow-hidden bg-white">
+      {/* Header / Navigation */}
+      <header className="relative z-20 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link href="/landing" className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/25">
+                <HardHat className="h-5 w-5 text-white" />
+              </div>
+              <span className="font-bold text-xl text-gray-900">Apprentice Log</span>
+            </Link>
 
-      {/* Decorative elements */}
-      <div className="absolute top-20 right-10 opacity-10">
-        <HardHat className="w-32 h-32 text-orange-500" />
-      </div>
-      <div className="absolute bottom-20 left-10 opacity-10">
-        <Wrench className="w-24 h-24 text-orange-500" />
-      </div>
+            {/* Navigation */}
+            <nav className="hidden md:flex items-center gap-8">
+              <button
+                onClick={() => scrollToSection("features")}
+                className="text-gray-600 hover:text-orange-600 text-sm font-medium transition-colors"
+              >
+                Features
+              </button>
+              <button
+                onClick={() => scrollToSection("testimonials")}
+                className="text-gray-600 hover:text-orange-600 text-sm font-medium transition-colors"
+              >
+                Testimonials
+              </button>
+              <button
+                onClick={() => scrollToSection("faq")}
+                className="text-gray-600 hover:text-orange-600 text-sm font-medium transition-colors"
+              >
+                FAQ
+              </button>
+              <Link href="/privacy" className="text-gray-600 hover:text-orange-600 text-sm font-medium transition-colors">
+                Privacy
+              </Link>
+            </nav>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            {/* CTA Button */}
+            <div className="flex items-center gap-4">
+              <Link href="/">
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-lg shadow-md">
+                  Get Started
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Content */}
+      <div className="flex-1 flex items-center justify-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left column - Text content */}
           <motion.div
@@ -248,6 +293,7 @@ export function HeroSection() {
           </div>
         </motion.div>
       )}
+      </div>
     </section>
   );
 }

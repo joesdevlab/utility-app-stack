@@ -83,8 +83,8 @@ export function TestimonialsSection() {
   };
 
   return (
-    <section ref={ref} className="py-24 bg-gradient-to-b from-orange-50 to-white relative overflow-hidden">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section ref={ref} id="testimonials" className="py-24 bg-gradient-to-b from-orange-50 to-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

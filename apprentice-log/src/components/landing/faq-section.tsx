@@ -58,8 +58,8 @@ export function FAQSection() {
   };
 
   return (
-    <section ref={ref} className="py-24 bg-gray-50 relative overflow-hidden">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section ref={ref} id="faq" className="py-24 bg-gray-50">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
