@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { stripe, ORG_PLANS } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import Stripe from "stripe";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+
+// Helper to get max seats based on plan
+function getMaxSeatsForPlan(plan: string): number {
+  const planConfig = ORG_PLANS[plan as keyof typeof ORG_PLANS];
+  return planConfig?.maxSeats || 5;
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -27,33 +33,66 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        const userId = session.metadata?.supabase_user_id;
+        const isOrgSubscription = session.metadata?.type === "organization";
 
-        if (userId && session.subscription) {
-          // Get subscription details - use any to handle Stripe API version differences
-          const subscriptionData = await stripe.subscriptions.retrieve(
-            session.subscription as string
-          ) as unknown as {
-            id: string;
-            items: { data: Array<{ price: { id: string } }> };
-            current_period_start: number;
-            current_period_end: number;
-            cancel_at_period_end: boolean;
-          };
+        if (isOrgSubscription) {
+          // Handle organization subscription
+          const organizationId = session.metadata?.organization_id;
+          const plan = session.metadata?.plan || "starter";
 
-          await supabase
-            .from("subscriptions")
-            .upsert({
-              user_id: userId,
-              stripe_customer_id: session.customer as string,
-              stripe_subscription_id: subscriptionData.id,
-              stripe_price_id: subscriptionData.items.data[0].price.id,
-              status: "active",
-              plan: "premium",
-              current_period_start: new Date(subscriptionData.current_period_start * 1000).toISOString(),
-              current_period_end: new Date(subscriptionData.current_period_end * 1000).toISOString(),
-              cancel_at_period_end: subscriptionData.cancel_at_period_end,
-            });
+          if (organizationId && session.subscription) {
+            const subscriptionData = await stripe.subscriptions.retrieve(
+              session.subscription as string
+            ) as unknown as {
+              id: string;
+              items: { data: Array<{ price: { id: string } }> };
+              current_period_start: number;
+              current_period_end: number;
+              cancel_at_period_end: boolean;
+            };
+
+            await supabase
+              .from("organizations")
+              .update({
+                stripe_subscription_id: subscriptionData.id,
+                plan: plan,
+                status: "active",
+                max_seats: getMaxSeatsForPlan(plan),
+                current_period_start: new Date(subscriptionData.current_period_start * 1000).toISOString(),
+                current_period_end: new Date(subscriptionData.current_period_end * 1000).toISOString(),
+              })
+              .eq("id", organizationId);
+          }
+        } else {
+          // Handle individual user subscription
+          const userId = session.metadata?.supabase_user_id;
+
+          if (userId && session.subscription) {
+            // Get subscription details - use any to handle Stripe API version differences
+            const subscriptionData = await stripe.subscriptions.retrieve(
+              session.subscription as string
+            ) as unknown as {
+              id: string;
+              items: { data: Array<{ price: { id: string } }> };
+              current_period_start: number;
+              current_period_end: number;
+              cancel_at_period_end: boolean;
+            };
+
+            await supabase
+              .from("subscriptions")
+              .upsert({
+                user_id: userId,
+                stripe_customer_id: session.customer as string,
+                stripe_subscription_id: subscriptionData.id,
+                stripe_price_id: subscriptionData.items.data[0].price.id,
+                status: "active",
+                plan: "premium",
+                current_period_start: new Date(subscriptionData.current_period_start * 1000).toISOString(),
+                current_period_end: new Date(subscriptionData.current_period_end * 1000).toISOString(),
+                cancel_at_period_end: subscriptionData.cancel_at_period_end,
+              });
+          }
         }
         break;
       }
@@ -64,54 +103,102 @@ export async function POST(request: NextRequest) {
           id: string;
           customer: string;
           status: string;
+          metadata?: { type?: string; organization_id?: string; plan?: string };
           items: { data: Array<{ price: { id: string } }> };
           current_period_start: number;
           current_period_end: number;
           cancel_at_period_end: boolean;
         };
         const customerId = subscription.customer;
+        const isOrgSubscription = subscription.metadata?.type === "organization";
 
-        // Find user by customer ID
-        const { data: existingSub } = await supabase
-          .from("subscriptions")
-          .select("user_id")
-          .eq("stripe_customer_id", customerId)
-          .single();
+        if (isOrgSubscription) {
+          // Handle organization subscription update
+          const { data: existingOrg } = await supabase
+            .from("organizations")
+            .select("id")
+            .eq("stripe_customer_id", customerId)
+            .single();
 
-        if (existingSub) {
-          const status = subscription.status === "active" || subscription.status === "trialing"
-            ? "active"
-            : subscription.status;
+          if (existingOrg) {
+            const status = subscription.status === "active" || subscription.status === "trialing"
+              ? "active"
+              : subscription.status;
+            const plan = subscription.metadata?.plan || "starter";
 
-          await supabase
+            await supabase
+              .from("organizations")
+              .update({
+                stripe_subscription_id: subscription.id,
+                status: status,
+                plan: status === "active" ? plan : "starter",
+                max_seats: status === "active" ? getMaxSeatsForPlan(plan) : 5,
+                current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+                current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+              })
+              .eq("stripe_customer_id", customerId);
+          }
+        } else {
+          // Handle individual user subscription update
+          const { data: existingSub } = await supabase
             .from("subscriptions")
-            .update({
-              stripe_subscription_id: subscription.id,
-              stripe_price_id: subscription.items.data[0].price.id,
-              status: status,
-              plan: status === "active" ? "premium" : "free",
-              current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-              current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-              cancel_at_period_end: subscription.cancel_at_period_end,
-            })
-            .eq("stripe_customer_id", customerId);
+            .select("user_id")
+            .eq("stripe_customer_id", customerId)
+            .single();
+
+          if (existingSub) {
+            const status = subscription.status === "active" || subscription.status === "trialing"
+              ? "active"
+              : subscription.status;
+
+            await supabase
+              .from("subscriptions")
+              .update({
+                stripe_subscription_id: subscription.id,
+                stripe_price_id: subscription.items.data[0].price.id,
+                status: status,
+                plan: status === "active" ? "premium" : "free",
+                current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+                current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+                cancel_at_period_end: subscription.cancel_at_period_end,
+              })
+              .eq("stripe_customer_id", customerId);
+          }
         }
         break;
       }
 
       case "customer.subscription.deleted": {
-        const subscription = event.data.object as { customer: string };
+        const subscription = event.data.object as {
+          customer: string;
+          metadata?: { type?: string };
+        };
         const customerId = subscription.customer;
+        const isOrgSubscription = subscription.metadata?.type === "organization";
 
-        await supabase
-          .from("subscriptions")
-          .update({
-            status: "canceled",
-            plan: "free",
-            stripe_subscription_id: null,
-            stripe_price_id: null,
-          })
-          .eq("stripe_customer_id", customerId);
+        if (isOrgSubscription) {
+          // Handle organization subscription cancellation
+          await supabase
+            .from("organizations")
+            .update({
+              status: "canceled",
+              plan: "starter",
+              max_seats: 5,
+              stripe_subscription_id: null,
+            })
+            .eq("stripe_customer_id", customerId);
+        } else {
+          // Handle individual subscription cancellation
+          await supabase
+            .from("subscriptions")
+            .update({
+              status: "canceled",
+              plan: "free",
+              stripe_subscription_id: null,
+              stripe_price_id: null,
+            })
+            .eq("stripe_customer_id", customerId);
+        }
         break;
       }
 
@@ -119,12 +206,30 @@ export async function POST(request: NextRequest) {
         const invoice = event.data.object as Stripe.Invoice;
         const customerId = invoice.customer as string;
 
-        await supabase
-          .from("subscriptions")
-          .update({
-            status: "past_due",
-          })
-          .eq("stripe_customer_id", customerId);
+        // Check if this is an organization subscription by checking both tables
+        const { data: existingOrg } = await supabase
+          .from("organizations")
+          .select("id")
+          .eq("stripe_customer_id", customerId)
+          .single();
+
+        if (existingOrg) {
+          // This is an organization subscription
+          await supabase
+            .from("organizations")
+            .update({
+              status: "past_due",
+            })
+            .eq("stripe_customer_id", customerId);
+        } else {
+          // This is an individual subscription
+          await supabase
+            .from("subscriptions")
+            .update({
+              status: "past_due",
+            })
+            .eq("stripe_customer_id", customerId);
+        }
         break;
       }
     }

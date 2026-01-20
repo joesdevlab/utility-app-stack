@@ -5,6 +5,77 @@ export interface ApiResponse<T> {
   error: string | null;
 }
 
+// Organization Types (B2B Employer Portal)
+export type OrganizationRole = 'owner' | 'admin' | 'supervisor' | 'apprentice';
+export type OrganizationPlan = 'starter' | 'professional' | 'enterprise';
+export type OrganizationStatus = 'active' | 'canceled' | 'past_due' | 'trialing' | 'incomplete';
+export type MemberStatus = 'pending' | 'active' | 'removed';
+
+export interface Organization {
+  id: string;
+  name: string;
+  slug: string;
+  owner_id: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  plan: OrganizationPlan;
+  status: OrganizationStatus;
+  max_seats: number;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface OrganizationMember {
+  id: string;
+  organization_id: string;
+  user_id: string | null;
+  email: string;
+  role: OrganizationRole;
+  status: MemberStatus;
+  invited_at: string;
+  joined_at: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined fields
+  user?: {
+    id: string;
+    email: string;
+    full_name?: string;
+  };
+}
+
+export interface OrganizationWithRole extends Organization {
+  role: OrganizationRole;
+  member_count: number;
+}
+
+export interface OrganizationStats {
+  organization_id: string;
+  name: string;
+  slug: string;
+  plan: OrganizationPlan;
+  status: OrganizationStatus;
+  max_seats: number;
+  member_count: number;
+  entries_this_week: number;
+  hours_this_week: number;
+  entries_this_month: number;
+  hours_this_month: number;
+}
+
+export interface ApprenticeWithStats {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: OrganizationRole;
+  joined_at: string | null;
+  entries_count: number;
+  total_hours: number;
+  last_entry_date: string | null;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   total: number;

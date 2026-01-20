@@ -1,13 +1,18 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+import type { OrganizationWithRole } from "@/types";
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  organization: OrganizationWithRole | null;
+  isEmployer: boolean;
+  orgLoading: boolean;
+  refreshOrganization: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -22,7 +27,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [organization, setOrganization] = useState<OrganizationWithRole | null>(null);
+  const [orgLoading, setOrgLoading] = useState(false);
   const supabase = createClient();
+
+  const fetchOrganization = useCallback(async () => {
+    setOrgLoading(true);
+    try {
+      const response = await fetch("/api/organizations");
+      if (response.ok) {
+        const data = await response.json();
+        setOrganization(data.organization);
+      } else {
+        setOrganization(null);
+      }
+    } catch {
+      setOrganization(null);
+    } finally {
+      setOrgLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     // Get initial session
@@ -30,6 +54,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setIsLoading(false);
+      if (session?.user) {
+        fetchOrganization();
+      }
     });
 
     // Listen for auth changes
@@ -38,11 +65,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         setIsLoading(false);
+        if (session?.user) {
+          fetchOrganization();
+        } else {
+          setOrganization(null);
+        }
       }
     );
 
     return () => subscription.unsubscribe();
-  }, [supabase.auth]);
+  }, [supabase.auth, fetchOrganization]);
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -91,9 +123,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error: error as Error | null };
   };
 
+  const isEmployer = organization !== null;
+
   return (
     <AuthContext.Provider
-      value={{ user, session, isLoading, signIn, signUp, signOut, resetPassword, updatePassword, resendVerification }}
+      value={{
+        user,
+        session,
+        isLoading,
+        organization,
+        isEmployer,
+        orgLoading,
+        refreshOrganization: fetchOrganization,
+        signIn,
+        signUp,
+        signOut,
+        resetPassword,
+        updatePassword,
+        resendVerification,
+      }}
     >
       {children}
     </AuthContext.Provider>

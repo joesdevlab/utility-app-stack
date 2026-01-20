@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Crown, CreditCard, Zap } from "lucide-react";
+import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Crown, CreditCard, Zap, Building2 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useSubscription } from "@/hooks";
@@ -22,6 +22,7 @@ interface SettingItem {
   disabled?: boolean;
   onClick?: () => void;
   external?: string;
+  href?: string;  // For internal navigation
   destructive?: boolean;
 }
 
@@ -92,6 +93,12 @@ export default function SettingsPage() {
           icon: User,
           label: user.email || "Account",
           description: "Signed in and syncing to cloud",
+        },
+        {
+          icon: Building2,
+          label: "Employer Portal",
+          description: "Manage your apprentices and team",
+          href: "/employer",
         },
         {
           icon: LogOut,
@@ -272,22 +279,8 @@ export default function SettingsPage() {
                 <CardContent className="space-y-2">
                   {group.items.map((item) => {
                     const Icon = item.icon;
-                    return (
-                      <Button
-                        key={item.label}
-                        variant="ghost"
-                        className={`w-full justify-start h-auto py-3 px-3 ${
-                          item.destructive ? "text-destructive hover:text-destructive" : ""
-                        }`}
-                        disabled={item.disabled}
-                        onClick={() => {
-                          if (item.onClick) {
-                            item.onClick();
-                          } else if (item.external) {
-                            window.open(item.external, "_blank");
-                          }
-                        }}
-                      >
+                    const content = (
+                      <>
                         <Icon className={`h-5 w-5 mr-3 ${
                           item.destructive ? "text-destructive" : "text-muted-foreground"
                         }`} />
@@ -309,6 +302,39 @@ export default function SettingsPage() {
                             {item.description}
                           </p>
                         </div>
+                      </>
+                    );
+
+                    if (item.href) {
+                      return (
+                        <Link key={item.label} href={item.href}>
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start h-auto py-3 px-3"
+                          >
+                            {content}
+                          </Button>
+                        </Link>
+                      );
+                    }
+
+                    return (
+                      <Button
+                        key={item.label}
+                        variant="ghost"
+                        className={`w-full justify-start h-auto py-3 px-3 ${
+                          item.destructive ? "text-destructive hover:text-destructive" : ""
+                        }`}
+                        disabled={item.disabled}
+                        onClick={() => {
+                          if (item.onClick) {
+                            item.onClick();
+                          } else if (item.external) {
+                            window.open(item.external, "_blank");
+                          }
+                        }}
+                      >
+                        {content}
                       </Button>
                     );
                   })}
