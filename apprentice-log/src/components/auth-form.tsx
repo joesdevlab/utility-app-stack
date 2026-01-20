@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ClipboardList, Loader2, Mail, Lock, User, CheckCircle2, RefreshCw } from "lucide-react";
+import { HardHat, Loader2, Mail, Lock, User, CheckCircle2, RefreshCw } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { toast } from "sonner";
 
@@ -88,8 +88,8 @@ export function AuthForm() {
         >
           <Card>
             <CardHeader className="text-center">
-              <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <CheckCircle2 className="h-6 w-6 text-blue-500" />
+              <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-orange-500/10 flex items-center justify-center">
+                <CheckCircle2 className="h-6 w-6 text-orange-500" />
               </div>
               <CardTitle>Check your email</CardTitle>
               <CardDescription>
@@ -114,7 +114,7 @@ export function AuthForm() {
                 Resend email
               </Button>
               <Button
-                className="w-full bg-blue-500 hover:bg-blue-600"
+                className="w-full bg-orange-500 hover:bg-orange-600"
                 onClick={() => setMode("signin")}
               >
                 Back to Sign In
@@ -135,8 +135,8 @@ export function AuthForm() {
       >
         <Card>
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-              <ClipboardList className="h-6 w-6 text-blue-500" />
+            <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-orange-500/10 flex items-center justify-center">
+              <HardHat className="h-6 w-6 text-orange-500" />
             </div>
             <CardTitle>Apprentice Log</CardTitle>
             <CardDescription>
@@ -204,7 +204,7 @@ export function AuthForm() {
 
               <Button
                 type="submit"
-                className="w-full bg-blue-500 hover:bg-blue-600"
+                className="w-full bg-orange-500 hover:bg-orange-600"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -227,7 +227,7 @@ export function AuthForm() {
                     <button
                       type="button"
                       onClick={() => setMode("signup")}
-                      className="text-blue-500 hover:underline"
+                      className="text-orange-500 hover:underline"
                     >
                       Sign up
                     </button>
@@ -236,7 +236,7 @@ export function AuthForm() {
                     <button
                       type="button"
                       onClick={() => setMode("forgot")}
-                      className="text-muted-foreground hover:text-blue-500"
+                      className="text-muted-foreground hover:text-orange-500"
                     >
                       Forgot password?
                     </button>
@@ -249,7 +249,7 @@ export function AuthForm() {
                   <button
                     type="button"
                     onClick={() => setMode("signin")}
-                    className="text-blue-500 hover:underline"
+                    className="text-orange-500 hover:underline"
                   >
                     Sign in
                   </button>
@@ -261,7 +261,7 @@ export function AuthForm() {
                   <button
                     type="button"
                     onClick={() => setMode("signin")}
-                    className="text-blue-500 hover:underline"
+                    className="text-orange-500 hover:underline"
                   >
                     Sign in
                   </button>

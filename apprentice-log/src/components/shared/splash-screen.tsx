@@ -35,39 +35,49 @@ export function SplashScreen() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#0a0a0a",
+        backgroundColor: "#ffffff",
         opacity: isFading ? 0 : 1,
         transition: "opacity 0.5s ease-out",
         pointerEvents: isFading ? "none" : "auto",
       }}
     >
-      {/* App Icon */}
-      <svg
-        width="80"
-        height="80"
-        viewBox="0 0 512 512"
-        style={{ marginBottom: "24px" }}
+      {/* App Icon - Hard Hat */}
+      <div
+        style={{
+          width: "80px",
+          height: "80px",
+          borderRadius: "20px",
+          background: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: "24px",
+          boxShadow: "0 10px 25px -5px rgba(249, 115, 22, 0.3)",
+        }}
       >
-        <rect width="512" height="512" rx="96" fill="#3b82f6" />
-        <path
-          d="M256 120c-75 0-136 61-136 136s61 136 136 136 136-61 136-136-61-136-136-136zm0 240c-57.4 0-104-46.6-104-104s46.6-104 104-104 104 46.6 104 104-46.6 104-104 104z"
-          fill="white"
-        />
-        <circle cx="256" cy="256" r="48" fill="white" />
-        <path
-          d="M256 168v-32M256 376v-32M344 256h32M136 256h32"
+        <svg
+          width="44"
+          height="44"
+          viewBox="0 0 24 24"
+          fill="none"
           stroke="white"
-          strokeWidth="24"
+          strokeWidth="2"
           strokeLinecap="round"
-        />
-      </svg>
+          strokeLinejoin="round"
+        >
+          <path d="M2 18a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v2z" />
+          <path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5" />
+          <path d="M4 15v-3a6 6 0 0 1 6-6h0" />
+          <path d="M14 6h0a6 6 0 0 1 6 6v3" />
+        </svg>
+      </div>
 
       {/* App Name */}
       <h1
         style={{
           fontSize: "24px",
-          fontWeight: 600,
-          color: "white",
+          fontWeight: 700,
+          color: "#111827",
           margin: 0,
           letterSpacing: "-0.02em",
         }}
@@ -79,11 +89,11 @@ export function SplashScreen() {
       <p
         style={{
           fontSize: "14px",
-          color: "#a1a1aa",
+          color: "#6b7280",
           margin: "8px 0 0 0",
         }}
       >
-        Voice-to-logbook for apprentices
+        Voice-to-logbook for NZ apprentices
       </p>
 
       {/* Loading indicator */}
@@ -92,8 +102,8 @@ export function SplashScreen() {
           marginTop: "32px",
           width: "32px",
           height: "32px",
-          border: "3px solid #27272a",
-          borderTopColor: "#3b82f6",
+          border: "3px solid #fed7aa",
+          borderTopColor: "#f97316",
           borderRadius: "50%",
           animation: "splash-spin 1s linear infinite",
         }}
