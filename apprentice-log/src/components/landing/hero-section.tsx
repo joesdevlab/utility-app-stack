@@ -251,7 +251,7 @@ export function HeroSection() {
               </Button>
             </motion.div>
 
-            {/* Industry */}
+            {/* Industry - links to trade pages */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -261,30 +261,43 @@ export function HeroSection() {
               <p className="text-sm text-gray-500 mb-4">
                 Trusted by 500+ apprentices across New Zealand
               </p>
-              <div className="flex items-center gap-6 justify-center lg:justify-start flex-wrap">
-                <div className="flex items-center gap-2 text-gray-400">
-                  <HardHat className="h-6 w-6" />
-                  <span className="font-semibold">Construction</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-400">
-                  <Wrench className="h-6 w-6" />
-                  <span className="font-semibold">Carpentry</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-400">
-                  <ClipboardCheck className="h-6 w-6" />
-                  <span className="font-semibold">All Trades</span>
-                </div>
+              <div className="flex items-center gap-4 justify-center lg:justify-start flex-wrap">
+                <Link href="/trades/construction" className="flex items-center gap-2 text-gray-400 hover:text-orange-500 transition-colors">
+                  <HardHat className="h-5 w-5" />
+                  <span className="font-medium text-sm">Construction</span>
+                </Link>
+                <Link href="/trades/carpentry" className="flex items-center gap-2 text-gray-400 hover:text-orange-500 transition-colors">
+                  <Wrench className="h-5 w-5" />
+                  <span className="font-medium text-sm">Carpentry</span>
+                </Link>
+                <Link href="/trades/electrical" className="flex items-center gap-2 text-gray-400 hover:text-orange-500 transition-colors">
+                  <ClipboardCheck className="h-5 w-5" />
+                  <span className="font-medium text-sm">Electrical</span>
+                </Link>
+                <Link href="/trades/plumbing" className="flex items-center gap-2 text-gray-400 hover:text-orange-500 transition-colors">
+                  <ClipboardCheck className="h-5 w-5" />
+                  <span className="font-medium text-sm">Plumbing</span>
+                </Link>
               </div>
             </motion.div>
           </motion.div>
 
-          {/* Right column - Phone mockup */}
+          {/* Right column - Image + Phone mockup */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="relative"
           >
+            {/* Background image of tradesperson */}
+            <div className="absolute -inset-4 lg:-inset-8 rounded-3xl overflow-hidden opacity-20 lg:opacity-30">
+              <img
+                src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80"
+                alt="Construction worker"
+                className="w-full h-full object-cover"
+              />
+            </div>
+
             <div className="relative mx-auto w-[280px] sm:w-[320px]">
               {/* Glow effect */}
               <div className="absolute inset-0 bg-orange-500/10 blur-3xl rounded-full scale-150" />

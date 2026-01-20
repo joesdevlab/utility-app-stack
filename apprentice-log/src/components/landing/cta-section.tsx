@@ -14,9 +14,18 @@ export function CTASection() {
     <section
       ref={ref}
       id="download"
-      className="py-24 bg-gradient-to-b from-white to-orange-50"
+      className="py-24 bg-gradient-to-b from-white to-orange-50 relative overflow-hidden"
     >
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Background image */}
+      <div className="absolute inset-0 opacity-5">
+        <img
+          src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1200&q=80"
+          alt=""
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}

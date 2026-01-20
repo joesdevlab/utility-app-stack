@@ -78,25 +78,44 @@ export function ProblemSection() {
           ))}
         </div>
 
-        {/* Stats */}
+        {/* Stats with image */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm"
+          className="grid lg:grid-cols-2 gap-8"
         >
-          <div className="grid sm:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-red-600 mb-2">73%</div>
-              <div className="text-gray-600">of apprentices report logbook frustration</div>
+          {/* Image */}
+          <div className="relative rounded-2xl overflow-hidden h-64 lg:h-auto">
+            <img
+              src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&q=80"
+              alt="Apprentice doing paperwork on site"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute bottom-4 left-4 right-4">
+              <p className="text-white text-sm font-medium">
+                &quot;I used to spend my smoko breaks catching up on paperwork instead of resting.&quot;
+              </p>
+              <p className="text-white/70 text-xs mt-1">— 3rd Year Carpentry Apprentice</p>
             </div>
-            <div>
-              <div className="text-4xl font-bold text-red-600 mb-2">2+ hrs</div>
-              <div className="text-gray-600">weekly time lost to manual entry</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-red-600 mb-2">40%</div>
-              <div className="text-gray-600">submit incomplete documentation</div>
+          </div>
+
+          {/* Stats */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm flex items-center">
+            <div className="grid grid-cols-1 gap-6 w-full">
+              <div className="text-center p-4 rounded-xl bg-red-50">
+                <div className="text-4xl font-bold text-red-600 mb-2">73%</div>
+                <div className="text-gray-600">of apprentices report logbook frustration</div>
+              </div>
+              <div className="text-center p-4 rounded-xl bg-red-50">
+                <div className="text-4xl font-bold text-red-600 mb-2">2+ hrs</div>
+                <div className="text-gray-600">weekly time lost to manual entry</div>
+              </div>
+              <div className="text-center p-4 rounded-xl bg-red-50">
+                <div className="text-4xl font-bold text-red-600 mb-2">40%</div>
+                <div className="text-gray-600">submit incomplete documentation</div>
+              </div>
             </div>
           </div>
         </motion.div>
