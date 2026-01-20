@@ -167,23 +167,20 @@ export function HeroSection() {
             transition={{ duration: 0.8 }}
             className="text-center lg:text-left"
           >
-            {/* Badges */}
+            {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="flex flex-wrap gap-3 justify-center lg:justify-start mb-6"
+              className="mb-6"
             >
-              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full px-4 py-2">
-                <span className="text-lg">🇳🇿</span>
-                <span className="text-blue-700 text-sm font-semibold">Built in New Zealand</span>
-              </div>
-              <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-200 rounded-full px-4 py-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+              <div className="inline-flex items-center gap-3 bg-gray-100 border border-gray-200 rounded-full px-4 py-2">
+                <span className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                  <span>🇳🇿</span>
+                  <span>NZ Made</span>
                 </span>
-                <span className="text-orange-700 text-sm font-semibold">BCITO Approved Format</span>
+                <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                <span className="text-sm font-medium text-orange-600">BCITO Compliant</span>
               </div>
             </motion.div>
 
@@ -219,7 +216,7 @@ export function HeroSection() {
               transition={{ delay: 0.5 }}
               className="flex flex-wrap gap-4 justify-center lg:justify-start mb-8"
             >
-              {["100% NZ Made", "BCITO Compliant", "Works Offline"].map((item, i) => (
+              {["Free for NZ Apprentices", "Works Offline", "30-Second Entries"].map((item, i) => (
                 <div key={i} className="flex items-center gap-2 text-gray-600 text-sm">
                   <CheckCircle className="h-4 w-4 text-orange-500" />
                   <span className="font-medium">{item}</span>
@@ -254,7 +251,7 @@ export function HeroSection() {
               </Button>
             </motion.div>
 
-            {/* NZ Industry */}
+            {/* Industry */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -262,8 +259,7 @@ export function HeroSection() {
               className="mt-10 pt-8 border-t border-gray-200"
             >
               <p className="text-sm text-gray-500 mb-4">
-                <span className="text-lg mr-2">🇳🇿</span>
-                Proudly supporting Kiwi tradies from Northland to Southland
+                Trusted by 500+ apprentices across New Zealand
               </p>
               <div className="flex items-center gap-6 justify-center lg:justify-start flex-wrap">
                 <div className="flex items-center gap-2 text-gray-400">
@@ -276,7 +272,7 @@ export function HeroSection() {
                 </div>
                 <div className="flex items-center gap-2 text-gray-400">
                   <ClipboardCheck className="h-6 w-6" />
-                  <span className="font-semibold">All NZ Trades</span>
+                  <span className="font-semibold">All Trades</span>
                 </div>
               </div>
             </motion.div>

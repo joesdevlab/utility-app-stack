@@ -14,11 +14,8 @@ export function FooterSection() {
               <HardHat className="h-5 w-5 text-white" />
             </div>
             <div>
-              <div className="font-semibold text-gray-900 flex items-center gap-2">
-                Apprentice Log
-                <span className="text-base">🇳🇿</span>
-              </div>
-              <div className="text-xs text-gray-500">Proudly made in Aotearoa New Zealand</div>
+              <div className="font-semibold text-gray-900">Apprentice Log</div>
+              <div className="text-xs text-gray-500">Made in New Zealand 🇳🇿</div>
             </div>
           </div>
 
@@ -79,7 +76,7 @@ export function FooterSection() {
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-gray-200 text-center">
           <p className="text-sm text-gray-500">
-            © {new Date().getFullYear()} Apprentice Log. 🇳🇿 Proudly supporting Kiwi tradies nationwide.
+            © {new Date().getFullYear()} Apprentice Log. Supporting New Zealand&apos;s trade industry.
           </p>
         </div>
       </div>

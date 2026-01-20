@@ -93,14 +93,14 @@ export function TestimonialsSection() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 bg-amber-100 border border-amber-200 rounded-full px-4 py-2 mb-6">
-            <span className="text-lg">🇳🇿</span>
-            <span className="text-amber-700 text-sm font-semibold">Kiwi Testimonials</span>
+            <Star className="h-4 w-4 text-amber-600 fill-amber-600" />
+            <span className="text-amber-700 text-sm font-semibold">Real Reviews</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Trusted by NZ Tradies
+            Trusted by Trade Professionals
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Join hundreds of apprentices across Aotearoa&apos;s leading construction companies
+            Join hundreds of apprentices across New Zealand&apos;s leading construction companies
             who have streamlined their documentation process.
           </p>
         </motion.div>
@@ -235,7 +235,7 @@ export function TestimonialsSection() {
           <div className="grid sm:grid-cols-4 gap-8 text-center">
             <div>
               <div className="text-3xl font-bold text-gray-900">500+</div>
-              <div className="text-sm text-gray-500">NZ Apprentices</div>
+              <div className="text-sm text-gray-500">Active Users</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-gray-900">25,000+</div>
@@ -247,9 +247,10 @@ export function TestimonialsSection() {
             </div>
             <div>
               <div className="flex justify-center gap-2 mb-1">
-                <span className="text-2xl">🇳🇿</span>
+                <Building2 className="h-6 w-6 text-orange-500" />
+                <HardHat className="h-6 w-6 text-orange-500" />
               </div>
-              <div className="text-sm text-gray-500">100% Kiwi Made</div>
+              <div className="text-sm text-gray-500">NZ Trade Industry</div>
             </div>
           </div>
         </motion.div>
