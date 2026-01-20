@@ -10,7 +10,6 @@ import {
   Shield,
   Clock,
   Smartphone,
-  CheckCircle2,
   ArrowRight,
 } from "lucide-react";
 
@@ -73,19 +72,19 @@ export function FeaturesSection() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-200 rounded-full px-4 py-2 mb-6">
-            <CheckCircle2 className="h-4 w-4 text-orange-600" />
-            <span className="text-orange-700 text-sm font-semibold">Professional Solution</span>
+            <span className="text-lg">🇳🇿</span>
+            <span className="text-orange-700 text-sm font-semibold">Designed for New Zealand</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-            Purpose-Built for the
+            Purpose-Built for
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">
-              Trade Industry
+              NZ Trade Apprentices
             </span>
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             A comprehensive digital solution designed specifically for the unique requirements
-            of New Zealand&apos;s trade apprenticeship programmes.
+            of New Zealand&apos;s BCITO apprenticeship programmes and Kiwi work sites.
           </p>
         </motion.div>
 

@@ -28,7 +28,10 @@ export function HeroSection() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/25">
                 <HardHat className="h-5 w-5 text-white" />
               </div>
-              <span className="font-bold text-xl text-gray-900">Apprentice Log</span>
+              <div className="flex flex-col">
+                <span className="font-bold text-xl text-gray-900">Apprentice Log</span>
+                <span className="text-xs text-gray-500 hidden sm:block">Made in New Zealand</span>
+              </div>
             </Link>
 
             {/* Navigation */}
@@ -79,18 +82,24 @@ export function HeroSection() {
             transition={{ duration: 0.8 }}
             className="text-center lg:text-left"
           >
-            {/* Badge */}
+            {/* Badges */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 bg-orange-100 border border-orange-200 rounded-full px-4 py-2 mb-6"
+              className="flex flex-wrap gap-3 justify-center lg:justify-start mb-6"
             >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
-              </span>
-              <span className="text-orange-700 text-sm font-semibold">BCITO Approved Format</span>
+              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full px-4 py-2">
+                <span className="text-lg">🇳🇿</span>
+                <span className="text-blue-700 text-sm font-semibold">Built in New Zealand</span>
+              </div>
+              <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-200 rounded-full px-4 py-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                </span>
+                <span className="text-orange-700 text-sm font-semibold">BCITO Approved Format</span>
+              </div>
             </motion.div>
 
             {/* Main headline */}
@@ -100,10 +109,10 @@ export function HeroSection() {
               transition={{ delay: 0.3 }}
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6"
             >
-              Streamline Your
+              Built for Kiwi
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-600">
-                Apprentice Logbook
+                Trade Apprentices
               </span>
             </motion.h1>
 
@@ -114,8 +123,8 @@ export function HeroSection() {
               transition={{ delay: 0.4 }}
               className="text-lg sm:text-xl text-gray-600 mb-8 max-w-xl mx-auto lg:mx-0"
             >
-              The professional solution for NZ trade apprentices. Voice-to-text technology
-              transforms your daily activities into compliant, detailed logbook entries in seconds.
+              The #1 logbook app designed exclusively for New Zealand apprentices.
+              Voice-to-text technology transforms your daily activities into BCITO-compliant entries in seconds.
             </motion.p>
 
             {/* Trust indicators */}
@@ -125,7 +134,7 @@ export function HeroSection() {
               transition={{ delay: 0.5 }}
               className="flex flex-wrap gap-4 justify-center lg:justify-start mb-8"
             >
-              {["BCITO Compliant", "Enterprise Security", "Offline Capable"].map((item, i) => (
+              {["100% NZ Made", "BCITO Compliant", "Works Offline"].map((item, i) => (
                 <div key={i} className="flex items-center gap-2 text-gray-600 text-sm">
                   <CheckCircle className="h-4 w-4 text-orange-500" />
                   <span className="font-medium">{item}</span>
@@ -160,14 +169,17 @@ export function HeroSection() {
               </Button>
             </motion.div>
 
-            {/* Industry partners */}
+            {/* NZ Industry */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
               className="mt-10 pt-8 border-t border-gray-200"
             >
-              <p className="text-sm text-gray-500 mb-4">Trusted by apprentices across New Zealand</p>
+              <p className="text-sm text-gray-500 mb-4">
+                <span className="text-lg mr-2">🇳🇿</span>
+                Proudly supporting Kiwi tradies from Northland to Southland
+              </p>
               <div className="flex items-center gap-6 justify-center lg:justify-start flex-wrap">
                 <div className="flex items-center gap-2 text-gray-400">
                   <HardHat className="h-6 w-6" />
@@ -179,7 +191,7 @@ export function HeroSection() {
                 </div>
                 <div className="flex items-center gap-2 text-gray-400">
                   <ClipboardCheck className="h-6 w-6" />
-                  <span className="font-semibold">All Trades</span>
+                  <span className="font-semibold">All NZ Trades</span>
                 </div>
               </div>
             </motion.div>

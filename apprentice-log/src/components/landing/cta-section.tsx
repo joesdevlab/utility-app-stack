@@ -23,23 +23,29 @@ export function CTASection() {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-green-100 border border-green-200 rounded-full px-4 py-2 mb-8">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
-            <span className="text-green-700 text-sm font-semibold">Free for All NZ Apprentices</span>
+          {/* Badges */}
+          <div className="flex flex-wrap gap-3 justify-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full px-4 py-2">
+              <span className="text-lg">🇳🇿</span>
+              <span className="text-blue-700 text-sm font-semibold">Made in Aotearoa</span>
+            </div>
+            <div className="inline-flex items-center gap-2 bg-green-100 border border-green-200 rounded-full px-4 py-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              <span className="text-green-700 text-sm font-semibold">Free for All NZ Apprentices</span>
+            </div>
           </div>
 
           {/* Headline */}
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Start Streamlining Your Documentation Today
+            Join Kiwi Tradies Across the Country
           </h2>
 
           <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Join over 500 trade professionals across New Zealand who have transformed their
-            logbook process. Get started in under a minute.
+            Over 500 apprentices from Auckland to Invercargill have transformed their
+            logbook process. Built by Kiwis, for Kiwis.
           </p>
 
           {/* Benefits list */}
