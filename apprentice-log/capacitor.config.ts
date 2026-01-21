@@ -6,14 +6,14 @@ const config: CapacitorConfig = {
   webDir: 'public',
   server: {
     // Production: Load the hosted web app
-    url: 'https://apprenticelog.nz',
+    url: 'https://apprentice-log.vercel.app',
     androidScheme: 'https',
   },
   android: {
     backgroundColor: '#ffffff',
     allowMixedContent: false,
     captureInput: true,
-    webContentsDebuggingEnabled: false,
+    webContentsDebuggingEnabled: true,
   },
   plugins: {
     SplashScreen: {

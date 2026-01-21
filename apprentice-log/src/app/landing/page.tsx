@@ -8,6 +8,7 @@ import {
   CTASection,
   FooterSection,
 } from "@/components/landing";
+import { NativeAppRedirect } from "@/components/native-app-redirect";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://apprentice-log.vercel.app"),
@@ -57,14 +58,16 @@ export const metadata: Metadata = {
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-slate-950">
-      <HeroSection />
-      <ProblemSection />
-      <FeaturesSection />
-      <TestimonialsSection />
-      <FAQSection />
-      <CTASection />
-      <FooterSection />
-    </main>
+    <NativeAppRedirect>
+      <main className="min-h-screen bg-slate-950">
+        <HeroSection />
+        <ProblemSection />
+        <FeaturesSection />
+        <TestimonialsSection />
+        <FAQSection />
+        <CTASection />
+        <FooterSection />
+      </main>
+    </NativeAppRedirect>
   );
 }

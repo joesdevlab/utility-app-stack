@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { VoiceRecorder } from "@/components/voice-recorder";
 import { ManualEntryForm } from "@/components/manual-entry-form";
@@ -20,13 +20,29 @@ type AppState = "idle" | "processing" | "result" | "saved";
 type EntryMode = "voice" | "manual";
 
 export default function Home() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, signOut } = useAuth();
   const [state, setState] = useState<AppState>("idle");
   const [entryMode, setEntryMode] = useState<EntryMode>("voice");
   const [entry, setEntry] = useState<LogbookEntry | null>(null);
   const [transcript, setTranscript] = useState<string>("");
   const [isManualProcessing, setIsManualProcessing] = useState(false);
   const { addEntry } = useEntries(user?.id);
+
+  // Verify server-side auth on mount
+  useEffect(() => {
+    if (user) {
+      fetch("/api/health/auth", { credentials: "include" })
+        .then(res => res.json())
+        .then(data => {
+          if (!data.authenticated) {
+            console.error("Server auth mismatch:", data);
+            toast.error("Session expired. Please sign in again.", { duration: 5000 });
+            signOut();
+          }
+        })
+        .catch(err => console.error("Auth check failed:", err));
+    }
+  }, [user, signOut]);
 
   // Show loading while checking auth
   if (authLoading) {
@@ -53,6 +69,7 @@ export default function Home() {
       const transcribeResponse = await fetch("/api/transcribe", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
 
       if (!transcribeResponse.ok) {
@@ -69,6 +86,7 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ transcript: text }),
+        credentials: "include",
       });
 
       if (!formatResponse.ok) {
@@ -97,7 +115,19 @@ export default function Home() {
     } catch (error) {
       const message = error instanceof Error ? error.message : "Something went wrong";
       console.error("Recording processing error:", error);
-      toast.error(message);
+
+      // Show more detailed error for debugging
+      if (message.includes("401") || message.includes("Unauthorized")) {
+        toast.error("Authentication error. Please sign out and sign in again.", {
+          duration: 5000,
+        });
+      } else if (message.includes("Failed to fetch") || message.includes("NetworkError")) {
+        toast.error("Network error. Check your internet connection.", {
+          duration: 5000,
+        });
+      } else {
+        toast.error(message, { duration: 5000 });
+      }
       setState("idle");
     }
   };

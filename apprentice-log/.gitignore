@@ -48,6 +48,24 @@ public/workbox-*.js.map
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
 .env.test
 .env.vercel.local
+
+# Android / Capacitor
+*.apk
+*.aab
+*.keystore
+*.jks
+android/app/build/
+android/.gradle/
+android/build/
+android/app/release/
+android/local.properties
+
+# iOS (if added later)
+ios/App/Pods/
+ios/App/build/
+*.ipa
+
+
+

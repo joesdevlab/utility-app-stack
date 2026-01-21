@@ -51,7 +51,8 @@
       "Bash(./gradlew assembleRelease:*)",
       "Bash(ls:*)",
       "Bash(keytool:*)",
-      "Bash(jarsigner:*)"
+      "Bash(jarsigner:*)",
+      "Bash(C:/Android/Sdk/platform-tools/adb devices)"
     ]
   }
 }
