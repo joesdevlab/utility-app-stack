@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "521381318244",
+    "project_id": "apprentice-log-prod",
+    "storage_bucket": "apprentice-log-prod.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521381318244:android:ccc17d39ecd4c0b32a9971",
+        "android_client_info": {
+          "package_name": "nz.apprenticelog.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChXnGeBMUsu5mzwAyTPLx0x0eqZ3hXyyw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

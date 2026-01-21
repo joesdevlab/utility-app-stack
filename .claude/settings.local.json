@@ -56,7 +56,13 @@
       "Bash(dir:*)",
       "Bash(npm test:*)",
       "Bash(npx vitest:*)",
-      "Bash(firebase --version:*)"
+      "Bash(firebase --version:*)",
+      "Bash(firebase projects:list:*)",
+      "Bash(firebase projects:create:*)",
+      "Bash(firebase apps:create:*)",
+      "Bash(firebase apps:sdkconfig:*)",
+      "Bash(firebase appdistribution:distribute:*)",
+      "Bash(firebase appdistribution:testers:add:*)"
     ]
   }
 }

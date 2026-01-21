@@ -124,6 +124,50 @@ For CI/CD builds, set these environment variables:
 - `KEYSTORE_PASSWORD` - Keystore password
 - `KEY_PASSWORD` - Key password
 
+## Firebase App Distribution (Beta Testing)
+
+Firebase App Distribution is set up for distributing beta builds to testers.
+
+### Project Details
+- **Firebase Project**: `apprentice-log-prod`
+- **App ID**: `1:521381318244:android:ccc17d39ecd4c0b32a9971`
+- **Console**: https://console.firebase.google.com/project/apprentice-log-prod/appdistribution
+
+### Current Testers
+- laikadynamics@gmail.com
+- zedvex@gmail.com
+
+### Distribute a New Build
+
+```bash
+# From apprentice-log directory
+
+# 1. Sync web assets
+npx cap sync android
+
+# 2. Build debug APK
+cd android && ./gradlew assembleDebug && cd ..
+
+# 3. Upload and distribute to testers
+firebase appdistribution:distribute android/app/build/outputs/apk/debug/app-debug.apk \
+  --project apprentice-log-prod \
+  --app 1:521381318244:android:ccc17d39ecd4c0b32a9971 \
+  --testers "laikadynamics@gmail.com,zedvex@gmail.com" \
+  --release-notes "Your release notes here"
+```
+
+### Add New Testers
+
+```bash
+firebase appdistribution:testers:add --project apprentice-log-prod email1@example.com email2@example.com
+```
+
+### What Testers Need To Do
+1. Check email for Firebase invitation
+2. Click link and sign in with Google
+3. Install "Firebase App Tester" app (if prompted)
+4. Download and install Apprentice Log
+
 ## Support
 
 For issues: https://github.com/your-repo/apprentice-log/issues
