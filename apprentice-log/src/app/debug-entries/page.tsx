@@ -273,7 +273,7 @@ export default function DebugEntriesPage() {
                     <span className="font-semibold uppercase">[{log.level}]</span>
                     <span>{log.message}</span>
                   </div>
-                  {log.data && (
+                  {log.data !== undefined && (
                     <pre className="mt-1 pl-4 text-gray-600 overflow-x-auto">
                       {JSON.stringify(log.data, null, 2)}
                     </pre>
