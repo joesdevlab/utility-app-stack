@@ -55,7 +55,8 @@
       "Bash(C:/Android/Sdk/platform-tools/adb devices)",
       "Bash(dir:*)",
       "Bash(npm test:*)",
-      "Bash(npx vitest:*)"
+      "Bash(npx vitest:*)",
+      "Bash(firebase --version:*)"
     ]
   }
 }
