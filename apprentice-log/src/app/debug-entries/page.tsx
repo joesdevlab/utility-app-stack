@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/components/auth-provider";
 
 interface DebugLog {
   timestamp: string;

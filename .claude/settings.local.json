@@ -52,7 +52,10 @@
       "Bash(ls:*)",
       "Bash(keytool:*)",
       "Bash(jarsigner:*)",
-      "Bash(C:/Android/Sdk/platform-tools/adb devices)"
+      "Bash(C:/Android/Sdk/platform-tools/adb devices)",
+      "Bash(dir:*)",
+      "Bash(npm test:*)",
+      "Bash(npx vitest:*)"
     ]
   }
 }
