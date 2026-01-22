@@ -29,8 +29,14 @@ export function useOrganization(): UseOrganizationReturn {
   const [stats, setStats] = useState<OrganizationStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasFetched, setHasFetched] = useState(false);
 
-  const fetchOrganization = useCallback(async () => {
+  const fetchOrganization = useCallback(async (forceRefresh = false) => {
+    // Skip if already fetched and not forcing refresh
+    if (hasFetched && !forceRefresh) {
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);
@@ -54,6 +60,7 @@ export function useOrganization(): UseOrganizationReturn {
       const data = await response.json();
       setOrganization(data.organization);
       setStats(data.stats);
+      setHasFetched(true);
     } catch (err) {
       console.error("Organization fetch error:", err);
       setError(err instanceof Error ? err.message : "Unknown error");
@@ -61,7 +68,7 @@ export function useOrganization(): UseOrganizationReturn {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [hasFetched]);
 
   useEffect(() => {
     fetchOrganization();
@@ -309,5 +316,70 @@ export function useOrgApprentices(organizationId: string | undefined): UseOrgApp
     isLoading,
     error,
     refetch: fetchApprentices,
+  };
+}
+
+// Combined dashboard hook - fetches org, stats, and apprentices in ONE call
+export interface UseDashboardDataReturn {
+  organization: OrganizationWithRole | null;
+  stats: OrganizationStats | null;
+  apprentices: ApprenticeWithStats[];
+  isLoading: boolean;
+  error: string | null;
+  refetch: () => Promise<void>;
+}
+
+export function useDashboardData(): UseDashboardDataReturn {
+  const [organization, setOrganization] = useState<OrganizationWithRole | null>(null);
+  const [stats, setStats] = useState<OrganizationStats | null>(null);
+  const [apprentices, setApprentices] = useState<ApprenticeWithStats[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchDashboard = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await fetch("/api/employer/dashboard");
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setOrganization(null);
+          return;
+        }
+        if (response.status === 404) {
+          setOrganization(null);
+          return;
+        }
+        throw new Error("Failed to fetch dashboard data");
+      }
+
+      const data = await response.json();
+      setOrganization(data.organization);
+      setStats(data.stats);
+      setApprentices(data.apprentices || []);
+    } catch (err) {
+      console.error("Dashboard fetch error:", err);
+      setError(err instanceof Error ? err.message : "Unknown error");
+      setOrganization(null);
+      setStats(null);
+      setApprentices([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchDashboard();
+  }, [fetchDashboard]);
+
+  return {
+    organization,
+    stats,
+    apprentices,
+    isLoading,
+    error,
+    refetch: fetchDashboard,
   };
 }

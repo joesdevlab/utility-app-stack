@@ -1,8 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useAuth } from "@/components/auth-provider";
-import { useOrganization, useOrgApprentices } from "@/hooks/use-organization";
+import { useDashboardData } from "@/hooks/use-organization";
 import { StatsCard } from "@/components/employer/stats-card";
 import { ApprenticeCard } from "@/components/employer/apprentice-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,9 +13,8 @@ import Link from "next/link";
 
 export default function EmployerDashboardPage() {
   const router = useRouter();
-  const { organization } = useAuth();
-  const { stats, isLoading: statsLoading } = useOrganization();
-  const { apprentices, isLoading: apprenticesLoading } = useOrgApprentices(organization?.id);
+  // Single API call for all dashboard data (org + stats + apprentices)
+  const { stats, apprentices, isLoading } = useDashboardData();
 
   // Filter apprentices needing attention (no entry in 7+ days)
   const apprenticesNeedingAttention = apprentices.filter((a) => {
@@ -27,7 +25,7 @@ export default function EmployerDashboardPage() {
     return daysSince > 7;
   });
 
-  if (statsLoading) {
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <div>
@@ -171,13 +169,7 @@ export default function EmployerDashboardPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3 pt-4">
-            {apprenticesLoading ? (
-              <>
-                {[...Array(3)].map((_, i) => (
-                  <Skeleton key={i} className="h-20 rounded-xl" />
-                ))}
-              </>
-            ) : apprentices.length === 0 ? (
+            {apprentices.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <div className="w-16 h-16 rounded-2xl bg-orange-100 flex items-center justify-center mx-auto mb-4">
                   <Users className="h-8 w-8 text-orange-500" />
