@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
-  HardHat, Menu, X, ChevronDown, ArrowRight,
+  Menu, X, ChevronDown, ArrowRight,
   Building2, Wrench, Zap, Droplets, Car
 } from "lucide-react";
 import Link from "next/link";
@@ -45,8 +45,8 @@ export function MarketingHeader() {
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link href="/landing" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/30 transition-shadow">
-              <HardHat className="h-5 w-5 text-white" />
+            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/30 transition-shadow">
+              <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">

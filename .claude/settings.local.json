@@ -62,7 +62,8 @@
       "Bash(firebase apps:create:*)",
       "Bash(firebase apps:sdkconfig:*)",
       "Bash(firebase appdistribution:distribute:*)",
-      "Bash(firebase appdistribution:testers:add:*)"
+      "Bash(firebase appdistribution:testers:add:*)",
+      "Bash(node scripts/generate-android-icons.mjs:*)"
     ]
   }
 }

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, Trash2, Pencil, Mic, Loader2, Search, X, ChevronLeft, ChevronRight, Calendar, Filter, FileText, HardHat } from "lucide-react";
+import { Clock, Trash2, Pencil, Mic, Loader2, Search, X, ChevronLeft, ChevronRight, Calendar, Filter, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -138,8 +138,8 @@ export default function HistoryPage() {
           >
             <div className="relative mb-6">
               <div className="absolute inset-0 rounded-full bg-orange-500/20 blur-xl" />
-              <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-orange-100 to-orange-200 shadow-lg">
-                <HardHat className="h-12 w-12 text-orange-500" />
+              <div className="relative w-24 h-24 rounded-full overflow-hidden shadow-lg">
+                <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="w-full h-full object-cover" />
               </div>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">No entries yet</h2>

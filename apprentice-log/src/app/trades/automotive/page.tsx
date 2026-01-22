@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
-  Mic, ArrowRight, CheckCircle, HardHat, Clock, FileText,
+  Mic, ArrowRight, CheckCircle, Clock, FileText,
   Shield, Car, Wrench, Settings
 } from "lucide-react";
 import Link from "next/link";
@@ -222,7 +222,9 @@ export default function AutomotivePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-gray-500">
-              <HardHat className="h-5 w-5 text-orange-500" />
+              <div className="w-6 h-6 rounded overflow-hidden">
+                <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="w-full h-full object-cover" />
+              </div>
               <span>Apprentice Log — Made in New Zealand</span>
             </div>
             <div className="flex gap-6 text-sm text-gray-500">

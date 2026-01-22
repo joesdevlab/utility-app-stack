@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { WifiOff, RefreshCw, HardHat } from "lucide-react";
+import { WifiOff, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -47,8 +47,8 @@ export default function OfflinePage() {
 
         <div className="mt-8 text-center">
           <div className="flex items-center justify-center gap-2 text-gray-500">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-md">
-              <HardHat className="h-4 w-4 text-white" />
+            <div className="w-8 h-8 rounded-lg overflow-hidden shadow-md">
+              <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="w-full h-full object-cover" />
             </div>
             <span className="font-medium text-gray-700">Apprentice Log</span>
           </div>
