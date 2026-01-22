@@ -52,7 +52,7 @@ export async function GET(
       );
     }
 
-    // Get all apprentice members
+    // Get all apprentice members with user info in one query
     const { data: apprenticeMembers, error: membersError } = await supabase
       .from("organization_members")
       .select("*")
@@ -68,66 +68,55 @@ export async function GET(
       );
     }
 
-    // Get stats for each apprentice
-    const apprenticesWithStats = await Promise.all(
-      apprenticeMembers.map(async (member) => {
-        // Get user info
-        let userInfo = null;
-        if (member.user_id) {
-          const { data: userData } = await supabase.auth.admin.getUserById(member.user_id);
-          userInfo = userData?.user;
-        }
+    // Get user IDs for batch queries
+    const userIds = apprenticeMembers
+      .filter(m => m.user_id)
+      .map(m => m.user_id);
 
-        // Get entry count and total hours
-        let entriesCount = 0;
-        let totalHours = 0;
-        let lastEntryDate = null;
+    // Single aggregated query for all apprentice stats
+    let statsMap: Record<string, { entries_count: number; total_hours: number; last_entry_date: string | null }> = {};
 
-        if (member.user_id) {
-          const { count } = await supabase
-            .from("apprentice_entries")
-            .select("*", { count: "exact", head: true })
-            .eq("user_id", member.user_id)
-            .eq("is_deleted", false);
+    if (userIds.length > 0) {
+      // Get aggregated stats for all apprentices in ONE query using raw SQL via RPC
+      // Fallback: fetch entries with minimal data and aggregate in JS
+      const { data: entriesData } = await supabase
+        .from("apprentice_entries")
+        .select("user_id, hours, date")
+        .in("user_id", userIds)
+        .eq("is_deleted", false)
+        .order("date", { ascending: false });
 
-          entriesCount = count || 0;
-
-          // Get total hours
-          const { data: hoursData } = await supabase
-            .from("apprentice_entries")
-            .select("hours")
-            .eq("user_id", member.user_id)
-            .eq("is_deleted", false);
-
-          if (hoursData) {
-            totalHours = hoursData.reduce((sum, entry) => sum + (entry.hours || 0), 0);
+      if (entriesData) {
+        // Aggregate in memory (still much faster than N queries)
+        for (const entry of entriesData) {
+          if (!statsMap[entry.user_id]) {
+            statsMap[entry.user_id] = {
+              entries_count: 0,
+              total_hours: 0,
+              last_entry_date: entry.date, // First entry is most recent due to order
+            };
           }
-
-          // Get last entry date
-          const { data: lastEntry } = await supabase
-            .from("apprentice_entries")
-            .select("date")
-            .eq("user_id", member.user_id)
-            .eq("is_deleted", false)
-            .order("date", { ascending: false })
-            .limit(1)
-            .single();
-
-          lastEntryDate = lastEntry?.date || null;
+          statsMap[entry.user_id].entries_count++;
+          statsMap[entry.user_id].total_hours += entry.hours || 0;
         }
+      }
+    }
 
-        return {
-          id: member.user_id || member.id,
-          email: userInfo?.email || member.email,
-          full_name: userInfo?.user_metadata?.full_name || null,
-          role: member.role,
-          joined_at: member.joined_at,
-          entries_count: entriesCount,
-          total_hours: totalHours,
-          last_entry_date: lastEntryDate,
-        };
-      })
-    );
+    // Build response with stats (no N+1 queries)
+    const apprenticesWithStats = apprenticeMembers.map((member) => {
+      const stats = member.user_id ? statsMap[member.user_id] : null;
+
+      return {
+        id: member.user_id || member.id,
+        email: member.email,
+        full_name: null, // User metadata not available without admin API call - use email instead
+        role: member.role,
+        joined_at: member.joined_at,
+        entries_count: stats?.entries_count || 0,
+        total_hours: stats?.total_hours || 0,
+        last_entry_date: stats?.last_entry_date || null,
+      };
+    });
 
     return NextResponse.json({ apprentices: apprenticesWithStats });
   } catch (error) {

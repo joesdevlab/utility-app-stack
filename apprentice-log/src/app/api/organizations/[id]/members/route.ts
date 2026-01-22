@@ -53,7 +53,7 @@ export async function GET(
       );
     }
 
-    // Get all members
+    // Get all members (email is already stored in organization_members)
     const { data: members, error: membersError } = await supabase
       .from("organization_members")
       .select("*")
@@ -69,23 +69,15 @@ export async function GET(
       );
     }
 
-    // Get user info for active members
-    const membersWithUsers = await Promise.all(
-      members.map(async (member) => {
-        if (member.user_id) {
-          const { data: userData } = await supabase.auth.admin.getUserById(member.user_id);
-          return {
-            ...member,
-            user: userData?.user ? {
-              id: userData.user.id,
-              email: userData.user.email,
-              full_name: userData.user.user_metadata?.full_name,
-            } : null,
-          };
-        }
-        return { ...member, user: null };
-      })
-    );
+    // Map members to include user info from stored data (no N+1 Auth API calls)
+    const membersWithUsers = members.map((member) => ({
+      ...member,
+      user: member.user_id ? {
+        id: member.user_id,
+        email: member.email,
+        full_name: null, // Could be stored in members table if needed
+      } : null,
+    }));
 
     return NextResponse.json({ members: membersWithUsers });
   } catch (error) {
