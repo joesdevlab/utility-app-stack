@@ -8,7 +8,7 @@
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "background_color": "#0a0a0a",
-  "theme_color": "#3b82f6",
+  "theme_color": "#f97316",
   "orientation": "portrait-primary",
   "categories": ["productivity", "utilities", "business"],
   "lang": "en-NZ",

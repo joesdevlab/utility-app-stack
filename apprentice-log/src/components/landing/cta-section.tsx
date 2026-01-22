@@ -5,6 +5,7 @@ import { useInView } from "framer-motion";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, ArrowRight, Smartphone, CheckCircle, Shield, Clock } from "lucide-react";
+import { AppStoreBadges } from "@/components/app-store-badges";
 
 export function CTASection() {
   const ref = useRef(null);
@@ -69,6 +70,17 @@ export function CTASection() {
             ))}
           </div>
 
+          {/* App Store Badges */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-10"
+          >
+            <p className="text-sm text-gray-500 mb-4">Download the app</p>
+            <AppStoreBadges className="justify-center" />
+          </motion.div>
+
           {/* CTA Button */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Button
@@ -78,7 +90,7 @@ export function CTASection() {
             >
               <a href="/">
                 <Mic className="h-5 w-5 mr-2" />
-                Create Your First Entry
+                Try Web Version
                 <ArrowRight className="h-5 w-5 ml-2" />
               </a>
             </Button>
@@ -95,7 +107,7 @@ export function CTASection() {
               <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center">
                 <Smartphone className="h-5 w-5 text-orange-600" />
               </div>
-              <h3 className="font-semibold text-gray-900">Quick Installation</h3>
+              <h3 className="font-semibold text-gray-900">Or Install as Web App</h3>
             </div>
 
             <ol className="text-left text-sm text-gray-600 space-y-2">
@@ -112,10 +124,6 @@ export function CTASection() {
                 <span>Open the app and create your free account</span>
               </li>
             </ol>
-
-            <p className="text-xs text-gray-500 mt-4 pt-4 border-t border-gray-100">
-              Android app launching on Google Play Store soon
-            </p>
           </motion.div>
         </motion.div>
       </div>

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Mic, ArrowRight, Play, CheckCircle, HardHat, Wrench, Menu, X, Zap, Droplets, Car, ChevronDown, Building2 } from "lucide-react";
+import { Mic, ArrowRight, Play, CheckCircle, Wrench, Menu, X, Zap, Droplets, Car, ChevronDown, Building2 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 
@@ -48,8 +48,8 @@ export function HeroSection() {
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
             <Link href="/landing" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/30 transition-shadow">
-                <HardHat className="h-5 w-5 text-white" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/30 transition-shadow">
+                <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="w-full h-full object-cover" />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
@@ -377,8 +377,8 @@ export function HeroSection() {
                     {/* Header */}
                     <div className="flex items-center justify-between">
                       <div className="text-gray-900 font-semibold">Apprentice Log</div>
-                      <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
-                        <HardHat className="h-4 w-4 text-orange-500" />
+                      <div className="w-8 h-8 rounded-full overflow-hidden">
+                        <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="w-full h-full object-cover" />
                       </div>
                     </div>
 

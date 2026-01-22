@@ -1,11 +1,13 @@
 "use client";
 
+import { useEffect } from "react";
 import { useAuth } from "@/components/auth-provider";
 import { redirect } from "next/navigation";
 import { EmployerNav, EmployerMobileNav } from "./employer-nav";
-import { Building2, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { prefetchDashboard } from "@/hooks/use-dashboard";
 
 interface EmployerLayoutProps {
   children: React.ReactNode;
@@ -13,6 +15,11 @@ interface EmployerLayoutProps {
 
 export function EmployerLayout({ children }: EmployerLayoutProps) {
   const { user, isLoading, organization } = useAuth();
+
+  // Prefetch dashboard data immediately when employer section is accessed
+  useEffect(() => {
+    prefetchDashboard();
+  }, []);
 
   // Show loading state
   if (isLoading) {
@@ -24,8 +31,8 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
           className="flex flex-col items-center gap-4"
         >
           <div className="relative">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/20">
-              <Building2 className="h-8 w-8 text-white" />
+            <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg shadow-orange-500/20">
+              <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="w-full h-full object-cover" />
             </div>
             <motion.div
               className="absolute inset-0 rounded-2xl bg-orange-500/20"
@@ -50,8 +57,8 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
       <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
         <div className="flex flex-col flex-grow border-r bg-card/50 backdrop-blur-sm pt-5 overflow-y-auto">
           <div className="flex items-center gap-3 px-4 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/20">
-              <Building2 className="h-5 w-5 text-white" />
+            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-orange-500/20">
+              <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-gray-900">Employer Portal</span>
@@ -82,8 +89,8 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
       {/* Mobile Header */}
       <div className="sticky top-0 z-40 md:hidden">
         <div className="flex items-center gap-3 border-b bg-background/95 backdrop-blur-lg px-4 py-3 safe-area-top">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-md shadow-orange-500/20">
-            <Building2 className="h-4 w-4 text-white" />
+          <div className="w-9 h-9 rounded-xl overflow-hidden shadow-md shadow-orange-500/20">
+            <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="w-full h-full object-cover" />
           </div>
           <div className="flex-1">
             <span className="font-bold text-sm">Employer Portal</span>

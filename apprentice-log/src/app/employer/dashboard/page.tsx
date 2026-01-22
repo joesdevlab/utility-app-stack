@@ -1,20 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useDashboardData } from "@/hooks/use-organization";
+import { useDashboard } from "@/hooks/use-dashboard";
 import { StatsCard } from "@/components/employer/stats-card";
 import { ApprenticeCard } from "@/components/employer/apprentice-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Users, Clock, FileText, AlertCircle, Plus, ArrowRight } from "lucide-react";
+import { Users, Clock, FileText, AlertCircle, Plus, ArrowRight, RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function EmployerDashboardPage() {
   const router = useRouter();
-  // Single API call for all dashboard data (org + stats + apprentices)
-  const { stats, apprentices, isLoading } = useDashboardData();
+  // SWR-powered hook with localStorage caching for instant loads
+  const { stats, apprentices, isLoading, isValidating } = useDashboard();
 
   // Filter apprentices needing attention (no entry in 7+ days)
   const apprenticesNeedingAttention = apprentices.filter((a) => {
@@ -48,7 +48,12 @@ export default function EmployerDashboardPage() {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
+          {isValidating && (
+            <RefreshCw className="h-4 w-4 text-orange-500 animate-spin" />
+          )}
+        </div>
         <p className="text-muted-foreground">
           Overview of your organization's apprentices and activity
         </p>

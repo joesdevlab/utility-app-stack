@@ -33,8 +33,8 @@ export async function GET(request: NextRequest) {
       .eq("status", "active")
       .single();
 
-    // Also check if user is org owner directly
-    let organization = membership?.organization as {
+    // Extract organization from membership (handle both array and object return types)
+    type OrgType = {
       id: string;
       name: string;
       slug: string;
@@ -42,7 +42,19 @@ export async function GET(request: NextRequest) {
       status: string;
       max_seats: number;
       owner_id: string;
-    } | null;
+    };
+
+    const rawOrg = membership?.organization;
+    let organization: OrgType | null = null;
+
+    if (rawOrg) {
+      // Supabase may return array or single object depending on relation type
+      if (Array.isArray(rawOrg)) {
+        organization = rawOrg[0] as OrgType || null;
+      } else {
+        organization = rawOrg as OrgType;
+      }
+    }
     let userRole = membership?.role;
 
     if (!organization) {
