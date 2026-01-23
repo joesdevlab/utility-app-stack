@@ -14,9 +14,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Plus, Trash2, Save, Loader2 } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Camera } from "lucide-react";
 import { toast } from "sonner";
 import type { LogbookEntry, LogbookTask } from "@/types";
+import { PhotoUpload } from "./photo-upload";
 
 interface EntryEditSheetProps {
   entry: LogbookEntry | null;
@@ -38,6 +39,7 @@ export function EntryEditSheet({
   const [safetyObservations, setSafetyObservations] = useState("");
   const [siteName, setSiteName] = useState("");
   const [supervisor, setSupervisor] = useState("");
+  const [photos, setPhotos] = useState<string[]>([]);
 
   useEffect(() => {
     if (entry) {
@@ -47,6 +49,7 @@ export function EntryEditSheet({
       setSafetyObservations(entry.safetyObservations || "");
       setSiteName(entry.siteName || "");
       setSupervisor(entry.supervisor || "");
+      setPhotos(entry.photos || []);
     }
   }, [entry]);
 
@@ -106,6 +109,7 @@ export function EntryEditSheet({
         safetyObservations: safetyObservations || undefined,
         siteName: siteName || undefined,
         supervisor: supervisor || undefined,
+        photos: photos.length > 0 ? photos : undefined,
       });
 
       if (result) {
@@ -268,6 +272,20 @@ export function EntryEditSheet({
               placeholder="Any safety observations..."
               value={safetyObservations}
               onChange={(e) => setSafetyObservations(e.target.value)}
+            />
+          </div>
+
+          {/* Photos */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Camera className="h-4 w-4 text-orange-500" />
+              <Label>Photos</Label>
+            </div>
+            <PhotoUpload
+              photos={photos}
+              onPhotosChange={setPhotos}
+              maxPhotos={5}
+              disabled={isSaving}
             />
           </div>
         </div>

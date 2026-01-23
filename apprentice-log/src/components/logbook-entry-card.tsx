@@ -8,6 +8,7 @@ import { Clock, Wrench, BookOpen, ShieldCheck, Copy, Check, Calendar, MapPin, Us
 import { useState } from "react";
 import { toast } from "sonner";
 import type { LogbookEntry } from "@/types";
+import { PhotoGallery } from "./photo-gallery";
 
 interface LogbookEntryCardProps {
   entry: LogbookEntry;
@@ -191,6 +192,11 @@ export function LogbookEntryCard({ entry, compact = false }: LogbookEntryCardPro
               </p>
             </div>
           </div>
+        )}
+
+        {/* Photos */}
+        {entry.photos && entry.photos.length > 0 && (
+          <PhotoGallery photos={entry.photos} showCount={!compact} />
         )}
       </CardContent>
     </Card>

@@ -103,6 +103,8 @@ export interface LogbookEntry {
   siteName?: string;
   supervisor?: string;
   createdAt?: string;
+  // Photos - array of Supabase Storage paths
+  photos?: string[];
   // Legacy fields for backwards compatibility
   totalHours?: number;
   notes?: string;
@@ -128,6 +130,7 @@ export type Database = {
           supervisor: string | null;
           notes: string | null;
           safety_observations: string | null;
+          photos: string[] | null;
           is_deleted: boolean;
           created_at: string;
           updated_at: string;
@@ -145,6 +148,7 @@ export type Database = {
           supervisor?: string | null;
           notes?: string | null;
           safety_observations?: string | null;
+          photos?: string[] | null;
           is_deleted?: boolean;
         };
         Update: Partial<Database["public"]["Tables"]["apprentice_entries"]["Insert"]>;

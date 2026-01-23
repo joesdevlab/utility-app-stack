@@ -11,10 +11,11 @@ import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, PenLine, RotateCcw, Save, CheckCircle2, Loader2 } from "lucide-react";
+import { Mic, PenLine, RotateCcw, Save, CheckCircle2, Loader2, Camera } from "lucide-react";
 import { toast } from "sonner";
 import { useEntries } from "@/hooks";
 import type { LogbookEntry } from "@/types";
+import { PhotoUpload } from "@/components/photo-upload";
 
 type AppState = "idle" | "processing" | "result" | "saved";
 type EntryMode = "voice" | "manual";
@@ -26,6 +27,7 @@ export default function Home() {
   const [entry, setEntry] = useState<LogbookEntry | null>(null);
   const [transcript, setTranscript] = useState<string>("");
   const [isManualProcessing, setIsManualProcessing] = useState(false);
+  const [voiceEntryPhotos, setVoiceEntryPhotos] = useState<string[]>([]);
   const { addEntry } = useEntries(user?.id);
 
   // Verify server-side auth on mount
@@ -134,9 +136,15 @@ export default function Home() {
 
   const handleSave = async () => {
     if (entry) {
-      const saved = await addEntry(entry);
+      // Include photos with the entry
+      const entryWithPhotos = {
+        ...entry,
+        photos: voiceEntryPhotos.length > 0 ? voiceEntryPhotos : undefined,
+      };
+      const saved = await addEntry(entryWithPhotos);
       if (saved) {
         setState("saved");
+        setVoiceEntryPhotos([]);
         toast.success("Entry saved to cloud!");
       } else {
         toast.error("Failed to save entry");
@@ -163,6 +171,7 @@ export default function Home() {
     setState("idle");
     setEntry(null);
     setTranscript("");
+    setVoiceEntryPhotos([]);
   };
 
   return (
@@ -280,11 +289,32 @@ export default function Home() {
 
               <LogbookEntryCard entry={entry} />
 
-              {/* Transcript */}
+              {/* Add Photos */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
+              >
+                <Card className="border-gray-200">
+                  <CardContent className="py-4 px-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Camera className="h-4 w-4 text-orange-500" />
+                      <p className="text-sm font-semibold text-gray-700">Add Photos (optional)</p>
+                    </div>
+                    <PhotoUpload
+                      photos={voiceEntryPhotos}
+                      onPhotosChange={setVoiceEntryPhotos}
+                      maxPhotos={5}
+                    />
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Transcript */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
               >
                 <Card className="border-gray-200">
                   <CardContent className="py-3 px-4">
@@ -307,7 +337,7 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
+                transition={{ delay: 0.25 }}
                 className="flex gap-3 pt-2"
               >
                 <Button
