@@ -19,6 +19,9 @@ const publicRoutes = [
   "/trades",
 ];
 
+// Route where unverified users can go to verify
+const verificationRoute = "/auth/verify-email";
+
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
   const pathname = request.nextUrl.pathname;
@@ -53,6 +56,18 @@ export async function middleware(request: NextRequest) {
     const redirectUrl = new URL("/", request.url);
     redirectUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(redirectUrl);
+  }
+
+  // Check if user's email is verified (for protected routes)
+  if (isProtectedRoute && user && !user.email_confirmed_at) {
+    // Allow if already on verification page
+    if (pathname === verificationRoute) {
+      return supabaseResponse;
+    }
+    // Redirect to email verification page
+    const verifyUrl = new URL(verificationRoute, request.url);
+    verifyUrl.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(verifyUrl);
   }
 
   return supabaseResponse;
