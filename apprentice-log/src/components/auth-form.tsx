@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { HardHat, Loader2, Mail, Lock, User, CheckCircle2, RefreshCw } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { MFAVerify } from "@/components/mfa-verify";
+import { Turnstile } from "@/components/turnstile";
 import { toast } from "sonner";
 
 type AuthMode = "signin" | "signup" | "forgot" | "verify" | "mfa";
@@ -20,13 +21,48 @@ export function AuthForm() {
   const [fullName, setFullName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const { signIn, signUp, resetPassword, resendVerification } = useAuth();
+
+  // Check if Turnstile is configured
+  const isTurnstileConfigured = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+  const handleTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Require Turnstile verification if configured
+    if (isTurnstileConfigured && !turnstileToken) {
+      toast.error("Please complete the security verification");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
+      // Verify Turnstile token server-side for sensitive actions
+      if (isTurnstileConfigured && turnstileToken && (mode === "signup" || mode === "forgot")) {
+        const verifyResponse = await fetch("/api/auth/verify-turnstile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: turnstileToken }),
+        });
+
+        if (!verifyResponse.ok) {
+          const data = await verifyResponse.json();
+          toast.error(data.error || "Security verification failed");
+          setTurnstileToken(null); // Reset to require new verification
+          return;
+        }
+      }
+
       if (mode === "signin") {
         const { error, mfaRequired } = await signIn(email, password);
         if (error) {
@@ -221,10 +257,22 @@ export function AuthForm() {
                 </div>
               )}
 
+              {/* Turnstile CAPTCHA - only show for signup and forgot password */}
+              {(mode === "signup" || mode === "forgot") && (
+                <div className="flex justify-center">
+                  <Turnstile
+                    onVerify={handleTurnstileVerify}
+                    onExpire={handleTurnstileExpire}
+                    theme="auto"
+                    action={mode}
+                  />
+                </div>
+              )}
+
               <Button
                 type="submit"
                 className="w-full bg-orange-500 hover:bg-orange-600"
-                disabled={isLoading}
+                disabled={isLoading || (isTurnstileConfigured && (mode === "signup" || mode === "forgot") && !turnstileToken)}
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

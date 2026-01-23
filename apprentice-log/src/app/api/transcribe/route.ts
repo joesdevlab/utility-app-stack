@@ -69,4 +69,4 @@ async function handleTranscribe(request: NextRequest) {
   }
 }
 
-export const POST = withAuth(handleTranscribe);
+export const POST = withAuth(handleTranscribe, { rateLimitType: "ai" });

@@ -96,4 +96,4 @@ async function handleFormatEntry(request: NextRequest) {
   }
 }
 
-export const POST = withAuth(handleFormatEntry);
+export const POST = withAuth(handleFormatEntry, { rateLimitType: "ai" });

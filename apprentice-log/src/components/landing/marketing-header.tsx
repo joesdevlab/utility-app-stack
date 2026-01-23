@@ -121,6 +121,12 @@ export function MarketingHeader() {
             >
               For Employers
             </Link>
+            <Link
+              href="/about"
+              className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
+            >
+              About
+            </Link>
           </nav>
 
           {/* Right side buttons */}
@@ -213,6 +219,13 @@ export function MarketingHeader() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               For Employers
+            </Link>
+            <Link
+              href="/about"
+              className="block w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              About
             </Link>
             <div className="pt-3 border-t border-gray-100 space-y-2">
               <Link
