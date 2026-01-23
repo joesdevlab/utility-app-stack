@@ -140,7 +140,7 @@ export default function PrivacyPolicyPage() {
         </div>
 
         <div className="mt-12 pt-6 border-t">
-          <a href="/" className="text-orange-500 hover:text-orange-600 font-medium">
+          <a href="/app" className="text-orange-500 hover:text-orange-600 font-medium">
             ← Back to App
           </a>
         </div>

@@ -47,7 +47,7 @@ export function HeroSection() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
-            <Link href="/landing" className="flex items-center gap-3 group">
+            <Link href="/" className="flex items-center gap-3 group">
               <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/30 transition-shadow">
                 <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="w-full h-full object-cover" />
               </div>
@@ -124,14 +124,14 @@ export function HeroSection() {
             <div className="flex items-center gap-3">
               {/* Sign In - Desktop */}
               <Link
-                href="/"
+                href="/app"
                 className="hidden md:inline-flex px-4 py-2 text-gray-700 hover:text-orange-600 text-sm font-medium transition-colors"
               >
                 Sign In
               </Link>
 
               {/* Get Started CTA */}
-              <Link href="/" className="hidden sm:inline-flex">
+              <Link href="/app" className="hidden sm:inline-flex">
                 <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all px-5">
                   <span>Get Started Free</span>
                   <ArrowRight className="h-4 w-4 ml-2" />
@@ -206,12 +206,12 @@ export function HeroSection() {
               </button>
               <div className="pt-3 border-t border-gray-100 space-y-2">
                 <Link
-                  href="/"
+                  href="/app"
                   className="block w-full text-center px-4 py-3 text-gray-700 hover:text-orange-600 rounded-lg text-base font-medium transition-all"
                 >
                   Sign In
                 </Link>
-                <Link href="/" className="block">
+                <Link href="/app" className="block">
                   <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-lg shadow-md py-3">
                     Get Started Free
                     <ArrowRight className="h-4 w-4 ml-2" />

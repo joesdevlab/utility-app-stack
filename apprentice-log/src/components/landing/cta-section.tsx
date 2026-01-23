@@ -88,7 +88,7 @@ export function CTASection() {
               className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-10 py-7 rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300"
               asChild
             >
-              <a href="/">
+              <a href="/app">
                 <Mic className="h-5 w-5 mr-2" />
                 Try Web Version
                 <ArrowRight className="h-5 w-5 ml-2" />

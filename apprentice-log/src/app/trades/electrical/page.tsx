@@ -62,7 +62,7 @@ export default function ElectricalPage() {
               transition={{ delay: 0.3 }}
               className="flex flex-wrap gap-4"
             >
-              <Link href="/">
+              <Link href="/app">
                 <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-8 py-6 rounded-xl">
                   <Mic className="h-5 w-5 mr-2" />
                   Start Free Trial
@@ -206,7 +206,7 @@ export default function ElectricalPage() {
           <p className="text-xl text-gray-600 mb-8">
             Join electrical apprentices across New Zealand.
           </p>
-          <Link href="/">
+          <Link href="/app">
             <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-10 py-7 rounded-xl shadow-lg">
               <Mic className="h-5 w-5 mr-2" />
               Get Started Free
@@ -227,7 +227,7 @@ export default function ElectricalPage() {
               <span>Apprentice Log — Made in New Zealand</span>
             </div>
             <div className="flex gap-6 text-sm text-gray-500">
-              <Link href="/landing" className="hover:text-orange-600">Home</Link>
+              <Link href="/" className="hover:text-orange-600">Home</Link>
               <Link href="/privacy" className="hover:text-orange-600">Privacy</Link>
               <Link href="/terms" className="hover:text-orange-600">Terms</Link>
             </div>

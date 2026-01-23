@@ -6,9 +6,9 @@ import { motion } from "framer-motion";
 import { Mic, Clock, Settings } from "lucide-react";
 
 const navItems = [
-  { href: "/history", label: "History", icon: Clock },
-  { href: "/", label: "Record", icon: Mic, isMain: true },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/app/history", label: "History", icon: Clock },
+  { href: "/app", label: "Record", icon: Mic, isMain: true },
+  { href: "/app/settings", label: "Settings", icon: Settings },
 ];
 
 export function BottomNav() {

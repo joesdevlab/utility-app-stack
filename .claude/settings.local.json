@@ -63,7 +63,10 @@
       "Bash(firebase apps:sdkconfig:*)",
       "Bash(firebase appdistribution:distribute:*)",
       "Bash(firebase appdistribution:testers:add:*)",
-      "Bash(node scripts/generate-android-icons.mjs:*)"
+      "Bash(node scripts/generate-android-icons.mjs:*)",
+      "Bash(for f in src/app/trades/*/page.tsx)",
+      "Bash(do sed -i 's|<Link href=\"\"/\"\">|<Link href=\"\"/app\"\">|g' \"$f\")",
+      "Bash(done)"
     ]
   }
 }

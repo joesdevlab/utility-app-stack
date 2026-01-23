@@ -146,7 +146,7 @@ export default function HistoryPage() {
             <p className="text-muted-foreground mb-8 max-w-xs">
               Start logging your apprenticeship journey by recording your first entry
             </p>
-            <Link href="/">
+            <Link href="/app">
               <Button className="h-12 px-6 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg shadow-orange-500/25">
                 <Mic className="h-4 w-4 mr-2" />
                 Record Your First Entry
