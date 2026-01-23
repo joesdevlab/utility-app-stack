@@ -89,14 +89,14 @@ export function EmployerPricingSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-200 rounded-full px-4 py-2 mb-6">
-            <Building2 className="h-4 w-4 text-slate-700" />
-            <span className="text-slate-800 text-sm font-semibold">For Employers</span>
+          <div className="inline-flex items-center gap-2 bg-[rgb(18_49_72)]/10 border border-[rgb(18_49_72)]/20 rounded-full px-4 py-2 mb-6">
+            <Building2 className="h-4 w-4 text-[rgb(18_49_72)]" />
+            <span className="text-[rgb(18_49_72)] text-sm font-semibold">For Employers</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             Manage Your
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-800 to-slate-600">
+            <span className="text-[rgb(18_49_72)]">
               Apprentice Team
             </span>
           </h2>
@@ -118,7 +118,7 @@ export function EmployerPricingSection() {
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-gradient-to-r from-slate-800 to-slate-700 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg shadow-slate-800/25">
+                  <span className="bg-[rgb(18_49_72)] text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg shadow-[rgb(18_49_72)]/25">
                     Most Popular
                   </span>
                 </div>
@@ -126,7 +126,7 @@ export function EmployerPricingSection() {
               <div
                 className={`h-full rounded-2xl p-8 transition-all duration-300 ${
                   plan.popular
-                    ? "bg-white border-2 border-slate-800 shadow-xl shadow-slate-800/10"
+                    ? "bg-white border-2 border-[rgb(18_49_72)] shadow-xl shadow-[rgb(18_49_72)]/10"
                     : "bg-white border border-gray-200 hover:border-gray-300 hover:shadow-lg"
                 }`}
               >
@@ -143,7 +143,7 @@ export function EmployerPricingSection() {
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <CheckCircle className={`h-5 w-5 mt-0.5 flex-shrink-0 ${plan.popular ? "text-slate-700" : "text-green-500"}`} />
+                      <CheckCircle className={`h-5 w-5 mt-0.5 flex-shrink-0 ${plan.popular ? "text-[rgb(18_49_72)]" : "text-green-500"}`} />
                       <span className="text-gray-600">{feature}</span>
                     </li>
                   ))}
@@ -153,7 +153,7 @@ export function EmployerPricingSection() {
                   <Button
                     className={`w-full py-6 text-base font-semibold ${
                       plan.popular
-                        ? "bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-900 hover:to-slate-800 text-white shadow-lg shadow-slate-800/25"
+                        ? "bg-[rgb(18_49_72)] hover:bg-[rgb(12_35_52)] text-white shadow-lg shadow-[rgb(18_49_72)]/25"
                         : "bg-gray-900 hover:bg-gray-800 text-white"
                     }`}
                   >
@@ -185,7 +185,7 @@ export function EmployerPricingSection() {
                 transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
                 className="text-center"
               >
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 shadow-lg shadow-slate-800/25 flex items-center justify-center mx-auto mb-4">
+                <div className="w-14 h-14 rounded-xl bg-[rgb(18_49_72)] shadow-lg shadow-[rgb(18_49_72)]/25 flex items-center justify-center mx-auto mb-4">
                   <benefit.icon className="h-7 w-7 text-white" />
                 </div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-2">{benefit.title}</h4>
