@@ -10,12 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { motion } from "framer-motion";
-import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Crown, CreditCard, Zap, Building2, Clock, Shield, ShieldCheck, ShieldOff } from "lucide-react";
+import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Building2, Shield, ShieldCheck, ShieldOff } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
-import { useSubscription } from "@/hooks";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
 interface SettingItem {
   icon: LucideIcon;
@@ -36,12 +34,9 @@ interface SettingsGroup {
 
 export default function SettingsPage() {
   const { user, isLoading: authLoading, signOut, mfaEnabled, getMFAFactors, unenrollMFA } = useAuth();
-  const { subscription, isLoading: subLoading, openPortal } = useSubscription();
   const [mfaSetupOpen, setMfaSetupOpen] = useState(false);
   const [isDisablingMFA, setIsDisablingMFA] = useState(false);
   const supabase = createClient();
-  const searchParams = useSearchParams();
-  const success = searchParams.get("success");
 
   if (authLoading) {
     return (
@@ -57,14 +52,6 @@ export default function SettingsPage() {
   if (!user) {
     return <AuthForm />;
   }
-
-  const handleManageSubscription = async () => {
-    try {
-      await openPortal();
-    } catch {
-      toast.error("Failed to open billing portal");
-    }
-  };
 
   const handleExport = async () => {
     try {
@@ -202,133 +189,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Success message */}
-        {success && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-5 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl"
-          >
-            <p className="text-green-800 font-medium flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
-                <Crown className="h-4 w-4 text-green-600" />
-              </div>
-              Welcome to Premium! You now have unlimited entries.
-            </p>
-          </motion.div>
-        )}
-
         <div className="space-y-4">
-          {/* Subscription Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Card className={`overflow-hidden border-gray-200 ${
-              subscription.isPremium
-                ? "bg-gradient-to-br from-orange-50 via-white to-amber-50 border-orange-200"
-                : "hover:border-orange-200 transition-colors"
-            }`}>
-              <CardHeader className={`pb-2 ${subscription.isPremium ? "bg-gradient-to-r from-orange-100/50 to-transparent" : ""}`}>
-                <CardTitle className="text-sm font-semibold text-gray-500 flex items-center gap-2">
-                  {subscription.isPremium ? (
-                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-sm">
-                      <Crown className="h-3.5 w-3.5 text-white" />
-                    </div>
-                  ) : (
-                    <div className="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center">
-                      <Zap className="h-3.5 w-3.5 text-gray-500" />
-                    </div>
-                  )}
-                  Subscription
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {subLoading ? (
-                  <div className="flex items-center gap-3 py-2">
-                    <div className="h-6 w-6 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
-                    <span className="text-sm text-muted-foreground">Loading subscription...</span>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-xl text-gray-900">
-                            {subscription.isPremium ? "Premium" : "Free"}
-                          </span>
-                          {subscription.isPremium && (
-                            <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 shadow-sm">
-                              Active
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-0.5">
-                          {subscription.isPremium
-                            ? "Unlimited entries forever"
-                            : `${subscription.entriesRemaining} of 10 entries remaining this month`}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Progress bar for free users */}
-                    {!subscription.isPremium && (
-                      <div className="space-y-2">
-                        <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${(subscription.entriesThisMonth / 10) * 100}%` }}
-                            transition={{ duration: 0.5, ease: "easeOut" }}
-                            className="h-full bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"
-                          />
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {subscription.entriesThisMonth} entries used this month
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Cancel notice */}
-                    {subscription.cancelAtPeriodEnd && subscription.currentPeriodEnd && (
-                      <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl">
-                        <div className="w-6 h-6 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
-                          <Clock className="h-3.5 w-3.5 text-amber-600" />
-                        </div>
-                        <p className="text-sm text-amber-700">
-                          Your subscription ends on{" "}
-                          <span className="font-semibold">
-                            {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
-                          </span>
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Action buttons */}
-                    <div className="flex gap-2 pt-1">
-                      {subscription.isPremium ? (
-                        <Button
-                          variant="outline"
-                          onClick={handleManageSubscription}
-                          className="flex-1 h-11 rounded-xl border-orange-200 hover:border-orange-300 hover:bg-orange-50"
-                        >
-                          <CreditCard className="h-4 w-4 mr-2 text-orange-500" />
-                          Manage Billing
-                        </Button>
-                      ) : (
-                        <Link href="/pricing" className="flex-1">
-                          <Button className="w-full h-11 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25">
-                            <Crown className="h-4 w-4 mr-2" />
-                            Upgrade to Premium
-                          </Button>
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-
           {/* Security Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

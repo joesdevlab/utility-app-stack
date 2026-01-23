@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { EMPLOYER_PLANS } from "@/lib/employer-stripe";
 
 // GET - Get organization members
 export async function GET(
@@ -127,7 +128,7 @@ export async function POST(
     // Check if user is owner or admin
     const { data: organization } = await supabase
       .from("organizations")
-      .select("owner_id, max_seats")
+      .select("owner_id, plan, stripe_subscription_id")
       .eq("id", id)
       .single();
 
@@ -158,18 +159,29 @@ export async function POST(
       );
     }
 
-    // Check seat limit
-    const { count: memberCount } = await supabase
-      .from("organization_members")
-      .select("*", { count: "exact", head: true })
-      .eq("organization_id", id)
-      .eq("status", "active");
+    // Check apprentice limit based on B2B plan
+    // Pro/Paid plan = unlimited, Free plan = 2 apprentices max
+    const isPro = organization.plan === "pro" || organization.plan === "paid";
 
-    if ((memberCount || 0) >= organization.max_seats) {
-      return NextResponse.json(
-        { error: "Organization has reached its seat limit. Please upgrade your plan." },
-        { status: 400 }
-      );
+    if (!isPro && role === "apprentice") {
+      // Count active apprentices only (not admins/supervisors)
+      const { count: apprenticeCount } = await supabase
+        .from("organization_members")
+        .select("*", { count: "exact", head: true })
+        .eq("organization_id", id)
+        .eq("role", "apprentice")
+        .eq("status", "active");
+
+      const maxApprentices = EMPLOYER_PLANS.free.maxApprentices;
+      if ((apprenticeCount || 0) >= maxApprentices) {
+        return NextResponse.json(
+          {
+            error: "Free plan limited to 2 apprentices. Upgrade to Pro for unlimited apprentices.",
+            code: "APPRENTICE_LIMIT_REACHED"
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // Check if email is already a member

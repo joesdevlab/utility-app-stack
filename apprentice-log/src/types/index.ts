@@ -7,7 +7,9 @@ export interface ApiResponse<T> {
 
 // Organization Types (B2B Employer Portal)
 export type OrganizationRole = 'owner' | 'admin' | 'supervisor' | 'apprentice';
-export type OrganizationPlan = 'starter' | 'professional' | 'enterprise';
+// B2B model: free (2 apprentices) or pro (unlimited)
+// Legacy values kept for backwards compatibility: starter, professional, enterprise, paid
+export type OrganizationPlan = 'free' | 'pro' | 'starter' | 'professional' | 'enterprise' | 'paid';
 export type OrganizationStatus = 'active' | 'canceled' | 'past_due' | 'trialing' | 'incomplete';
 export type MemberStatus = 'pending' | 'active' | 'removed';
 

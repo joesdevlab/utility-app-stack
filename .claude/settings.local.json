@@ -67,7 +67,10 @@
       "Bash(for f in src/app/trades/*/page.tsx)",
       "Bash(do sed -i 's|<Link href=\"\"/\"\">|<Link href=\"\"/app\"\">|g' \"$f\")",
       "Bash(done)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npx firebase-tools:*)",
+      "Bash(\"C:/Android/Sdk/build-tools/34.0.0/apksigner.bat\" sign --ks \"c:/dev/utility-app-stack/apprentice-log/apprentice-log-new.keystore\" --ks-key-alias apprentice-log-key --ks-pass pass:ApprLog2024 --key-pass pass:ApprLog2024 --out app/build/outputs/apk/release/apprentice-log-v0.1.4-signed.apk app/build/outputs/apk/release/app-release-aligned.apk)",
+      "Bash(\"C:/Android/Sdk/build-tools/34.0.0/apksigner.bat\" sign --ks \"c:/dev/utility-app-stack/apprentice-log/apprentice-log-2025.keystore\" --ks-key-alias apprentice-log-key --ks-pass pass:ApprenticeLog2025 --key-pass pass:ApprenticeLog2025 --out app/build/outputs/apk/release/apprentice-log-v0.1.4-signed.apk app/build/outputs/apk/release/app-release-aligned.apk)"
     ]
   }
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getStripe, STRIPE_ORG_PRICES, ORG_PLANS } from "@/lib/stripe";
+import { getStripe, STRIPE_EMPLOYER_PRO_PRICE } from "@/lib/employer-stripe";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,19 +17,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { plan } = body;
 
-    const validPlans = ["starter", "professional", "enterprise"] as const;
-    if (!plan || !validPlans.includes(plan)) {
+    // Only "pro" plan is available for checkout
+    if (plan !== "pro") {
       return NextResponse.json(
-        { error: "Valid plan is required (starter, professional, or enterprise)" },
+        { error: "Invalid plan. Only 'pro' plan is available for checkout." },
         { status: 400 }
       );
     }
 
-    const priceId = STRIPE_ORG_PRICES[plan as keyof typeof STRIPE_ORG_PRICES];
+    const priceId = STRIPE_EMPLOYER_PRO_PRICE;
 
     if (!priceId) {
       return NextResponse.json(
-        { error: "Price not configured for this plan" },
+        { error: "Stripe price not configured. Set STRIPE_PRICE_EMPLOYER_PRO env var." },
         { status: 500 }
       );
     }
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
         .eq("id", organization.id);
     }
 
-    // Create checkout session
+    // Create checkout session for Pro plan ($29/mo)
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -87,13 +87,13 @@ export async function POST(request: NextRequest) {
       cancel_url: `${appUrl}/employer/billing?canceled=true`,
       metadata: {
         organization_id: organization.id,
-        plan,
+        plan: "pro",
         type: "organization",
       },
       subscription_data: {
         metadata: {
           organization_id: organization.id,
-          plan,
+          plan: "pro",
           type: "organization",
         },
       },

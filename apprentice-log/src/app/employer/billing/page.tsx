@@ -17,57 +17,37 @@ import {
   ExternalLink,
   CheckCircle2,
   HelpCircle,
+  Sparkles,
+  Gift,
 } from "lucide-react";
 import { toast } from "sonner";
-import { ORG_PLANS } from "@/lib/stripe";
 import { cn } from "@/lib/utils";
-import type { OrganizationPlan } from "@/types";
 
-const plans: Array<{
-  id: OrganizationPlan;
-  name: string;
-  price: number;
-  seats: string;
-  features: string[];
-  popular?: boolean;
-}> = [
+const plans = [
   {
-    id: "starter",
-    name: "Starter",
-    price: 29,
-    seats: "1-5 apprentices",
+    id: "free",
+    name: "Free",
+    price: 0,
+    description: "Perfect for small teams",
     features: [
-      "Up to 5 apprentice seats",
+      "Up to 2 apprentices",
       "Apprentice logbook viewing",
       "Basic reports",
       "Email support",
     ],
   },
   {
-    id: "professional",
-    name: "Professional",
-    price: 79,
-    seats: "6-20 apprentices",
+    id: "pro",
+    name: "Pro",
+    price: 29,
+    description: "Unlimited apprentices",
     popular: true,
     features: [
-      "Up to 20 apprentice seats",
-      "Everything in Starter",
+      "Unlimited apprentices",
+      "Everything in Free",
       "BCITO compliance reports",
       "CSV & PDF exports",
       "Priority support",
-    ],
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    price: 149,
-    seats: "21+ apprentices",
-    features: [
-      "Up to 100 apprentice seats",
-      "Everything in Professional",
-      "Custom reporting",
-      "API access",
-      "Dedicated support",
     ],
   },
 ];
@@ -76,7 +56,7 @@ export default function BillingPage() {
   const searchParams = useSearchParams();
   const { organization, refreshOrganization } = useAuth();
   const { createCheckout, openPortal, isLoading } = useOrganization();
-  const [processingPlan, setProcessingPlan] = useState<OrganizationPlan | null>(null);
+  const [processingPlan, setProcessingPlan] = useState<string | null>(null);
 
   // Handle checkout success/cancel
   useEffect(() => {
@@ -88,10 +68,10 @@ export default function BillingPage() {
     }
   }, [searchParams, refreshOrganization]);
 
-  const handleSubscribe = async (plan: OrganizationPlan) => {
-    setProcessingPlan(plan);
+  const handleSubscribe = async () => {
+    setProcessingPlan("pro");
     try {
-      await createCheckout(plan);
+      await createCheckout("pro");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to start checkout");
     } finally {
@@ -111,8 +91,8 @@ export default function BillingPage() {
     return (
       <div className="space-y-6">
         <Skeleton className="h-8 w-48" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[...Array(3)].map((_, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+          {[...Array(2)].map((_, i) => (
             <Skeleton key={i} className="h-96 rounded-xl" />
           ))}
         </div>
@@ -120,8 +100,9 @@ export default function BillingPage() {
     );
   }
 
-  const currentPlan = organization?.plan || "starter";
+  const currentPlan = organization?.plan || "free";
   const hasSubscription = organization?.stripe_subscription_id;
+  const isPro = currentPlan === "pro" || currentPlan === "paid";
 
   return (
     <div className="space-y-6">
@@ -132,8 +113,31 @@ export default function BillingPage() {
       >
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Billing & Plans</h1>
         <p className="text-muted-foreground">
-          Manage your subscription and billing information
+          Simple pricing for managing your apprentices
         </p>
+      </motion.div>
+
+      {/* Free Apprentice Banner */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+      >
+        <Card className="border-green-200 bg-gradient-to-r from-green-50 to-emerald-50">
+          <CardContent className="py-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
+                <Gift className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-green-800">Apprentice App is 100% Free</p>
+                <p className="text-sm text-green-600">
+                  Your apprentices get unlimited entries at no cost. You only pay for the employer portal.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </motion.div>
 
       {/* Current Plan */}
@@ -159,9 +163,9 @@ export default function BillingPage() {
                     <Users className="h-6 w-6 text-orange-600" />
                   </div>
                   <div>
-                    <p className="text-lg font-semibold text-gray-900 capitalize">{currentPlan}</p>
+                    <p className="text-lg font-semibold text-gray-900">Pro Plan</p>
                     <p className="text-sm text-muted-foreground">
-                      {organization?.max_seats || 5} seats • ${ORG_PLANS[currentPlan as keyof typeof ORG_PLANS]?.price || 29}/month
+                      Unlimited apprentices &bull; $29/month
                     </p>
                   </div>
                 </div>
@@ -176,11 +180,9 @@ export default function BillingPage() {
       )}
 
       {/* Plans */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
         {plans.map((plan, index) => {
-          const isCurrentPlan = currentPlan === plan.id;
-          const isUpgrade = plans.findIndex((p) => p.id === plan.id) >
-            plans.findIndex((p) => p.id === currentPlan);
+          const isCurrentPlan = (plan.id === "free" && !isPro) || (plan.id === "pro" && isPro);
 
           return (
             <motion.div
@@ -200,15 +202,24 @@ export default function BillingPage() {
               >
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md">Most Popular</Badge>
+                    <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md">
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      Recommended
+                    </Badge>
                   </div>
                 )}
                 <CardHeader>
                   <CardTitle className="text-gray-900">{plan.name}</CardTitle>
-                  <CardDescription>{plan.seats}</CardDescription>
+                  <CardDescription>{plan.description}</CardDescription>
                   <div className="pt-2">
-                    <span className="text-4xl font-bold text-gray-900">${plan.price}</span>
-                    <span className="text-muted-foreground">/month</span>
+                    {plan.price === 0 ? (
+                      <span className="text-4xl font-bold text-gray-900">Free</span>
+                    ) : (
+                      <>
+                        <span className="text-4xl font-bold text-gray-900">${plan.price}</span>
+                        <span className="text-muted-foreground">/month</span>
+                      </>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -228,33 +239,29 @@ export default function BillingPage() {
                       <CheckCircle2 className="h-4 w-4 mr-2" />
                       Current Plan
                     </Button>
-                  ) : hasSubscription ? (
-                    <Button
-                      variant={isUpgrade ? "default" : "outline"}
-                      className={cn(
-                        "w-full",
-                        isUpgrade
-                          ? "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md shadow-orange-500/20"
-                          : "border-orange-200 hover:bg-orange-50 hover:text-orange-600"
-                      )}
-                      onClick={handleManageBilling}
-                    >
-                      {isUpgrade ? "Upgrade" : "Downgrade"}
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
+                  ) : plan.id === "free" ? (
+                    hasSubscription ? (
+                      <Button
+                        variant="outline"
+                        className="w-full border-orange-200 hover:bg-orange-50 hover:text-orange-600"
+                        onClick={handleManageBilling}
+                      >
+                        Downgrade
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    ) : (
+                      <Button disabled variant="outline" className="w-full">
+                        <CheckCircle2 className="h-4 w-4 mr-2" />
+                        Current Plan
+                      </Button>
+                    )
                   ) : (
                     <Button
-                      variant={plan.popular ? "default" : "outline"}
-                      className={cn(
-                        "w-full",
-                        plan.popular
-                          ? "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md shadow-orange-500/20"
-                          : "border-orange-200 hover:bg-orange-50 hover:text-orange-600"
-                      )}
-                      onClick={() => handleSubscribe(plan.id)}
+                      className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-md shadow-orange-500/20"
+                      onClick={handleSubscribe}
                       disabled={processingPlan !== null}
                     >
-                      {processingPlan === plan.id ? "Processing..." : "Get Started"}
+                      {processingPlan === plan.id ? "Processing..." : "Upgrade to Pro"}
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   )}
@@ -271,7 +278,7 @@ export default function BillingPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow max-w-3xl mx-auto">
           <CardHeader className="border-b bg-gradient-to-r from-orange-50/50 to-transparent">
             <CardTitle className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center">
@@ -282,23 +289,24 @@ export default function BillingPage() {
           </CardHeader>
           <CardContent className="space-y-4 pt-6">
             <div className="p-4 rounded-xl bg-gray-50/50">
-              <h4 className="font-medium text-gray-900">Can I change plans at any time?</h4>
+              <h4 className="font-medium text-gray-900">Is the apprentice app really free?</h4>
               <p className="text-sm text-muted-foreground mt-1">
-                Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately,
-                and we'll prorate your billing.
+                Yes! Apprentices can use the app with unlimited entries at no cost forever.
+                Only employers pay for the management portal.
               </p>
             </div>
             <div className="p-4 rounded-xl bg-gray-50/50">
-              <h4 className="font-medium text-gray-900">What happens if I exceed my seat limit?</h4>
+              <h4 className="font-medium text-gray-900">What happens when I hit 2 apprentices on Free?</h4>
               <p className="text-sm text-muted-foreground mt-1">
-                You won't be able to invite new apprentices until you upgrade your plan or remove
-                existing members.
+                You'll need to upgrade to Pro to add more apprentices, or remove existing ones
+                to make room for new team members.
               </p>
             </div>
             <div className="p-4 rounded-xl bg-gray-50/50">
-              <h4 className="font-medium text-gray-900">Do you offer annual billing?</h4>
+              <h4 className="font-medium text-gray-900">Can I cancel anytime?</h4>
               <p className="text-sm text-muted-foreground mt-1">
-                Contact us for annual billing options with discounted rates for larger organizations.
+                Yes, you can cancel your Pro subscription at any time. You'll keep access until
+                the end of your billing period.
               </p>
             </div>
           </CardContent>
