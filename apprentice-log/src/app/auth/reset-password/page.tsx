@@ -22,7 +22,7 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
-        router.push("/");
+        router.push("/app");
       }, 3000);
       return () => clearTimeout(timer);
     }

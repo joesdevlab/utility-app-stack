@@ -3,15 +3,13 @@ import { updateSession } from "@/lib/supabase/middleware";
 
 // Routes that require authentication
 const protectedRoutes = [
-  "/",
-  "/history",
-  "/settings",
+  "/app",
   "/employer",
 ];
 
 // Routes that are always public
 const publicRoutes = [
-  "/landing",
+  "/",
   "/pricing",
   "/employer-landing",
   "/privacy",
@@ -52,7 +50,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect unauthenticated users from protected routes to landing
   if (isProtectedRoute && !user) {
-    const redirectUrl = new URL("/landing", request.url);
+    const redirectUrl = new URL("/", request.url);
     redirectUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(redirectUrl);
   }

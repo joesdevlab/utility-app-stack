@@ -12,7 +12,7 @@ export default function AuthPage() {
   useEffect(() => {
     // If user is already logged in, redirect to main app
     if (!isLoading && user) {
-      router.replace("/");
+      router.replace("/app");
     }
   }, [user, isLoading, router]);
 
