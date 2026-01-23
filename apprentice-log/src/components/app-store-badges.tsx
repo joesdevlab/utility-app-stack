@@ -53,7 +53,7 @@ export function AppStoreBadges({
           </div>
           {/* Coming Soon Badge */}
           <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-            Q2 2026
+            Q1 2026
           </div>
         </div>
       )}

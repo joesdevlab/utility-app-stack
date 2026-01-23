@@ -65,10 +65,14 @@ export function HeroSection() {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-1">
-              {/* Trades Dropdown */}
-              <div className="relative" ref={tradesDropdownRef}>
+              {/* Trades Dropdown - Hover to open */}
+              <div
+                className="relative"
+                ref={tradesDropdownRef}
+                onMouseEnter={() => setIsTradesOpen(true)}
+                onMouseLeave={() => setIsTradesOpen(false)}
+              >
                 <button
-                  onClick={() => setIsTradesOpen(!isTradesOpen)}
                   className="flex items-center gap-1 px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
                 >
                   Trades
@@ -85,7 +89,6 @@ export function HeroSection() {
                         key={trade.href}
                         href={trade.href}
                         className="flex items-center gap-3 px-4 py-2.5 hover:bg-orange-50 transition-colors"
-                        onClick={() => setIsTradesOpen(false)}
                       >
                         <trade.icon className={`h-5 w-5 ${trade.color}`} />
                         <span className="text-gray-700 font-medium">{trade.name}</span>
