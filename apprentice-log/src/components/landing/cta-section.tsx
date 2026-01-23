@@ -113,7 +113,7 @@ export function CTASection() {
             <ol className="text-left text-sm text-gray-600 space-y-2">
               <li className="flex gap-3">
                 <span className="text-orange-600 font-mono font-semibold">1.</span>
-                <span>Visit <strong className="text-gray-900">apprentice-log.vercel.app</strong> on your mobile device</span>
+                <span>Visit <strong className="text-gray-900">apprenticelog.nz</strong> on your mobile device</span>
               </li>
               <li className="flex gap-3">
                 <span className="text-orange-600 font-mono font-semibold">2.</span>

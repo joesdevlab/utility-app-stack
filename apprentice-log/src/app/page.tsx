@@ -12,7 +12,7 @@ import {
 import { NativeAppRedirect } from "@/components/native-app-redirect";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://apprentice-log.vercel.app"),
+  metadataBase: new URL("https://apprenticelog.nz"),
   title: "Apprentice Log | Voice-to-Logbook for NZ Apprentices",
   description:
     "Stop wasting time on paperwork. Record your voice in 30 seconds and get a professional BCITO logbook entry. Free for all NZ apprentices.",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     title: "Apprentice Log | Voice-to-Logbook for NZ Apprentices",
     description:
       "Stop wasting time on paperwork. Record your voice in 30 seconds and get a professional BCITO logbook entry.",
-    url: "https://apprentice-log.vercel.app",
+    url: "https://apprenticelog.nz",
     siteName: "Apprentice Log",
     images: [
       {

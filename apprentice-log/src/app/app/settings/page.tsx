@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { motion } from "framer-motion";
-import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Building2, Shield, ShieldCheck, ShieldOff } from "lucide-react";
+import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Building2, Shield, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
@@ -133,6 +133,13 @@ export default function SettingsPage() {
           label: "Sign Out",
           description: "Sign out of your account",
           onClick: handleSignOut,
+          destructive: true,
+        },
+        {
+          icon: Trash2,
+          label: "Delete Account",
+          description: "Permanently delete your account and data",
+          href: "/delete-account",
           destructive: true,
         },
       ],

@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     // Send notification email to support
     const emailResult = await sendEmail({
-      to: "support@apprenticelog.app",
+      to: "support@apprenticelog.nz",
       subject: `[Contact Form] ${inquiryTypeLabels[inquiryType] || "Inquiry"} from ${name}`,
       text: `
 New contact form submission:
@@ -94,7 +94,7 @@ Your inquiry type: ${inquiryTypeLabels[inquiryType] || inquiryType}
 Your message:
 "${message}"
 
-If you need immediate assistance, please check our FAQ at https://apprentice-log.vercel.app/#faq
+If you need immediate assistance, please check our FAQ at https://apprenticelog.nz/#faq
 
 Ngā mihi,
 The Apprentice Log Team

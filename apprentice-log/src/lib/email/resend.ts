@@ -11,8 +11,8 @@ export const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 // Email configuration
 export const emailConfig = {
-  from: "Apprentice Log <noreply@apprenticelog.co.nz>",
-  replyTo: "support@apprenticelog.co.nz",
+  from: "Apprentice Log <noreply@apprenticelog.nz>",
+  replyTo: "support@apprenticelog.nz",
 };
 
 // Send email helper with error handling

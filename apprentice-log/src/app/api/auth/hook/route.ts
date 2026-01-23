@@ -11,7 +11,7 @@ import crypto from "crypto";
  *
  * Configure in Supabase Dashboard:
  * Authentication > Hooks > Send Email > Enable HTTP
- * URL: https://apprentice-log.vercel.app/api/auth/hook
+ * URL: https://apprenticelog.nz/api/auth/hook
  *
  * The hook secret should be added to environment variables as:
  * SUPABASE_AUTH_HOOK_SECRET=whsec_xxxxx (the base64 part after v1,whsec_)
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`Send Email Hook: ${email_data.email_action_type} for ${user.email}`);
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://apprentice-log.vercel.app";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://apprenticelog.nz";
 
     switch (email_data.email_action_type) {
       case "signup": {

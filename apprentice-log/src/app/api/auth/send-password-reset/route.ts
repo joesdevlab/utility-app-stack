@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Build reset URL
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://apprentice-log.vercel.app";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://apprenticelog.nz";
     const resetUrl = `${baseUrl}/auth/reset-password?token=${token}`;
 
     // Send password reset email

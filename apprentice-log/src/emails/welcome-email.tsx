@@ -15,7 +15,7 @@ interface WelcomeEmailProps {
 
 export function WelcomeEmail({
   userName,
-  loginUrl = "https://apprentice-log.vercel.app/app",
+  loginUrl = "https://apprenticelog.nz/app",
 }: WelcomeEmailProps) {
   return (
     <BaseLayout preview="Welcome to Apprentice Log - Let's get started!">

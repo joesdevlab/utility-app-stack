@@ -26,7 +26,7 @@ export function BaseLayout({ preview, children }: BaseLayoutProps) {
           {/* Header with Logo */}
           <Section style={header}>
             <Img
-              src="https://apprentice-log.vercel.app/Logo-v1-128-128.png"
+              src="https://apprenticelog.nz/Logo-v1-128-128.png"
               width="48"
               height="48"
               alt="Apprentice Log"
@@ -44,15 +44,15 @@ export function BaseLayout({ preview, children }: BaseLayoutProps) {
               Made with care in New Zealand for Kiwi trade apprentices
             </Text>
             <Text style={footerLinks}>
-              <Link href="https://apprentice-log.vercel.app" style={link}>
+              <Link href="https://apprenticelog.nz" style={link}>
                 Website
               </Link>
               {" • "}
-              <Link href="https://apprentice-log.vercel.app/privacy" style={link}>
+              <Link href="https://apprenticelog.nz/privacy" style={link}>
                 Privacy
               </Link>
               {" • "}
-              <Link href="https://apprentice-log.vercel.app/terms" style={link}>
+              <Link href="https://apprenticelog.nz/terms" style={link}>
                 Terms
               </Link>
             </Text>

@@ -17,24 +17,21 @@ android {
         }
     }
 
-    // Signing config for release builds
-    // Uncomment and configure when you have your keystore
-    // signingConfigs {
-    //     release {
-    //         storeFile file('release-key.keystore')
-    //         storePassword System.getenv('KEYSTORE_PASSWORD') ?: ''
-    //         keyAlias 'apprentice-log'
-    //         keyPassword System.getenv('KEY_PASSWORD') ?: ''
-    //     }
-    // }
+    signingConfigs {
+        release {
+            storeFile file('../../apprentice-log-2025.keystore')
+            storePassword 'ApprenticeLog2025'
+            keyAlias 'apprentice-log-key'
+            keyPassword 'ApprenticeLog2025'
+        }
+    }
 
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // Uncomment when signing config is set up
-            // signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
         }
         debug {
             debuggable true

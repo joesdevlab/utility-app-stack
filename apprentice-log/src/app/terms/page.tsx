@@ -129,7 +129,7 @@ export default function TermsOfServicePage() {
               If you have questions about these terms, please contact us at:
             </p>
             <p className="text-muted-foreground mt-2">
-              <strong>Email:</strong> legal@apprenticelog.app
+              <strong>Email:</strong> legal@apprenticelog.nz
             </p>
           </section>
         </div>

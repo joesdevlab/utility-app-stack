@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Build verification URL
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://apprentice-log.vercel.app";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://apprenticelog.nz";
     const verificationUrl = token
       ? `${baseUrl}/auth?token=${token}&type=signup`
       : `${baseUrl}/auth`;

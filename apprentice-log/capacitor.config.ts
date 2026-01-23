@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   webDir: 'public',
   server: {
     // Production: Load the hosted web app (app route)
-    url: 'https://apprentice-log.vercel.app/app',
+    url: 'https://apprenticelog.nz/app',
     androidScheme: 'https',
   },
   android: {

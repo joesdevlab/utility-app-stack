@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://apprentice-log.vercel.app";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://apprenticelog.nz";
     const loginUrl = `${baseUrl}/app`;
 
     // Get user's name from metadata if available

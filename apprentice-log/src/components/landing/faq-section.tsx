@@ -129,7 +129,7 @@ export function FAQSection() {
         >
           <p className="text-gray-600 mb-2">Have additional questions?</p>
           <a
-            href="mailto:support@apprenticelog.app"
+            href="mailto:support@apprenticelog.nz"
             className="text-orange-600 hover:text-orange-700 font-semibold transition-colors"
           >
             Contact our support team →
