@@ -3,6 +3,7 @@ import {
   HeroSection,
   ProblemSection,
   FeaturesSection,
+  VideoSection,
   EmployerPricingSection,
   TestimonialsSection,
   FAQSection,
@@ -64,6 +65,7 @@ export default function LandingPage() {
         <HeroSection />
         <ProblemSection />
         <FeaturesSection />
+        <VideoSection />
         <EmployerPricingSection />
         <TestimonialsSection />
         <FAQSection />
