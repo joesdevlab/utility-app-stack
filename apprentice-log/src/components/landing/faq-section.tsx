@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { ChevronDown, HelpCircle } from "lucide-react";
+import Link from "next/link";
 
 const faqs = [
   {
@@ -128,12 +129,12 @@ export function FAQSection() {
           className="mt-12 text-center"
         >
           <p className="text-gray-600 mb-2">Have additional questions?</p>
-          <a
-            href="mailto:support@apprenticelog.nz"
+          <Link
+            href="/contact"
             className="text-orange-600 hover:text-orange-700 font-semibold transition-colors"
           >
             Contact our support team →
-          </a>
+          </Link>
         </motion.div>
       </div>
     </section>

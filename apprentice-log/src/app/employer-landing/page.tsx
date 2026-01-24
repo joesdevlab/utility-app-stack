@@ -366,9 +366,9 @@ export default function EmployerLandingPage() {
               <Link href="#pricing" className="hover:text-white transition-colors">
                 Pricing
               </Link>
-              <a href="mailto:support@apprenticelog.nz" className="hover:text-white transition-colors">
+              <Link href="/contact" className="hover:text-white transition-colors">
                 Contact
-              </a>
+              </Link>
             </div>
             <p className="text-sm">
               © {new Date().getFullYear()} Apprentice Log. Made in NZ.

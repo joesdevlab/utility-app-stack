@@ -99,6 +99,12 @@ export default function TeamPage() {
   const activeMembers = members.filter((m) => m.status === "active");
   const pendingMembers = members.filter((m) => m.status === "pending");
 
+  // B2B plan: free = 2 apprentices, pro = unlimited
+  const isPro = organization?.plan === "pro" || organization?.plan === "paid";
+  const apprenticeCount = activeMembers.filter((m) => m.role === "apprentice").length;
+  const maxApprentices = isPro ? -1 : 2; // -1 = unlimited
+  const isAtLimit = !isPro && apprenticeCount >= maxApprentices;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -137,17 +143,25 @@ export default function TeamPage() {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">
-                    {activeMembers.length} of {organization?.max_seats || 5} seats used
+                    {isPro ? (
+                      <>{apprenticeCount} apprentices (unlimited)</>
+                    ) : (
+                      <>{apprenticeCount} of {maxApprentices} apprentices</>
+                    )}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {(organization?.max_seats || 5) - activeMembers.length} seats available
+                    {isPro ? (
+                      <>Pro plan &bull; Unlimited apprentices</>
+                    ) : (
+                      <>{maxApprentices - apprenticeCount} slots available on Free plan</>
+                    )}
                   </p>
                 </div>
               </div>
-              {activeMembers.length >= (organization?.max_seats || 5) && (
+              {isAtLimit && (
                 <Link href="/employer/billing">
                   <Button variant="outline" size="sm" className="border-orange-200 hover:bg-orange-50 hover:text-orange-600">
-                    Upgrade Plan
+                    Upgrade to Pro
                   </Button>
                 </Link>
               )}

@@ -205,13 +205,10 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">Email Us</h3>
-                  <a
-                    href="mailto:support@apprenticelog.nz"
-                    className="text-orange-600 hover:text-orange-700 font-medium"
-                  >
+                  <p className="text-orange-600 font-medium">
                     support@apprenticelog.nz
-                  </a>
-                  <p className="text-sm text-gray-500 mt-1">For general inquiries</p>
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">Use the form below to contact us</p>
                 </div>
               </div>
             </div>

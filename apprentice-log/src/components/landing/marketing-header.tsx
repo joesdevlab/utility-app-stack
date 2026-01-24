@@ -63,31 +63,60 @@ export function MarketingHeader() {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1">
             {/* Trades Dropdown */}
-            <div className="relative" ref={tradesDropdownRef}>
+            <div
+              className="relative"
+              ref={tradesDropdownRef}
+              onMouseEnter={() => setIsTradesOpen(true)}
+              onMouseLeave={() => setIsTradesOpen(false)}
+            >
               <button
                 onClick={() => setIsTradesOpen(!isTradesOpen)}
-                className="flex items-center gap-1 px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
+                className={`flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  isTradesOpen
+                    ? "text-orange-600 bg-orange-50"
+                    : "text-gray-600 hover:text-orange-600 hover:bg-orange-50"
+                }`}
               >
                 Trades
-                <ChevronDown className={`h-4 w-4 transition-transform ${isTradesOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isTradesOpen ? "rotate-180" : ""}`} />
               </button>
               {isTradesOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute top-full left-0 mt-1 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50"
+                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
+                  className="absolute top-full left-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl shadow-gray-200/50 border border-gray-100 py-3 z-50 overflow-hidden"
                 >
-                  {trades.map((trade) => (
+                  <div className="px-4 pb-2 mb-2 border-b border-gray-100">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Select Your Trade</p>
+                  </div>
+                  {trades.map((trade, index) => (
                     <Link
                       key={trade.href}
                       href={trade.href}
-                      className="flex items-center gap-3 px-4 py-2.5 hover:bg-orange-50 transition-colors"
+                      className="group flex items-center gap-3 px-4 py-3 mx-2 rounded-xl hover:bg-gradient-to-r hover:from-orange-50 hover:to-amber-50 transition-all duration-200"
                       onClick={() => setIsTradesOpen(false)}
                     >
-                      <trade.icon className={`h-5 w-5 ${trade.color}`} />
-                      <span className="text-gray-700 font-medium">{trade.name}</span>
+                      <div className={`flex items-center justify-center w-10 h-10 rounded-xl bg-gray-50 group-hover:bg-white group-hover:shadow-md transition-all duration-200 ${trade.color.replace('text-', 'group-hover:shadow-')}/20`}>
+                        <trade.icon className={`h-5 w-5 ${trade.color} transition-transform duration-200 group-hover:scale-110`} />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-gray-800 font-semibold group-hover:text-orange-600 transition-colors">{trade.name}</span>
+                        <p className="text-xs text-gray-400 group-hover:text-gray-500">View {trade.name.toLowerCase()} resources</p>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-gray-300 group-hover:text-orange-500 group-hover:translate-x-1 transition-all duration-200" />
                     </Link>
                   ))}
+                  <div className="mt-2 pt-2 mx-4 border-t border-gray-100">
+                    <Link
+                      href="/trades"
+                      className="flex items-center justify-center gap-2 py-2 text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors"
+                      onClick={() => setIsTradesOpen(false)}
+                    >
+                      View all trades
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
                 </motion.div>
               )}
             </div>
