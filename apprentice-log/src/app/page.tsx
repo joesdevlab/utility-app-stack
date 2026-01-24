@@ -11,6 +11,7 @@ import {
   FooterSection,
 } from "@/components/landing";
 import { NativeAppRedirect } from "@/components/native-app-redirect";
+import { LandingPageSchema } from "@/components/shared/json-ld";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://apprenticelog.nz"),
@@ -61,6 +62,7 @@ export const metadata: Metadata = {
 export default function LandingPage() {
   return (
     <NativeAppRedirect>
+      <LandingPageSchema />
       <main className="min-h-screen bg-slate-950">
         <HeroSection />
         <ProblemSection />

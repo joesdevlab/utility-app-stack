@@ -5,6 +5,13 @@ import { updateSession } from "@/lib/supabase/middleware";
 const protectedRoutes = [
   "/app",
   "/employer",
+  "/admin",
+];
+
+// Admin emails that can access /admin routes
+const ADMIN_EMAILS = [
+  "admin@apprenticelog.nz",
+  "demo@apprenticelog.nz",
 ];
 
 // Routes that are always public
@@ -68,6 +75,16 @@ export async function middleware(request: NextRequest) {
     const verifyUrl = new URL(verificationRoute, request.url);
     verifyUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(verifyUrl);
+  }
+
+  // Check admin access for /admin routes
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+  if (isAdminRoute && user) {
+    const userEmail = user.email || "";
+    if (!ADMIN_EMAILS.includes(userEmail)) {
+      // Non-admin users get redirected to home
+      return NextResponse.redirect(new URL("/", request.url));
+    }
   }
 
   return supabaseResponse;

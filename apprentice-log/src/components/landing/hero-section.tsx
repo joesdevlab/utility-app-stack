@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Mic, ArrowRight, Play, CheckCircle, Wrench, Menu, X, Zap, Droplets, Car, ChevronDown, Building2 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { trackCTAClicked } from "@/lib/analytics";
 
 export function HeroSection() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
@@ -32,6 +33,7 @@ export function HeroSection() {
   ];
 
   const scrollToDownload = () => {
+    trackCTAClicked("Start Free Trial", "hero");
     document.getElementById("download")?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -314,7 +316,10 @@ export function HeroSection() {
                 size="lg"
                 variant="outline"
                 className="border-gray-300 text-gray-700 hover:bg-gray-50 text-lg px-8 py-6 rounded-xl"
-                onClick={() => setIsVideoPlaying(true)}
+                onClick={() => {
+                  trackCTAClicked("Watch Demo", "hero");
+                  setIsVideoPlaying(true);
+                }}
               >
                 <Play className="h-5 w-5 mr-2" />
                 Watch Demo

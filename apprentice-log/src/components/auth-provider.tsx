@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, useCallback } from "rea
 import { User, Session, AuthMFAEnrollResponse, Factor } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import type { OrganizationWithRole } from "@/types";
+import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analytics";
 
 interface MFAEnrollmentData {
   id: string;
@@ -121,6 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (error) {
+      trackEvent(ANALYTICS_EVENTS.LOGIN_FAILED, { reason: error.message });
       return { error: error as Error | null, mfaRequired: false };
     }
 
@@ -133,11 +135,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
+    trackEvent(ANALYTICS_EVENTS.LOGIN_SUCCESS, { method: "email" });
     await checkMFAStatus();
     return { error: null, mfaRequired: false };
   };
 
   const signUp = async (email: string, password: string, fullName?: string) => {
+    trackEvent(ANALYTICS_EVENTS.SIGNUP_STARTED);
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -147,6 +151,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       },
     });
+    if (!error) {
+      trackEvent(ANALYTICS_EVENTS.SIGNUP_COMPLETED, { method: "email" });
+    }
     return { error: error as Error | null };
   };
 
@@ -213,6 +220,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setMfaEnabled(true);
     setMfaRequired(false);
+    trackEvent(ANALYTICS_EVENTS.MFA_ENABLED);
     return { error: null };
   };
 
@@ -254,6 +262,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { error } = await supabase.auth.mfa.unenroll({ factorId });
     if (!error) {
       setMfaEnabled(false);
+      trackEvent(ANALYTICS_EVENTS.MFA_DISABLED);
     }
     return { error: error as Error | null };
   };

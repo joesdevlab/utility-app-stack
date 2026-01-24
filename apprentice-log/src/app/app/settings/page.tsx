@@ -10,10 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { motion } from "framer-motion";
-import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Building2, Shield, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
+import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Building2, Shield, ShieldCheck, ShieldOff, Trash2, Gift } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { ShareReferral } from "@/components/share-referral";
 
 interface SettingItem {
   icon: LucideIcon;
@@ -370,6 +371,36 @@ export default function SettingsPage() {
               </Card>
             </motion.div>
           ))}
+
+          {/* Invite Friends Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+          >
+            <Card className="overflow-hidden border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center">
+                      <Gift className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Invite Your Mates</p>
+                      <p className="text-xs text-gray-600">Share with fellow apprentices</p>
+                    </div>
+                  </div>
+                  <ShareReferral
+                    trigger={
+                      <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+                        Share
+                      </Button>
+                    }
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* App Info */}
           <motion.div

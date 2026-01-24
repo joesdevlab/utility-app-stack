@@ -38,8 +38,9 @@ export function AuthForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Require Turnstile verification if configured
-    if (isTurnstileConfigured && !turnstileToken) {
+    // Require Turnstile verification for signup and forgot password only
+    const requiresTurnstile = mode === "signup" || mode === "forgot";
+    if (isTurnstileConfigured && requiresTurnstile && !turnstileToken) {
       toast.error("Please complete the security verification");
       return;
     }
@@ -48,7 +49,7 @@ export function AuthForm() {
 
     try {
       // Verify Turnstile token server-side for sensitive actions
-      if (isTurnstileConfigured && turnstileToken && (mode === "signup" || mode === "forgot")) {
+      if (isTurnstileConfigured && turnstileToken && requiresTurnstile) {
         const verifyResponse = await fetch("/api/auth/verify-turnstile", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
