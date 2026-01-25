@@ -8,71 +8,23 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { MarketingHeader } from "@/components/landing/marketing-header";
+import { TradeVideoHero } from "@/components/landing/trade-video-hero";
 
 export default function ElectricalPage() {
   return (
     <div className="min-h-screen bg-white">
       <MarketingHeader />
 
-      {/* Hero */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1600&q=80"
-            alt="Electrical work"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-gray-900/80 to-gray-900/60" />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 bg-yellow-500/20 border border-yellow-500/30 rounded-full px-4 py-2 mb-6"
-            >
-              <Zap className="h-4 w-4 text-yellow-400" />
-              <span className="text-yellow-300 text-sm font-semibold">For Electrical Apprentices</span>
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6"
-            >
-              Power Up Your{" "}
-              <span className="text-yellow-400">Logbook</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-xl text-gray-300 mb-8"
-            >
-              Document your wiring, installations, and testing work.
-              AI converts your voice notes into EWRB-compliant entries.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex flex-wrap gap-4"
-            >
-              <Link href="/app">
-                <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-8 py-6 rounded-xl">
-                  <Mic className="h-5 w-5 mr-2" />
-                  Start Free Trial
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </Button>
-              </Link>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      {/* Video Hero */}
+      <TradeVideoHero
+        videoSrc="/videos/electrical.mp4"
+        fallbackImage="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1600&q=80"
+        badgeIcon={Zap}
+        badgeText="For Electrical Apprentices"
+        title="Power Up Your"
+        highlight="Logbook"
+        description="Document your wiring, installations, and testing work. AI converts your voice notes into EWRB-compliant entries."
+      />
 
       {/* Electrical-specific benefits */}
       <section className="py-20 bg-gray-50">

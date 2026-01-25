@@ -8,71 +8,23 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { MarketingHeader } from "@/components/landing/marketing-header";
+import { TradeVideoHero } from "@/components/landing/trade-video-hero";
 
 export default function CarpentryPage() {
   return (
     <div className="min-h-screen bg-white">
       <MarketingHeader />
 
-      {/* Hero */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80"
-            alt="Carpentry work"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-gray-900/80 to-gray-900/60" />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-500/30 rounded-full px-4 py-2 mb-6"
-            >
-              <Hammer className="h-4 w-4 text-orange-400" />
-              <span className="text-orange-300 text-sm font-semibold">For Carpentry Apprentices</span>
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6"
-            >
-              Your Carpentry Logbook,{" "}
-              <span className="text-orange-400">Simplified</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-xl text-gray-300 mb-8"
-            >
-              Voice-record your framing, roofing, and finishing work. AI converts it to
-              BCITO-compliant entries that capture every skill and technique.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex flex-wrap gap-4"
-            >
-              <Link href="/app">
-                <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-8 py-6 rounded-xl">
-                  <Mic className="h-5 w-5 mr-2" />
-                  Start Free Trial
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </Button>
-              </Link>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      {/* Video Hero */}
+      <TradeVideoHero
+        videoSrc="/videos/carpentry.mp4"
+        fallbackImage="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80"
+        badgeIcon={Hammer}
+        badgeText="For Carpentry Apprentices"
+        title="Your Carpentry Logbook,"
+        highlight="Simplified"
+        description="Voice-record your framing, roofing, and finishing work. AI converts it to BCITO-compliant entries that capture every skill and technique."
+      />
 
       {/* Carpentry-specific benefits */}
       <section className="py-20 bg-gray-50">
