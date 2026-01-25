@@ -36,7 +36,13 @@ import {
   FlaskConical,
   Download,
   Repeat,
+  Mail,
+  LogOut,
 } from "lucide-react";
+import { EmailManager } from "@/components/admin/email-manager";
+import { EmployerManager } from "@/components/admin/employer-manager";
+import { useAuth } from "@/components/auth-provider";
+import { useRouter } from "next/navigation";
 
 interface MRRData {
   mrr: {
@@ -810,6 +816,13 @@ export default function AdminDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [useDemoData, setUseDemoData] = useState(false);
+  const { signOut } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push("/");
+  };
 
   const fetchData = async (showRefresh = false) => {
     if (showRefresh) setIsRefreshing(true);
@@ -952,7 +965,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="flex items-center gap-4">
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="flex items-center gap-6">
             {/* Demo Data Toggle */}
             <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200">
               <FlaskConical className={`h-4 w-4 ${useDemoData ? "text-violet-600" : "text-gray-400"}`} />
@@ -984,6 +997,15 @@ export default function AdminDashboard() {
             >
               <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
               {isRefreshing ? "Refreshing..." : "Refresh"}
+            </Button>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              size="sm"
+              className="gap-2 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200"
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
             </Button>
           </motion.div>
         </motion.div>
@@ -1107,6 +1129,14 @@ export default function AdminDashboard() {
             <TabsTrigger value="usage" className="gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
               <Activity className="h-4 w-4" />
               Usage
+            </TabsTrigger>
+            <TabsTrigger value="employers" className="gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+              <Building2 className="h-4 w-4" />
+              Employers
+            </TabsTrigger>
+            <TabsTrigger value="emails" className="gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+              <Mail className="h-4 w-4" />
+              Emails
             </TabsTrigger>
           </TabsList>
 
@@ -1501,6 +1531,16 @@ export default function AdminDashboard() {
                 </motion.div>
               ))}
             </div>
+          </TabsContent>
+
+          {/* Employers Tab */}
+          <TabsContent value="employers" className="space-y-6">
+            <EmployerManager />
+          </TabsContent>
+
+          {/* Emails Tab */}
+          <TabsContent value="emails" className="space-y-6">
+            <EmailManager />
           </TabsContent>
         </Tabs>
       </div>

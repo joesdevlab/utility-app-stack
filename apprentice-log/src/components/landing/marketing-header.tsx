@@ -71,7 +71,7 @@ export function MarketingHeader() {
             >
               <button
                 onClick={() => setIsTradesOpen(!isTradesOpen)}
-                className={`flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
                   isTradesOpen
                     ? "text-orange-600 bg-orange-50"
                     : "text-gray-600 hover:text-orange-600 hover:bg-orange-50"
@@ -122,25 +122,25 @@ export function MarketingHeader() {
             </div>
             <button
               onClick={() => scrollToSection("features")}
-              className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
+              className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all cursor-pointer"
             >
               Features
             </button>
             <button
               onClick={() => scrollToSection("testimonials")}
-              className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
+              className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all cursor-pointer"
             >
               Testimonials
             </button>
             <button
               onClick={() => scrollToSection("faq")}
-              className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
+              className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all cursor-pointer"
             >
               FAQ
             </button>
             <button
               onClick={() => scrollToSection("download")}
-              className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
+              className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all cursor-pointer"
             >
               Download
             </button>
@@ -179,7 +179,7 @@ export function MarketingHeader() {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
@@ -220,25 +220,25 @@ export function MarketingHeader() {
             </div>
             <button
               onClick={() => scrollToSection("features")}
-              className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all"
+              className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all cursor-pointer"
             >
               Features
             </button>
             <button
               onClick={() => scrollToSection("testimonials")}
-              className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all"
+              className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all cursor-pointer"
             >
               Testimonials
             </button>
             <button
               onClick={() => scrollToSection("faq")}
-              className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all"
+              className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all cursor-pointer"
             >
               FAQ
             </button>
             <button
               onClick={() => scrollToSection("download")}
-              className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all"
+              className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all cursor-pointer"
             >
               Download
             </button>

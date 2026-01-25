@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { EMPLOYER_PLANS } from "@/lib/employer-stripe";
+import { sendEmail } from "@/lib/email/resend";
+import { EmployerInvitationEmail } from "@/emails";
 
 // GET - Get organization members
 export async function GET(
@@ -128,7 +130,7 @@ export async function POST(
     // Check if user is owner or admin
     const { data: organization } = await supabase
       .from("organizations")
-      .select("owner_id, plan, stripe_subscription_id")
+      .select("owner_id, plan, stripe_subscription_id, name")
       .eq("id", id)
       .single();
 
@@ -217,6 +219,25 @@ export async function POST(
         );
       }
 
+      // Send invitation email for re-invited members
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://apprenticelog.nz";
+      const inviteUrl = `${baseUrl}/auth?mode=signup&invite=${id}&email=${encodeURIComponent(email.toLowerCase())}`;
+
+      try {
+        await sendEmail({
+          to: email.toLowerCase(),
+          subject: `${organization.name} has invited you to join Apprentice Log`,
+          react: EmployerInvitationEmail({
+            inviteUrl,
+            employerName: organization.name || "Your employer",
+            apprenticeEmail: email.toLowerCase(),
+          }),
+          text: `${organization.name} has invited you to join their team on Apprentice Log. Accept the invitation here: ${inviteUrl}`,
+        });
+      } catch (emailError) {
+        console.error("Failed to send invitation email:", emailError);
+      }
+
       return NextResponse.json({
         message: "Invitation sent",
         member: { ...existingMember, role, status: "pending" },
@@ -251,7 +272,27 @@ export async function POST(
       );
     }
 
-    // TODO: Send invitation email for pending members
+    // Send invitation email for pending members (new users who need to sign up)
+    if (!existingUser) {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://apprenticelog.nz";
+      const inviteUrl = `${baseUrl}/auth?mode=signup&invite=${id}&email=${encodeURIComponent(email.toLowerCase())}`;
+
+      try {
+        await sendEmail({
+          to: email.toLowerCase(),
+          subject: `${organization.name} has invited you to join Apprentice Log`,
+          react: EmployerInvitationEmail({
+            inviteUrl,
+            employerName: organization.name || "Your employer",
+            apprenticeEmail: email.toLowerCase(),
+          }),
+          text: `${organization.name} has invited you to join their team on Apprentice Log. Accept the invitation here: ${inviteUrl}`,
+        });
+      } catch (emailError) {
+        console.error("Failed to send invitation email:", emailError);
+        // Don't fail the request if email fails - invite is still created
+      }
+    }
 
     return NextResponse.json({
       message: existingUser ? "Member added" : "Invitation sent",

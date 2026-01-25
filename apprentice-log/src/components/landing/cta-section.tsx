@@ -3,8 +3,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Mic, ArrowRight, Smartphone, CheckCircle, Shield, Clock } from "lucide-react";
+import { Smartphone, CheckCircle, Shield, Clock, Download } from "lucide-react";
 import { AppStoreBadges } from "@/components/app-store-badges";
 
 export function CTASection() {
@@ -81,21 +80,6 @@ export function CTASection() {
             <AppStoreBadges className="justify-center" />
           </motion.div>
 
-          {/* CTA Button */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button
-              size="lg"
-              className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-10 py-7 rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300"
-              asChild
-            >
-              <a href="/app">
-                <Mic className="h-5 w-5 mr-2" />
-                Try Web Version
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </a>
-            </Button>
-          </div>
-
           {/* Install instructions */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -105,23 +89,23 @@ export function CTASection() {
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center">
-                <Smartphone className="h-5 w-5 text-orange-600" />
+                <Download className="h-5 w-5 text-orange-600" />
               </div>
-              <h3 className="font-semibold text-gray-900">Or Install as Web App</h3>
+              <h3 className="font-semibold text-gray-900">How to Install</h3>
             </div>
 
             <ol className="text-left text-sm text-gray-600 space-y-2">
               <li className="flex gap-3">
                 <span className="text-orange-600 font-mono font-semibold">1.</span>
-                <span>Visit <strong className="text-gray-900">apprenticelog.nz</strong> on your mobile device</span>
+                <span>Tap the <strong className="text-gray-900">Google Play</strong> badge above on your Android device</span>
               </li>
               <li className="flex gap-3">
                 <span className="text-orange-600 font-mono font-semibold">2.</span>
-                <span>Tap the browser menu and select <strong className="text-gray-900">&quot;Add to Home Screen&quot;</strong></span>
+                <span>Install the app and open it</span>
               </li>
               <li className="flex gap-3">
                 <span className="text-orange-600 font-mono font-semibold">3.</span>
-                <span>Open the app and create your free account</span>
+                <span>Create your <strong className="text-gray-900">free account</strong> and start logging</span>
               </li>
             </ol>
           </motion.div>

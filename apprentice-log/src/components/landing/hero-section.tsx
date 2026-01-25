@@ -75,7 +75,7 @@ export function HeroSection() {
                 onMouseLeave={() => setIsTradesOpen(false)}
               >
                 <button
-                  className="flex items-center gap-1 px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
+                  className="flex items-center gap-1 px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all cursor-pointer"
                 >
                   Trades
                   <ChevronDown className={`h-4 w-4 transition-transform ${isTradesOpen ? "rotate-180" : ""}`} />
@@ -101,25 +101,25 @@ export function HeroSection() {
               </div>
               <button
                 onClick={() => scrollToSection("features")}
-                className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
+                className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all cursor-pointer"
               >
                 Features
               </button>
               <button
-                onClick={() => scrollToSection("testimonials")}
-                className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
+                onClick={() => scrollToSection("employer-pricing")}
+                className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all cursor-pointer"
               >
-                Testimonials
+                Pricing
               </button>
               <button
                 onClick={() => scrollToSection("faq")}
-                className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
+                className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all cursor-pointer"
               >
                 FAQ
               </button>
               <button
                 onClick={() => scrollToSection("download")}
-                className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all"
+                className="px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-sm font-medium transition-all cursor-pointer"
               >
                 Download
               </button>
@@ -129,14 +129,14 @@ export function HeroSection() {
             <div className="flex items-center gap-3">
               {/* Sign In - Desktop */}
               <Link
-                href="/app"
+                href="/auth"
                 className="hidden md:inline-flex px-4 py-2 text-gray-700 hover:text-orange-600 text-sm font-medium transition-colors"
               >
                 Sign In
               </Link>
 
               {/* Get Started CTA */}
-              <Link href="/app" className="hidden sm:inline-flex">
+              <Link href="/auth?mode=signup" className="hidden sm:inline-flex">
                 <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all px-5">
                   <span>Get Started Free</span>
                   <ArrowRight className="h-4 w-4 ml-2" />
@@ -146,7 +146,7 @@ export function HeroSection() {
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
                 aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? (
@@ -187,36 +187,36 @@ export function HeroSection() {
               </div>
               <button
                 onClick={() => scrollToSection("features")}
-                className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all"
+                className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all cursor-pointer"
               >
                 Features
               </button>
               <button
-                onClick={() => scrollToSection("testimonials")}
-                className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all"
+                onClick={() => scrollToSection("employer-pricing")}
+                className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all cursor-pointer"
               >
-                Testimonials
+                Pricing
               </button>
               <button
                 onClick={() => scrollToSection("faq")}
-                className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all"
+                className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all cursor-pointer"
               >
                 FAQ
               </button>
               <button
                 onClick={() => scrollToSection("download")}
-                className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all"
+                className="w-full text-left px-4 py-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg text-base font-medium transition-all cursor-pointer"
               >
                 Download
               </button>
               <div className="pt-3 border-t border-gray-100 space-y-2">
                 <Link
-                  href="/app"
+                  href="/auth"
                   className="block w-full text-center px-4 py-3 text-gray-700 hover:text-orange-600 rounded-lg text-base font-medium transition-all"
                 >
                   Sign In
                 </Link>
-                <Link href="/app" className="block">
+                <Link href="/auth?mode=signup" className="block">
                   <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-lg shadow-md py-3">
                     Get Started Free
                     <ArrowRight className="h-4 w-4 ml-2" />
@@ -305,7 +305,7 @@ export function HeroSection() {
             >
               <Button
                 size="lg"
-                className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-8 py-6 rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300"
+                className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-8 py-6 rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300 cursor-pointer"
                 onClick={scrollToDownload}
               >
                 <Mic className="h-5 w-5 mr-2" />
@@ -315,7 +315,7 @@ export function HeroSection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-gray-300 text-gray-700 hover:bg-gray-50 text-lg px-8 py-6 rounded-xl"
+                className="border-gray-300 text-gray-700 hover:bg-gray-50 text-lg px-8 py-6 rounded-xl cursor-pointer"
                 onClick={() => {
                   trackCTAClicked("Watch Demo", "hero");
                   setIsVideoPlaying(true);

@@ -173,9 +173,9 @@ export default function SettingsPage() {
       items: [
         {
           icon: HelpCircle,
-          label: "About BCITO Logbooks",
-          description: "Learn about apprentice requirements",
-          external: "https://bcito.org.nz",
+          label: "BCITO Compliance Guide",
+          description: "Logbook requirements & best practices",
+          href: "/app/bcito",
         },
       ],
     },

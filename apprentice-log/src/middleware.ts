@@ -10,8 +10,9 @@ const protectedRoutes = [
 
 // Admin emails that can access /admin routes
 const ADMIN_EMAILS = [
-  "admin@apprenticelog.nz",
-  "demo@apprenticelog.nz",
+  "joe@apprenticelog.nz",
+  "joe@laikadynamics.co.nz",
+  "joseph.doidge@gmail.com",
 ];
 
 // Routes that are always public

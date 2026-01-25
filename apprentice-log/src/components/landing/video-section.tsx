@@ -101,7 +101,7 @@ function VideoCard({
                 e.stopPropagation();
                 toggleMute();
               }}
-              className="absolute bottom-3 right-3 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors"
+              className="absolute bottom-3 right-3 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors cursor-pointer"
             >
               {isMuted ? (
                 <VolumeX className="h-5 w-5 text-white" />

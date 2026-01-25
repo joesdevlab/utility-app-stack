@@ -163,7 +163,7 @@ export function TestimonialsSection() {
                   <button
                     key={i}
                     onClick={() => setCurrentIndex(i)}
-                    className={`w-2 h-2 rounded-full transition-colors ${
+                    className={`w-2 h-2 rounded-full transition-colors cursor-pointer ${
                       i === currentIndex ? "bg-orange-500" : "bg-gray-300"
                     }`}
                   />

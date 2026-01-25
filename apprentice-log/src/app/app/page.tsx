@@ -16,6 +16,9 @@ import { toast } from "sonner";
 import { useEntries } from "@/hooks";
 import type { LogbookEntry } from "@/types";
 import { PhotoUpload } from "@/components/photo-upload";
+import { PendingInvitations } from "@/components/pending-invitations";
+import { LogoSpinner } from "@/components/animated-logo";
+import { ProcessingStepper, type ProcessingPhase } from "@/components/processing-stepper";
 
 type AppState = "idle" | "processing" | "result" | "saved";
 type EntryMode = "voice" | "manual";
@@ -28,6 +31,7 @@ export default function Home() {
   const [transcript, setTranscript] = useState<string>("");
   const [isManualProcessing, setIsManualProcessing] = useState(false);
   const [voiceEntryPhotos, setVoiceEntryPhotos] = useState<string[]>([]);
+  const [processingPhase, setProcessingPhase] = useState<ProcessingPhase>("idle");
   const { addEntry } = useEntries(user?.id);
 
   // Verify server-side auth on mount
@@ -49,8 +53,8 @@ export default function Home() {
   // Show loading while checking auth
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50/30 to-background">
+        <LogoSpinner size="lg" />
       </div>
     );
   }
@@ -62,6 +66,7 @@ export default function Home() {
 
   const handleRecordingComplete = async (audioBlob: Blob) => {
     setState("processing");
+    setProcessingPhase("transcribing");
 
     try {
       // Step 1: Transcribe the audio
@@ -84,6 +89,7 @@ export default function Home() {
       setTranscript(text);
 
       // Step 2: Format the entry
+      setProcessingPhase("formatting");
       const formatResponse = await fetch("/api/format-entry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -112,11 +118,13 @@ export default function Home() {
 
       logbookEntry.rawTranscript = text;
       setEntry(logbookEntry);
+      setProcessingPhase("complete");
       setState("result");
       toast.success("Entry created!");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Something went wrong";
       console.error("Recording processing error:", error);
+      setProcessingPhase("error");
 
       // Show more detailed error for debugging
       if (message.includes("401") || message.includes("Unauthorized")) {
@@ -131,6 +139,7 @@ export default function Home() {
         toast.error(message, { duration: 5000 });
       }
       setState("idle");
+      setProcessingPhase("idle");
     }
   };
 
@@ -172,11 +181,15 @@ export default function Home() {
     setEntry(null);
     setTranscript("");
     setVoiceEntryPhotos([]);
+    setProcessingPhase("idle");
   };
 
   return (
     <AppShell>
       <div className="px-4 py-4 max-w-lg mx-auto">
+        {/* Show pending employer invitations */}
+        <PendingInvitations />
+
         <AnimatePresence mode="wait">
           {/* Idle State - Ready to Record or Manual Entry */}
           {state === "idle" && (
@@ -256,11 +269,9 @@ export default function Home() {
               className="flex flex-col items-center"
             >
               <Card className="w-full border-gray-200 shadow-lg">
-                <CardContent className="flex flex-col items-center py-16">
-                  <VoiceRecorder
-                    onRecordingComplete={handleRecordingComplete}
-                    isProcessing={true}
-                  />
+                <CardContent className="flex flex-col items-center py-12 px-6 gap-8">
+                  <LogoSpinner size="lg" />
+                  <ProcessingStepper currentPhase={processingPhase} />
                 </CardContent>
               </Card>
             </motion.div>

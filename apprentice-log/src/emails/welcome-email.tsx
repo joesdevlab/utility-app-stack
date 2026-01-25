@@ -3,7 +3,9 @@ import {
   Heading,
   Text,
   Section,
-  Hr,
+  Img,
+  Row,
+  Column,
 } from "@react-email/components";
 import * as React from "react";
 import { BaseLayout } from "./base-layout";
@@ -19,6 +21,23 @@ export function WelcomeEmail({
 }: WelcomeEmailProps) {
   return (
     <BaseLayout preview="Welcome to Apprentice Log - Let's get started!">
+      {/* Hero icon */}
+      <Section style={heroSection}>
+        <Row>
+          <Column align="center">
+            <div style={iconWrapper}>
+              <Img
+                src="https://apprenticelog.nz/email-assets/party-popper.png"
+                width="48"
+                height="48"
+                alt="Welcome"
+                style={heroIcon}
+              />
+            </div>
+          </Column>
+        </Row>
+      </Section>
+
       <Heading style={heading}>Welcome to Apprentice Log!</Heading>
 
       <Text style={paragraph}>
@@ -37,49 +56,97 @@ export function WelcomeEmail({
         </Button>
       </Section>
 
-      <Hr style={divider} />
+      {/* Quick Start Guide */}
+      <Section style={quickStartBox}>
+        <Text style={quickStartTitle}>&#128640; Quick Start Guide</Text>
 
-      <Heading as="h2" style={subheading}>
-        Quick Start Guide
-      </Heading>
+        <Section style={stepSection}>
+          <Row>
+            <Column style={stepNumberColumn}>
+              <Text style={stepNumber}>1</Text>
+            </Column>
+            <Column>
+              <Text style={stepText}>
+                <strong>Record your day</strong> - Tap the microphone and describe
+                what you worked on today. Our AI will format it for you.
+              </Text>
+            </Column>
+          </Row>
+        </Section>
 
-      <Section style={tipSection}>
-        <Text style={tipNumber}>1</Text>
-        <Text style={tipText}>
-          <strong>Record your day</strong> - Tap the microphone and describe
-          what you worked on today. Our AI will format it for you.
-        </Text>
+        <Section style={stepSection}>
+          <Row>
+            <Column style={stepNumberColumn}>
+              <Text style={stepNumber}>2</Text>
+            </Column>
+            <Column>
+              <Text style={stepText}>
+                <strong>Review & save</strong> - Check your entry looks good, then
+                save it to your secure logbook.
+              </Text>
+            </Column>
+          </Row>
+        </Section>
+
+        <Section style={stepSection}>
+          <Row>
+            <Column style={stepNumberColumn}>
+              <Text style={stepNumber}>3</Text>
+            </Column>
+            <Column>
+              <Text style={stepText}>
+                <strong>Track progress</strong> - Watch your hours add up and see your
+                skills develop over time.
+              </Text>
+            </Column>
+          </Row>
+        </Section>
       </Section>
 
-      <Section style={tipSection}>
-        <Text style={tipNumber}>2</Text>
-        <Text style={tipText}>
-          <strong>Review & save</strong> - Check your entry looks good, then
-          save it to your secure logbook.
-        </Text>
+      {/* Pro Tip */}
+      <Section style={proTipBox}>
+        <Row>
+          <Column style={proTipIconColumn}>
+            <Text style={proTipIcon}>&#128161;</Text>
+          </Column>
+          <Column>
+            <Text style={proTipTitle}>Pro Tip</Text>
+            <Text style={proTipText}>
+              Enable two-factor authentication (2FA) in your settings for extra
+              security. Your logbook is important - keep it protected!
+            </Text>
+          </Column>
+        </Row>
       </Section>
 
-      <Section style={tipSection}>
-        <Text style={tipNumber}>3</Text>
-        <Text style={tipText}>
-          <strong>Track progress</strong> - Watch your hours add up and see your
-          skills develop over time.
-        </Text>
-      </Section>
-
-      <Hr style={divider} />
-
-      <Section style={proTipSection}>
-        <Text style={proTipTitle}>Pro Tip</Text>
-        <Text style={proTipText}>
-          Enable two-factor authentication (2FA) in your settings for extra
-          security. Your logbook is important - keep it protected!
-        </Text>
+      {/* What's included */}
+      <Section style={featuresBox}>
+        <Text style={featuresTitle}>What you can do with Apprentice Log:</Text>
+        <Row>
+          <Column style={featureColumn}>
+            <Text style={featureItem}>&#127908; Voice-to-text logging</Text>
+          </Column>
+        </Row>
+        <Row>
+          <Column style={featureColumn}>
+            <Text style={featureItem}>&#128202; Progress tracking</Text>
+          </Column>
+        </Row>
+        <Row>
+          <Column style={featureColumn}>
+            <Text style={featureItem}>&#128274; Secure cloud storage</Text>
+          </Column>
+        </Row>
+        <Row>
+          <Column style={featureColumn}>
+            <Text style={featureItem}>&#128241; Works offline too</Text>
+          </Column>
+        </Row>
       </Section>
 
       <Text style={paragraph}>
         If you have any questions, our team is here to help. Just reply to this
-        email or check out our FAQ.
+        email or check out our FAQ on the website.
       </Text>
 
       <Text style={signoff}>
@@ -91,26 +158,55 @@ export function WelcomeEmail({
   );
 }
 
+// Brand Colors
+const colors = {
+  primary: "#f97316",
+  primaryLight: "#fff7ed",
+  text: "#1f2937",
+  textMuted: "#6b7280",
+  textLight: "#9ca3af",
+  border: "#e5e7eb",
+  successBg: "#f0fdf4",
+  successBorder: "#86efac",
+  successText: "#166534",
+  infoBg: "#eff6ff",
+  infoBorder: "#bfdbfe",
+  infoText: "#1e40af",
+};
+
 // Styles
-const heading = {
-  fontSize: "24px",
-  fontWeight: "700",
-  color: "#1a1a1a",
-  margin: "0 0 24px",
+const heroSection = {
+  textAlign: "center" as const,
+  marginBottom: "24px",
+};
+
+const iconWrapper = {
+  backgroundColor: colors.primaryLight,
+  borderRadius: "50%",
+  width: "80px",
+  height: "80px",
+  display: "inline-block",
+  lineHeight: "80px",
   textAlign: "center" as const,
 };
 
-const subheading = {
-  fontSize: "18px",
-  fontWeight: "600",
-  color: "#1a1a1a",
-  margin: "24px 0 16px",
+const heroIcon = {
+  marginTop: "16px",
+};
+
+const heading = {
+  fontSize: "28px",
+  fontWeight: "700",
+  color: colors.text,
+  margin: "0 0 24px",
+  textAlign: "center" as const,
+  letterSpacing: "-0.5px",
 };
 
 const paragraph = {
   fontSize: "16px",
-  lineHeight: "26px",
-  color: "#404040",
+  lineHeight: "28px",
+  color: colors.text,
   margin: "0 0 16px",
 };
 
@@ -120,7 +216,7 @@ const buttonContainer = {
 };
 
 const button = {
-  backgroundColor: "#f97316",
+  backgroundColor: colors.primary,
   borderRadius: "8px",
   color: "#ffffff",
   fontSize: "16px",
@@ -128,22 +224,37 @@ const button = {
   textDecoration: "none",
   textAlign: "center" as const,
   display: "inline-block",
-  padding: "14px 32px",
+  padding: "16px 40px",
+  boxShadow: "0 4px 12px rgba(249, 115, 22, 0.3)",
 };
 
-const divider = {
-  borderColor: "#e6ebf1",
+const quickStartBox = {
+  backgroundColor: "#f8fafc",
+  borderRadius: "12px",
+  padding: "24px",
   margin: "32px 0",
+  border: `1px solid ${colors.border}`,
 };
 
-const tipSection = {
-  display: "flex",
-  alignItems: "flex-start",
+const quickStartTitle = {
+  fontSize: "18px",
+  fontWeight: "700",
+  color: colors.text,
+  margin: "0 0 20px",
+  textAlign: "center" as const,
+};
+
+const stepSection = {
   margin: "16px 0",
 };
 
-const tipNumber = {
-  backgroundColor: "#f97316",
+const stepNumberColumn = {
+  width: "40px",
+  verticalAlign: "top" as const,
+};
+
+const stepNumber = {
+  backgroundColor: colors.primary,
   color: "#ffffff",
   borderRadius: "50%",
   width: "28px",
@@ -152,45 +263,82 @@ const tipNumber = {
   textAlign: "center" as const,
   fontSize: "14px",
   fontWeight: "600",
-  margin: "0 12px 0 0",
-  flexShrink: 0,
+  margin: "0",
+  display: "inline-block",
 };
 
-const tipText = {
+const stepText = {
   fontSize: "15px",
   lineHeight: "24px",
-  color: "#404040",
+  color: colors.text,
   margin: "0",
-  flex: 1,
 };
 
-const proTipSection = {
-  backgroundColor: "#f0fdf4",
+const proTipBox = {
+  backgroundColor: colors.successBg,
   borderRadius: "8px",
   padding: "16px",
   margin: "24px 0",
-  borderLeft: "4px solid #22c55e",
+  borderLeft: `4px solid ${colors.successBorder}`,
+};
+
+const proTipIconColumn = {
+  width: "40px",
+  verticalAlign: "top" as const,
+};
+
+const proTipIcon = {
+  fontSize: "24px",
+  margin: "0",
 };
 
 const proTipTitle = {
   fontSize: "14px",
   fontWeight: "600",
-  color: "#166534",
-  margin: "0 0 8px",
+  color: colors.successText,
+  margin: "0 0 6px",
 };
 
 const proTipText = {
   fontSize: "14px",
-  color: "#166534",
+  color: colors.successText,
   margin: "0",
+  lineHeight: "22px",
+};
+
+const featuresBox = {
+  backgroundColor: colors.infoBg,
+  borderRadius: "8px",
+  padding: "20px",
+  margin: "24px 0",
+  borderLeft: `4px solid ${colors.infoBorder}`,
+};
+
+const featuresTitle = {
+  fontSize: "14px",
+  fontWeight: "600",
+  color: colors.infoText,
+  margin: "0 0 12px",
+};
+
+const featureColumn = {
+  paddingLeft: "8px",
+};
+
+const featureItem = {
+  fontSize: "14px",
+  color: colors.infoText,
+  margin: "0 0 8px",
   lineHeight: "22px",
 };
 
 const signoff = {
   fontSize: "16px",
-  lineHeight: "26px",
-  color: "#404040",
+  lineHeight: "28px",
+  color: colors.text,
   margin: "32px 0 0",
+  paddingTop: "24px",
+  borderTop: `1px solid ${colors.border}`,
 };
 
 export default WelcomeEmail;

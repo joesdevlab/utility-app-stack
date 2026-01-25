@@ -91,7 +91,7 @@ export function FAQSection() {
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full bg-white border border-gray-200 rounded-xl p-5 text-left hover:border-orange-200 hover:shadow-sm transition-all duration-200"
+                className="w-full bg-white border border-gray-200 rounded-xl p-5 text-left hover:border-orange-200 hover:shadow-sm transition-all duration-200 cursor-pointer"
               >
                 <div className="flex items-center justify-between gap-4">
                   <h3 className="font-semibold text-gray-900 text-lg">{faq.question}</h3>

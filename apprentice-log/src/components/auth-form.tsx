@@ -14,8 +14,12 @@ import { toast } from "sonner";
 
 type AuthMode = "signin" | "signup" | "forgot" | "verify" | "mfa";
 
-export function AuthForm() {
-  const [mode, setMode] = useState<AuthMode>("signin");
+interface AuthFormProps {
+  defaultMode?: AuthMode;
+}
+
+export function AuthForm({ defaultMode = "signin" }: AuthFormProps) {
+  const [mode, setMode] = useState<AuthMode>(defaultMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");

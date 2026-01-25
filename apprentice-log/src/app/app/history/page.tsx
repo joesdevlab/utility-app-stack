@@ -1,17 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/components/auth-provider";
 import { AuthForm } from "@/components/auth-form";
 import { AppShell } from "@/components/app-shell";
 import { useEntries } from "@/hooks";
 import { LogbookEntryCard } from "@/components/logbook-entry-card";
 import { EntryEditSheet } from "@/components/entry-edit-sheet";
+import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog";
+import { EntryListItem, ViewModeToggle } from "@/components/entry-list-item";
+import { LogoSpinner } from "@/components/animated-logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, Trash2, Pencil, Mic, Loader2, Search, X, ChevronLeft, ChevronRight, Calendar, Filter, FileText } from "lucide-react";
+import { Clock, Trash2, Pencil, Mic, Loader2, Search, X, ChevronLeft, ChevronRight, Calendar, Filter, FileText, LayoutList, LayoutGrid } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -27,7 +30,27 @@ export default function HistoryPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "card">("list");
+  const [expandedEntryId, setExpandedEntryId] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteAllDialogOpen, setDeleteAllDialogOpen] = useState(false);
+  const [entryToDelete, setEntryToDelete] = useState<LogbookEntry | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const ENTRIES_PER_PAGE = 20;
+
+  // Load view mode preference from localStorage
+  useEffect(() => {
+    const savedViewMode = localStorage.getItem("history-view-mode");
+    if (savedViewMode === "list" || savedViewMode === "card") {
+      setViewMode(savedViewMode);
+    }
+  }, []);
+
+  // Save view mode preference
+  const handleViewModeChange = (mode: "list" | "card") => {
+    setViewMode(mode);
+    localStorage.setItem("history-view-mode", mode);
+  };
 
   const handleEditEntry = (entry: LogbookEntry) => {
     setEditingEntry(entry);
@@ -37,6 +60,43 @@ export default function HistoryPage() {
   const handleSaveEntry = async (id: string, updates: Partial<LogbookEntry>) => {
     const result = await updateEntry(id, updates);
     return result;
+  };
+
+  const handleDeleteClick = (entry: LogbookEntry) => {
+    setEntryToDelete(entry);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!entryToDelete?.id) return;
+    setIsDeleting(true);
+    try {
+      await removeEntry(entryToDelete.id);
+      toast.success("Entry deleted");
+      setDeleteDialogOpen(false);
+      setEntryToDelete(null);
+    } catch {
+      toast.error("Failed to delete entry");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleConfirmDeleteAll = async () => {
+    setIsDeleting(true);
+    try {
+      await clearEntries();
+      toast.success("All entries cleared");
+      setDeleteAllDialogOpen(false);
+    } catch {
+      toast.error("Failed to clear entries");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const toggleEntryExpansion = (entryId: string) => {
+    setExpandedEntryId((prev) => (prev === entryId ? null : entryId));
   };
 
   // Filter entries based on search query and date range
@@ -89,10 +149,7 @@ export default function HistoryPage() {
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50/30 to-background">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
-          <p className="text-sm text-muted-foreground">Loading...</p>
-        </div>
+        <LogoSpinner size="lg" />
       </div>
     );
   }
@@ -195,21 +252,22 @@ export default function HistoryPage() {
               </div>
             </div>
           </div>
-          {entries.length > 0 && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 text-gray-400 hover:text-destructive hover:bg-red-50"
-              onClick={() => {
-                if (confirm("Clear all entries? This cannot be undone.")) {
-                  clearEntries();
-                }
-              }}
-              aria-label="Clear all entries"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {entries.length > 0 && (
+              <>
+                <ViewModeToggle viewMode={viewMode} onViewModeChange={handleViewModeChange} />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-gray-400 hover:text-destructive hover:bg-red-50"
+                  onClick={() => setDeleteAllDialogOpen(true)}
+                  aria-label="Clear all entries"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Search and Filters */}
@@ -387,7 +445,7 @@ export default function HistoryPage() {
                   <div className="h-px flex-1 bg-gradient-to-r from-transparent via-orange-200 to-transparent" />
                 </div>
 
-                <div className="space-y-3">
+                <div className={viewMode === "list" ? "space-y-2" : "space-y-3"}>
                   {weekEntries.map((entry, index) => (
                     <motion.div
                       key={entry.id || index}
@@ -395,39 +453,48 @@ export default function HistoryPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.03 }}
                     >
-                      <div className="relative group">
-                        <LogbookEntryCard entry={entry} />
-                        {entry.id && (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="absolute top-3 right-14 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8 bg-white/90 backdrop-blur-sm border-gray-200 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600"
-                              onClick={() => handleEditEntry(entry)}
-                              aria-label="Edit entry"
+                      {viewMode === "list" ? (
+                        <EntryListItem
+                          entry={entry}
+                          isExpanded={expandedEntryId === entry.id}
+                          onToggleExpand={() => entry.id && toggleEntryExpansion(entry.id)}
+                          onEdit={handleEditEntry}
+                          onDelete={(entryId) => {
+                            const entryToDelete = entries.find((e) => e.id === entryId);
+                            if (entryToDelete) handleDeleteClick(entryToDelete);
+                          }}
+                        />
+                      ) : (
+                        <div className="relative group">
+                          <LogbookEntryCard entry={entry} />
+                          {entry.id && (
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              className="absolute top-3 right-14 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                             >
-                              <Pencil className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8 bg-white/90 backdrop-blur-sm border-gray-200 hover:border-red-300 hover:bg-red-50 hover:text-destructive"
-                              onClick={() => {
-                                if (confirm("Delete this entry?")) {
-                                  removeEntry(entry.id!);
-                                }
-                              }}
-                              aria-label="Delete entry"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </motion.div>
-                        )}
-                      </div>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 bg-white/90 backdrop-blur-sm border-gray-200 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600"
+                                onClick={() => handleEditEntry(entry)}
+                                aria-label="Edit entry"
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 bg-white/90 backdrop-blur-sm border-gray-200 hover:border-red-300 hover:bg-red-50 hover:text-destructive"
+                                onClick={() => handleDeleteClick(entry)}
+                                aria-label="Delete entry"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </motion.div>
+                          )}
+                        </div>
+                      )}
                     </motion.div>
                   ))}
                 </div>
@@ -475,6 +542,42 @@ export default function HistoryPage() {
         open={editSheetOpen}
         onOpenChange={setEditSheetOpen}
         onSave={handleSaveEntry}
+      />
+
+      {/* Delete Single Entry Dialog */}
+      <DeleteConfirmationDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
+        title="Delete Entry?"
+        description="This will permanently delete this entry. This action cannot be undone."
+        isLoading={isDeleting}
+        variant="single"
+        entryPreview={
+          entryToDelete
+            ? {
+                date: new Date(entryToDelete.date).toLocaleDateString("en-NZ", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                }),
+                hours: entryToDelete.totalHours,
+                siteName: entryToDelete.siteName,
+              }
+            : undefined
+        }
+      />
+
+      {/* Delete All Entries Dialog */}
+      <DeleteConfirmationDialog
+        open={deleteAllDialogOpen}
+        onOpenChange={setDeleteAllDialogOpen}
+        onConfirm={handleConfirmDeleteAll}
+        title="Clear All Entries?"
+        description={`This will permanently delete all ${entries.length} entries from your logbook.`}
+        confirmText="Clear All"
+        isLoading={isDeleting}
+        variant="all"
       />
     </AppShell>
   );

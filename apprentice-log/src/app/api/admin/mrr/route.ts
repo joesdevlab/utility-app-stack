@@ -3,8 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 
 // Admin emails that can access this endpoint
 const ADMIN_EMAILS = [
-  "admin@apprenticelog.nz",
-  "demo@apprenticelog.nz", // For testing
+  "joe@apprenticelog.nz",
+  "joe@laikadynamics.co.nz",
+  "joseph.doidge@gmail.com",
 ];
 
 // Price per month in NZD

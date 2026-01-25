@@ -124,7 +124,7 @@ export function EmployerPricingSection() {
                 </div>
               )}
               <div
-                className={`h-full rounded-2xl p-8 transition-all duration-300 ${
+                className={`h-full flex flex-col rounded-2xl p-8 transition-all duration-300 ${
                   plan.popular
                     ? "bg-white border-2 border-[rgb(18_49_72)] shadow-xl shadow-[rgb(18_49_72)]/10"
                     : "bg-white border border-gray-200 hover:border-gray-300 hover:shadow-lg"
@@ -140,7 +140,7 @@ export function EmployerPricingSection() {
                   <span className="text-gray-500">{plan.period}</span>
                 </div>
 
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-3 mb-8 flex-grow">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <CheckCircle className={`h-5 w-5 mt-0.5 flex-shrink-0 ${plan.popular ? "text-[rgb(18_49_72)]" : "text-green-500"}`} />
@@ -149,9 +149,9 @@ export function EmployerPricingSection() {
                   ))}
                 </ul>
 
-                <Link href={plan.href} className="block">
+                <Link href={plan.href} className="block mt-auto">
                   <Button
-                    className={`w-full py-6 text-base font-semibold ${
+                    className={`w-full py-6 text-base font-semibold cursor-pointer ${
                       plan.popular
                         ? "bg-[rgb(18_49_72)] hover:bg-[rgb(12_35_52)] text-white shadow-lg shadow-[rgb(18_49_72)]/25"
                         : "bg-gray-900 hover:bg-gray-800 text-white"
