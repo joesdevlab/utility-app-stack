@@ -11,7 +11,7 @@ import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, PenLine, RotateCcw, Save, CheckCircle2, Loader2, Camera } from "lucide-react";
+import { Mic, PenLine, RotateCcw, Save, CheckCircle2, Loader2, Camera, X } from "lucide-react";
 import { toast } from "sonner";
 import { useEntries } from "@/hooks";
 import type { LogbookEntry } from "@/types";
@@ -349,22 +349,34 @@ export default function Home() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25 }}
-                className="flex gap-3 pt-2"
+                className="space-y-3 pt-2"
               >
+                {/* Primary actions: Redo and Save */}
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1 h-12 rounded-xl border-gray-200 hover:bg-gray-50"
+                    onClick={handleReset}
+                  >
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Redo
+                  </Button>
+                  <Button
+                    className="flex-1 h-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg shadow-orange-500/25"
+                    onClick={handleSave}
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Entry
+                  </Button>
+                </div>
+                {/* Discard option */}
                 <Button
-                  variant="outline"
-                  className="flex-1 h-12 rounded-xl border-gray-200 hover:bg-gray-50"
+                  variant="ghost"
+                  className="w-full h-10 text-gray-500 hover:text-red-600 hover:bg-red-50"
                   onClick={handleReset}
                 >
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Redo
-                </Button>
-                <Button
-                  className="flex-1 h-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg shadow-orange-500/25"
-                  onClick={handleSave}
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Entry
+                  <X className="h-4 w-4 mr-2" />
+                  Discard Entry
                 </Button>
               </motion.div>
             </motion.div>
