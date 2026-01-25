@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { VoiceRecorder } from "@/components/voice-recorder";
 import { ManualEntryForm } from "@/components/manual-entry-form";
@@ -11,15 +11,17 @@ import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, PenLine, RotateCcw, Save, CheckCircle2, Loader2, Camera, X, Clock, History, Sparkles } from "lucide-react";
+import { Mic, PenLine, RotateCcw, Save, CheckCircle2, Loader2, Camera, X, Clock, History, Sparkles, CloudOff } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useEntries } from "@/hooks";
+import { useOfflineSync } from "@/hooks/use-offline-sync";
 import type { LogbookEntry } from "@/types";
 import { PhotoUpload } from "@/components/photo-upload";
 import { PendingInvitations } from "@/components/pending-invitations";
 import { LogoSpinner } from "@/components/animated-logo";
 import { ProcessingStepper, type ProcessingPhase } from "@/components/processing-stepper";
+import { PendingEntriesBanner } from "@/components/pending-entries-banner";
 
 type AppState = "idle" | "processing" | "result" | "saved";
 type EntryMode = "voice" | "manual";
@@ -34,6 +36,38 @@ export default function Home() {
   const [voiceEntryPhotos, setVoiceEntryPhotos] = useState<string[]>([]);
   const [processingPhase, setProcessingPhase] = useState<ProcessingPhase>("idle");
   const { addEntry } = useEntries(user?.id);
+
+  // Wrapper function that returns the entry or throws
+  const submitEntryToServer = useCallback(
+    async (entryData: Omit<LogbookEntry, "id" | "createdAt">): Promise<LogbookEntry> => {
+      const saved = await addEntry(entryData);
+      if (!saved) {
+        throw new Error("Failed to save entry to server");
+      }
+      return saved;
+    },
+    [addEntry]
+  );
+
+  // Offline sync hook
+  const {
+    isOnline,
+    pendingCount,
+    pendingEntries,
+    isSyncing,
+    saveOffline,
+    syncAll,
+    removePending,
+    retryEntry,
+  } = useOfflineSync({
+    submitEntry: submitEntryToServer,
+    onSyncSuccess: (syncedEntry) => {
+      toast.success(`Entry synced: ${syncedEntry.tasks[0]?.description?.slice(0, 30) || "Untitled"}...`);
+    },
+    onSyncError: (error, pendingEntry) => {
+      toast.error(`Failed to sync entry: ${error}`);
+    },
+  });
 
   // Verify server-side auth on mount
   useEffect(() => {
@@ -151,13 +185,40 @@ export default function Home() {
         ...entry,
         photos: voiceEntryPhotos.length > 0 ? voiceEntryPhotos : undefined,
       };
+
+      // If offline, save locally
+      if (!isOnline) {
+        try {
+          await saveOffline(entryWithPhotos);
+          setState("saved");
+          setVoiceEntryPhotos([]);
+          toast.success("Entry saved offline - will sync when you're back online", {
+            icon: <CloudOff className="h-4 w-4" />,
+          });
+        } catch {
+          toast.error("Failed to save entry offline");
+        }
+        return;
+      }
+
+      // Online - try to save directly
       const saved = await addEntry(entryWithPhotos);
       if (saved) {
         setState("saved");
         setVoiceEntryPhotos([]);
         toast.success("Entry saved to cloud!");
       } else {
-        toast.error("Failed to save entry");
+        // Failed to save online - save offline as fallback
+        try {
+          await saveOffline(entryWithPhotos);
+          setState("saved");
+          setVoiceEntryPhotos([]);
+          toast.info("Entry saved offline - will retry sync automatically", {
+            icon: <CloudOff className="h-4 w-4" />,
+          });
+        } catch {
+          toast.error("Failed to save entry");
+        }
       }
     }
   };
@@ -165,13 +226,31 @@ export default function Home() {
   const handleManualSubmit = async (entryData: Omit<LogbookEntry, "id" | "createdAt">) => {
     setIsManualProcessing(true);
     try {
+      // If offline, save locally
+      if (!isOnline) {
+        await saveOffline(entryData);
+        setState("saved");
+        toast.success("Entry saved offline - will sync when you're back online", {
+          icon: <CloudOff className="h-4 w-4" />,
+        });
+        return;
+      }
+
+      // Online - try to save directly
       const saved = await addEntry(entryData);
       if (saved) {
         setState("saved");
         toast.success("Entry saved!");
       } else {
-        toast.error("Failed to save entry");
+        // Failed to save online - save offline as fallback
+        await saveOffline(entryData);
+        setState("saved");
+        toast.info("Entry saved offline - will retry sync automatically", {
+          icon: <CloudOff className="h-4 w-4" />,
+        });
       }
+    } catch {
+      toast.error("Failed to save entry");
     } finally {
       setIsManualProcessing(false);
     }
@@ -190,6 +269,21 @@ export default function Home() {
       <div className="px-4 py-4 max-w-lg mx-auto">
         {/* Show pending employer invitations */}
         <PendingInvitations />
+
+        {/* Pending offline entries banner */}
+        {pendingCount > 0 && (
+          <div className="mb-4">
+            <PendingEntriesBanner
+              pendingCount={pendingCount}
+              pendingEntries={pendingEntries}
+              isSyncing={isSyncing}
+              isOnline={isOnline}
+              onSyncAll={syncAll}
+              onRetryEntry={retryEntry}
+              onRemoveEntry={removePending}
+            />
+          </div>
+        )}
 
         <AnimatePresence mode="wait">
           {/* Idle State - Ready to Record or Manual Entry */}
@@ -394,7 +488,11 @@ export default function Home() {
             >
               <Card className="w-full border-gray-200 shadow-lg overflow-hidden">
                 {/* Success Banner */}
-                <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-6 py-4">
+                <div className={`px-6 py-4 ${
+                  pendingCount > 0
+                    ? "bg-gradient-to-r from-amber-500 to-orange-500"
+                    : "bg-gradient-to-r from-green-500 to-emerald-500"
+                }`}>
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
@@ -402,11 +500,17 @@ export default function Home() {
                     className="flex items-center justify-center gap-3"
                   >
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                      <CheckCircle2 className="h-7 w-7 text-white" />
+                      {pendingCount > 0 ? (
+                        <CloudOff className="h-7 w-7 text-white" />
+                      ) : (
+                        <CheckCircle2 className="h-7 w-7 text-white" />
+                      )}
                     </div>
                     <div className="text-left">
                       <h2 className="text-xl font-bold text-white">Entry Saved!</h2>
-                      <p className="text-sm text-white/80">Synced to cloud</p>
+                      <p className="text-sm text-white/80">
+                        {pendingCount > 0 ? "Saved offline - will sync later" : "Synced to cloud"}
+                      </p>
                     </div>
                   </motion.div>
                 </div>
