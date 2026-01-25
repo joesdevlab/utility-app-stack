@@ -11,7 +11,8 @@ import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, PenLine, RotateCcw, Save, CheckCircle2, Loader2, Camera, X } from "lucide-react";
+import { Mic, PenLine, RotateCcw, Save, CheckCircle2, Loader2, Camera, X, Clock, History, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { useEntries } from "@/hooks";
 import type { LogbookEntry } from "@/types";
@@ -382,7 +383,7 @@ export default function Home() {
             </motion.div>
           )}
 
-          {/* Saved State - Confirmation */}
+          {/* Saved State - Enhanced Confirmation */}
           {state === "saved" && (
             <motion.div
               key="saved"
@@ -391,30 +392,89 @@ export default function Home() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="flex flex-col items-center"
             >
-              <Card className="w-full border-gray-200 shadow-lg">
-                <CardContent className="flex flex-col items-center py-12 text-center">
+              <Card className="w-full border-gray-200 shadow-lg overflow-hidden">
+                {/* Success Banner */}
+                <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-6 py-4">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className="relative mb-6"
+                    className="flex items-center justify-center gap-3"
                   >
-                    <div className="absolute inset-0 rounded-full bg-green-500/20 blur-xl" />
-                    <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 shadow-xl shadow-green-500/30">
-                      <CheckCircle2 className="h-12 w-12 text-white" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                      <CheckCircle2 className="h-7 w-7 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <h2 className="text-xl font-bold text-white">Entry Saved!</h2>
+                      <p className="text-sm text-white/80">Synced to cloud</p>
                     </div>
                   </motion.div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Entry Saved!</h2>
-                  <p className="text-muted-foreground mb-8 max-w-xs">
-                    Your logbook entry has been saved and synced to the cloud.
-                  </p>
-                  <Button
-                    className="w-full h-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg shadow-orange-500/25"
-                    onClick={handleReset}
+                </div>
+
+                <CardContent className="py-6 px-6 space-y-5">
+                  {/* Entry Summary */}
+                  {entry && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                      className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-xl p-4 border border-gray-100"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Just Logged</span>
+                        <div className="flex items-center gap-1 bg-orange-100 px-2 py-0.5 rounded-full">
+                          <Clock className="h-3 w-3 text-orange-600" />
+                          <span className="text-xs font-bold text-orange-600">{entry.totalHours}h</span>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-700 line-clamp-2">
+                        {entry.tasks[0]?.description || "Entry saved successfully"}
+                      </p>
+                      {entry.tasks.length > 1 && (
+                        <p className="text-xs text-gray-500 mt-1">+{entry.tasks.length - 1} more tasks</p>
+                      )}
+                    </motion.div>
+                  )}
+
+                  {/* Motivational Message */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="flex items-center gap-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-100"
                   >
-                    <Mic className="h-4 w-4 mr-2" />
-                    Record Another Entry
-                  </Button>
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shrink-0">
+                      <Sparkles className="h-4 w-4 text-white" />
+                    </div>
+                    <p className="text-sm text-amber-800">
+                      <span className="font-semibold">Great work!</span> Every entry brings you closer to completing your apprenticeship.
+                    </p>
+                  </motion.div>
+
+                  {/* Action Buttons */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="space-y-3"
+                  >
+                    <Button
+                      className="w-full h-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg shadow-orange-500/25"
+                      onClick={handleReset}
+                    >
+                      <Mic className="h-4 w-4 mr-2" />
+                      Record Another Entry
+                    </Button>
+                    <Link href="/app/history" className="block">
+                      <Button
+                        variant="outline"
+                        className="w-full h-11 rounded-xl border-gray-200 hover:bg-gray-50 hover:border-orange-200"
+                      >
+                        <History className="h-4 w-4 mr-2" />
+                        View All Entries
+                      </Button>
+                    </Link>
+                  </motion.div>
                 </CardContent>
               </Card>
             </motion.div>

@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { motion } from "framer-motion";
-import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Building2, Shield, ShieldCheck, ShieldOff, Trash2, Gift } from "lucide-react";
+import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Building2, Shield, ShieldCheck, ShieldOff, Trash2, Gift, Settings2, ChevronRight } from "lucide-react";
+import { LogoSpinner } from "@/components/animated-logo";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
@@ -42,10 +43,7 @@ export default function SettingsPage() {
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50/30 to-background">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
-          <p className="text-sm text-muted-foreground">Loading...</p>
-        </div>
+        <LogoSpinner size="lg" />
       </div>
     );
   }
@@ -184,18 +182,42 @@ export default function SettingsPage() {
   return (
     <AppShell>
       <div className="px-4 py-4">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
-            <User className="h-5 w-5 text-orange-600" />
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-gray-900">Settings</h2>
-            <p className="text-sm text-muted-foreground">
-              Customize your experience
-            </p>
-          </div>
-        </div>
+        {/* Profile Header Card */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-5"
+        >
+          <Card className="border-gray-200 shadow-md overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-5">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center ring-2 ring-white/30">
+                  <User className="h-7 w-7 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-lg font-bold text-white truncate">
+                    {user.email?.split("@")[0] || "Apprentice"}
+                  </h2>
+                  <p className="text-sm text-white/80 truncate">
+                    {user.email}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <CardContent className="py-3 px-4 bg-gradient-to-r from-orange-50/50 to-transparent">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  <span>Synced to cloud</span>
+                </div>
+                <div className="flex items-center gap-1 text-xs text-orange-600 font-medium">
+                  <Settings2 className="h-3.5 w-3.5" />
+                  Settings
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
         <div className="space-y-4">
           {/* Security Card */}
@@ -292,14 +314,14 @@ export default function SettingsPage() {
                     const Icon = item.icon;
                     const content = (
                       <>
-                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200 ${
                           item.destructive
-                            ? "bg-red-50 group-hover:bg-red-100"
+                            ? "bg-red-50 group-hover:bg-red-100 group-hover:scale-105"
                             : item.href
-                            ? "bg-blue-50 group-hover:bg-blue-100"
-                            : "bg-gray-100 group-hover:bg-orange-100"
+                            ? "bg-gradient-to-br from-blue-50 to-blue-100/50 group-hover:from-blue-100 group-hover:to-blue-100 group-hover:scale-105"
+                            : "bg-gradient-to-br from-gray-50 to-gray-100 group-hover:from-orange-50 group-hover:to-orange-100 group-hover:scale-105"
                         }`}>
-                          <Icon className={`h-4.5 w-4.5 ${
+                          <Icon className={`h-5 w-5 transition-colors ${
                             item.destructive
                               ? "text-red-500"
                               : item.href
@@ -309,13 +331,13 @@ export default function SettingsPage() {
                         </div>
                         <div className="flex-1 text-left min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className={`font-medium text-sm truncate ${
+                            <span className={`font-semibold text-sm truncate ${
                               item.destructive ? "text-red-600" : "text-gray-900"
                             }`}>
                               {item.label}
                             </span>
                             {item.badge && (
-                              <Badge variant="secondary" className="text-[10px] bg-gray-100 text-gray-500 border-0 font-medium shrink-0">
+                              <Badge variant="secondary" className="text-[10px] bg-gradient-to-r from-gray-100 to-gray-50 text-gray-500 border border-gray-200 font-medium shrink-0">
                                 {item.badge}
                               </Badge>
                             )}
@@ -329,6 +351,9 @@ export default function SettingsPage() {
                             {item.description}
                           </p>
                         </div>
+                        {(item.href || item.onClick) && !item.destructive && (
+                          <ChevronRight className="h-4 w-4 text-gray-300 group-hover:text-gray-500 group-hover:translate-x-0.5 transition-all shrink-0" />
+                        )}
                       </>
                     );
 

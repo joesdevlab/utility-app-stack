@@ -226,37 +226,57 @@ export default function BCITOCompliancePage() {
   return (
     <AppShell>
       <div className="px-4 py-4">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-5">
-          <Link href="/app/settings">
-            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
-          <div className="flex-1">
-            <h2 className="text-lg font-bold text-gray-900">BCITO Compliance</h2>
-            <p className="text-sm text-muted-foreground">
-              Apprentice logbook requirements
-            </p>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
-            <HardHat className="h-5 w-5 text-orange-600" />
-          </div>
-        </div>
+        {/* Header Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-5"
+        >
+          <Card className="border-gray-200 shadow-md overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 px-4 py-5">
+              <div className="flex items-center gap-4">
+                <Link href="/app/settings">
+                  <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl bg-white/20 hover:bg-white/30 text-white">
+                    <ArrowLeft className="h-5 w-5" />
+                  </Button>
+                </Link>
+                <div className="flex-1">
+                  <h2 className="text-xl font-bold text-white">BCITO Compliance</h2>
+                  <p className="text-sm text-white/80">
+                    Your guide to apprentice logbook requirements
+                  </p>
+                </div>
+                <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <HardHat className="h-8 w-8 text-white" />
+                </div>
+              </div>
+            </div>
 
-        {/* Quick Reference Cards */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <QuickRefCard
-            value="4 years"
-            label="Typical Duration"
-            icon={<Clock className="h-4 w-4 text-orange-500" />}
-          />
-          <QuickRefCard
-            value="8,000+"
-            label="Required Hours"
-            icon={<Target className="h-4 w-4 text-blue-500" />}
-          />
-        </div>
+            {/* Quick Stats */}
+            <CardContent className="py-4 px-4 bg-gradient-to-r from-orange-50/50 to-amber-50/50">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
+                    <Clock className="h-5 w-5 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-gray-900">4 years</p>
+                    <p className="text-xs text-gray-500">Typical Duration</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                    <Target className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-gray-900">8,000+</p>
+                    <p className="text-xs text-gray-500">Required Hours</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Accordion Sections */}
         <div className="space-y-3">
@@ -431,27 +451,6 @@ function UnitStandardBadge({ code, title }: { code: string; title: string }) {
   );
 }
 
-function QuickRefCard({
-  value,
-  label,
-  icon,
-}: {
-  value: string;
-  label: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <Card className="border-gray-200">
-      <CardContent className="p-3">
-        <div className="flex items-center gap-2 mb-1">
-          {icon}
-          <span className="text-lg font-bold text-gray-900">{value}</span>
-        </div>
-        <p className="text-xs text-gray-500">{label}</p>
-      </CardContent>
-    </Card>
-  );
-}
 
 function ExternalLinkButton({
   href,

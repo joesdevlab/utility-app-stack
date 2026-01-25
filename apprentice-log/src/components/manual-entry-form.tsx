@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, Save, Loader2, Camera } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Camera, Calendar, MapPin, User, ClipboardList, FileText, ShieldCheck, Wrench, BookOpen, Clock } from "lucide-react";
 import type { LogbookTask, LogbookEntry } from "@/types";
 import { PhotoUpload } from "./photo-upload";
 
@@ -99,80 +100,127 @@ export function ManualEntryForm({ onSubmit, isProcessing }: ManualEntryFormProps
   const totalHours = tasks.reduce((sum, t) => sum + (t.hours || 0), 0);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md mx-auto">
-      <Card>
-        <CardContent className="pt-6 space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 w-full">
+      {/* Date & Location Card */}
+      <Card className="border-gray-200 shadow-md overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-3">
+          <div className="flex items-center gap-2 text-white">
+            <Calendar className="h-4 w-4" />
+            <span className="text-sm font-semibold">Entry Details</span>
+          </div>
+        </div>
+        <CardContent className="pt-4 space-y-4">
           {/* Date */}
-          <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="date" className="text-xs font-semibold text-gray-500">Date</Label>
             <Input
               id="date"
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
+              className="h-11 rounded-xl border-gray-200 focus:border-blue-300 focus:ring-blue-200"
             />
           </div>
 
           {/* Site & Supervisor */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label htmlFor="siteName">Site Name</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="siteName" className="text-xs font-semibold text-gray-500 flex items-center gap-1">
+                <MapPin className="h-3 w-3" />
+                Site Name
+              </Label>
               <Input
                 id="siteName"
                 placeholder="e.g., 123 Main St"
                 value={siteName}
                 onChange={(e) => setSiteName(e.target.value)}
+                className="h-10 rounded-xl border-gray-200 focus:border-blue-300 focus:ring-blue-200 text-sm"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="supervisor">Supervisor</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="supervisor" className="text-xs font-semibold text-gray-500 flex items-center gap-1">
+                <User className="h-3 w-3" />
+                Supervisor
+              </Label>
               <Input
                 id="supervisor"
                 placeholder="e.g., John Smith"
                 value={supervisor}
                 onChange={(e) => setSupervisor(e.target.value)}
+                className="h-10 rounded-xl border-gray-200 focus:border-blue-300 focus:ring-blue-200 text-sm"
               />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Tasks */}
-      <Card>
-        <CardContent className="pt-6 space-y-4">
+      {/* Tasks Card */}
+      <Card className="border-gray-200 shadow-md overflow-hidden">
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-3">
           <div className="flex items-center justify-between">
-            <Label>Tasks</Label>
-            <Badge variant="secondary" className="bg-blue-500/10 text-blue-600">
+            <div className="flex items-center gap-2 text-white">
+              <ClipboardList className="h-4 w-4" />
+              <span className="text-sm font-semibold">Tasks</span>
+            </div>
+            <Badge className="bg-white/20 text-white border-0 font-bold">
+              <Clock className="h-3 w-3 mr-1" />
               {totalHours}h total
             </Badge>
           </div>
+        </div>
+        <CardContent className="pt-4 space-y-3">
+          <AnimatePresence>
+            {tasks.map((task, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, height: 0 }}
+                className="rounded-xl bg-gradient-to-br from-gray-50 to-orange-50/30 border border-gray-100 p-3 space-y-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="w-6 h-6 rounded-lg bg-orange-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                    {index + 1}
+                  </div>
+                  {tasks.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="shrink-0 h-6 w-6 text-gray-400 hover:text-red-500 hover:bg-red-50"
+                      onClick={() => handleRemoveTask(index)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                </div>
 
-          {tasks.map((task, index) => (
-            <div
-              key={index}
-              className="rounded-lg border bg-muted/30 p-3 space-y-3"
-            >
-              <div className="flex items-start gap-2">
-                <div className="flex-1 space-y-3">
+                <div className="space-y-3">
                   <div className="space-y-1">
-                    <Label className="text-xs">Description *</Label>
+                    <Label className="text-xs font-semibold text-gray-500">What did you do? *</Label>
                     <Input
-                      placeholder="What did you do?"
+                      placeholder="Describe the task..."
                       value={task.description}
                       onChange={(e) =>
                         handleUpdateTask(index, "description", e.target.value)
                       }
                       required={index === 0}
+                      className="h-10 rounded-xl border-gray-200 focus:border-orange-300 focus:ring-orange-200 text-sm"
                     />
                   </div>
+
                   <div className="grid grid-cols-3 gap-2">
                     <div className="space-y-1">
-                      <Label className="text-xs">Hours</Label>
+                      <Label className="text-xs font-semibold text-gray-500 flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        Hours
+                      </Label>
                       <Input
                         type="number"
                         min="0"
                         step="0.5"
+                        placeholder="0"
                         value={task.hours || ""}
                         onChange={(e) =>
                           handleUpdateTask(
@@ -181,74 +229,81 @@ export function ManualEntryForm({ onSubmit, isProcessing }: ManualEntryFormProps
                             parseFloat(e.target.value) || 0
                           )
                         }
+                        className="h-9 rounded-xl border-gray-200 focus:border-orange-300 focus:ring-orange-200 text-sm"
                       />
                     </div>
                     <div className="space-y-1 col-span-2">
-                      <Label className="text-xs">Tools (comma separated)</Label>
+                      <Label className="text-xs font-semibold text-gray-500 flex items-center gap-1">
+                        <Wrench className="h-3 w-3" />
+                        Tools
+                      </Label>
                       <Input
-                        placeholder="e.g., Drill, Saw"
+                        placeholder="Drill, Saw..."
                         value={task.tools.join(", ")}
                         onChange={(e) => handleToolsChange(index, e.target.value)}
+                        className="h-9 rounded-xl border-gray-200 focus:border-orange-300 focus:ring-orange-200 text-sm"
                       />
                     </div>
                   </div>
+
                   <div className="space-y-1">
-                    <Label className="text-xs">Skills (comma separated)</Label>
+                    <Label className="text-xs font-semibold text-gray-500 flex items-center gap-1">
+                      <BookOpen className="h-3 w-3" />
+                      Skills learned
+                    </Label>
                     <Input
-                      placeholder="e.g., Framing, Measuring"
+                      placeholder="Framing, Measuring..."
                       value={task.skills.join(", ")}
                       onChange={(e) => handleSkillsChange(index, e.target.value)}
+                      className="h-9 rounded-xl border-gray-200 focus:border-orange-300 focus:ring-orange-200 text-sm"
                     />
                   </div>
                 </div>
-                {tasks.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="shrink-0 h-8 w-8 text-muted-foreground hover:text-destructive"
-                    onClick={() => handleRemoveTask(index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            </div>
-          ))}
+              </motion.div>
+            ))}
+          </AnimatePresence>
 
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="w-full"
+            className="w-full h-10 rounded-xl border-dashed border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300"
             onClick={handleAddTask}
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Task
+            Add Another Task
           </Button>
         </CardContent>
       </Card>
 
-      {/* Notes & Safety */}
-      <Card>
-        <CardContent className="pt-6 space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+      {/* Notes & Safety Card */}
+      <Card className="border-gray-200 shadow-md overflow-hidden">
+        <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-3">
+          <div className="flex items-center gap-2 text-white">
+            <FileText className="h-4 w-4" />
+            <span className="text-sm font-semibold">Notes & Safety</span>
+          </div>
+        </div>
+        <CardContent className="pt-4 space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="notes" className="text-xs font-semibold text-gray-500">Additional Notes</Label>
             <textarea
               id="notes"
-              className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              placeholder="Additional notes..."
+              className="flex min-h-[70px] w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-green-200 focus:border-green-300 disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="Any other details about your day..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="safety">Safety Observations</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="safety" className="text-xs font-semibold text-gray-500 flex items-center gap-1">
+              <ShieldCheck className="h-3 w-3 text-green-600" />
+              Safety Observations
+            </Label>
             <textarea
               id="safety"
-              className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              placeholder="PPE worn, safety measures..."
+              className="flex min-h-[70px] w-full rounded-xl border border-gray-200 bg-green-50/50 px-3 py-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-green-200 focus:border-green-300 disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="PPE worn, safety measures taken, hazards identified..."
               value={safetyObservations}
               onChange={(e) => setSafetyObservations(e.target.value)}
             />
@@ -256,13 +311,15 @@ export function ManualEntryForm({ onSubmit, isProcessing }: ManualEntryFormProps
         </CardContent>
       </Card>
 
-      {/* Photos */}
-      <Card>
-        <CardContent className="pt-6 space-y-4">
-          <div className="flex items-center gap-2">
-            <Camera className="h-4 w-4 text-orange-500" />
-            <Label>Photos</Label>
+      {/* Photos Card */}
+      <Card className="border-gray-200 shadow-md overflow-hidden">
+        <div className="bg-gradient-to-r from-purple-500 to-violet-500 px-4 py-3">
+          <div className="flex items-center gap-2 text-white">
+            <Camera className="h-4 w-4" />
+            <span className="text-sm font-semibold">Photos (Optional)</span>
           </div>
+        </div>
+        <CardContent className="pt-4">
           <PhotoUpload
             photos={photos}
             onPhotosChange={setPhotos}
@@ -272,18 +329,23 @@ export function ManualEntryForm({ onSubmit, isProcessing }: ManualEntryFormProps
         </CardContent>
       </Card>
 
-      <Button
-        type="submit"
-        className="w-full bg-blue-500 hover:bg-blue-600"
-        disabled={isProcessing || tasks.every((t) => !t.description.trim())}
+      {/* Submit Button */}
+      <motion.div
+        whileTap={{ scale: 0.98 }}
       >
-        {isProcessing ? (
-          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-        ) : (
-          <Save className="h-4 w-4 mr-2" />
-        )}
-        Save Entry
-      </Button>
+        <Button
+          type="submit"
+          className="w-full h-14 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg shadow-orange-500/25 text-base font-semibold"
+          disabled={isProcessing || tasks.every((t) => !t.description.trim())}
+        >
+          {isProcessing ? (
+            <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+          ) : (
+            <Save className="h-5 w-5 mr-2" />
+          )}
+          Save Entry
+        </Button>
+      </motion.div>
     </form>
   );
 }
