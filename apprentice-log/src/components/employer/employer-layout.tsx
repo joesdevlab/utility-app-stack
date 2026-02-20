@@ -48,7 +48,7 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
 
   // Redirect if not authenticated
   if (!user) {
-    redirect("/auth/login?redirect=/employer");
+    redirect("/auth?redirect=/employer");
   }
 
   return (

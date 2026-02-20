@@ -75,7 +75,10 @@
       "Bash(find:*)",
       "Bash(grep:*)",
       "Bash(npx supabase link:*)",
-      "Bash(npx supabase login --help:*)"
+      "Bash(npx supabase login --help:*)",
+      "Bash(git status:*)",
+      "Bash(git reset:*)",
+      "Bash(npx vercel:*)"
     ]
   }
 }
