@@ -15,11 +15,11 @@ export function AppShell({ children }: AppShellProps) {
   // Get page title based on pathname
   const getPageTitle = () => {
     switch (pathname) {
-      case "/":
+      case "/app":
         return "Record Entry";
-      case "/history":
+      case "/app/history":
         return "Entry History";
-      case "/settings":
+      case "/app/settings":
         return "Settings";
       default:
         return "Apprentice Log";

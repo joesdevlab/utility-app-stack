@@ -129,13 +129,13 @@ export default function TermsOfServicePage() {
               If you have questions about these terms, please contact us at:
             </p>
             <p className="text-muted-foreground mt-2">
-              <strong>Email:</strong> legal@apprenticelog.app
+              <strong>Email:</strong> legal@apprenticelog.nz
             </p>
           </section>
         </div>
 
         <div className="mt-12 pt-6 border-t">
-          <a href="/" className="text-orange-500 hover:text-orange-600 font-medium">
+          <a href="/app" className="text-orange-500 hover:text-orange-600 font-medium">
             ← Back to App
           </a>
         </div>

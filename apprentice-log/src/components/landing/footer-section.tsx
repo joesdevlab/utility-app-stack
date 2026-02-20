@@ -27,12 +27,12 @@ export function FooterSection() {
             <Link href="/terms" className="text-gray-600 hover:text-orange-600 text-sm transition-colors">
               Terms of Service
             </Link>
-            <a
-              href="mailto:support@apprenticelog.app"
+            <Link
+              href="/contact"
               className="text-gray-600 hover:text-orange-600 text-sm transition-colors"
             >
               Contact
-            </a>
+            </Link>
           </nav>
 
           {/* Social & App Store */}

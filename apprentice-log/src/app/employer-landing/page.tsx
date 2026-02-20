@@ -360,15 +360,15 @@ export default function EmployerLandingPage() {
               <Badge variant="secondary" className="ml-2">For Employers</Badge>
             </div>
             <div className="flex gap-6 text-sm">
-              <Link href="/landing" className="hover:text-white transition-colors">
+              <Link href="/" className="hover:text-white transition-colors">
                 For Apprentices
               </Link>
               <Link href="#pricing" className="hover:text-white transition-colors">
                 Pricing
               </Link>
-              <a href="mailto:support@apprenticelog.nz" className="hover:text-white transition-colors">
+              <Link href="/contact" className="hover:text-white transition-colors">
                 Contact
-              </a>
+              </Link>
             </div>
             <p className="text-sm">
               © {new Date().getFullYear()} Apprentice Log. Made in NZ.

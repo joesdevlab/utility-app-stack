@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Shield, Loader2, CheckCircle2, Copy, Check, Smartphone, QrCode, Key, AlertTriangle } from "lucide-react";
+import { Shield, Loader2, CheckCircle2, Copy, Check, Smartphone, QrCode, Key, AlertTriangle, Download } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -23,7 +23,7 @@ interface MFASetupProps {
   onSuccess?: () => void;
 }
 
-type SetupStep = "intro" | "qr" | "verify" | "success";
+type SetupStep = "intro" | "qr" | "verify" | "recovery" | "success";
 
 export function MFASetup({ open, onOpenChange, onSuccess }: MFASetupProps) {
   const [step, setStep] = useState<SetupStep>("intro");
@@ -33,6 +33,8 @@ export function MFASetup({ open, onOpenChange, onSuccess }: MFASetupProps) {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const [secretCopied, setSecretCopied] = useState(false);
+  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
+  const [recoveryCodesCopied, setRecoveryCodesCopied] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const { enrollMFA, verifyMFAEnrollment } = useAuth();
 
@@ -43,6 +45,7 @@ export function MFASetup({ open, onOpenChange, onSuccess }: MFASetupProps) {
       setSecret("");
       setFactorId("");
       setCode(["", "", "", "", "", ""]);
+      setRecoveryCodes([]);
     }
   }, [open]);
 
@@ -132,7 +135,22 @@ export function MFASetup({ open, onOpenChange, onSuccess }: MFASetupProps) {
         setCode(["", "", "", "", "", ""]);
         inputRefs.current[0]?.focus();
       } else {
-        setStep("success");
+        // Generate recovery codes after successful MFA enrollment
+        try {
+          const response = await fetch("/api/auth/mfa/recovery-codes", {
+            method: "POST",
+          });
+          const data = await response.json();
+          if (data.codes) {
+            setRecoveryCodes(data.codes);
+            setStep("recovery");
+          } else {
+            setStep("success");
+          }
+        } catch {
+          // Continue to success even if recovery codes fail
+          setStep("success");
+        }
         onSuccess?.();
       }
     } catch {
@@ -140,6 +158,38 @@ export function MFASetup({ open, onOpenChange, onSuccess }: MFASetupProps) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCopyRecoveryCodes = async () => {
+    const codesText = recoveryCodes.join("\n");
+    await navigator.clipboard.writeText(codesText);
+    setRecoveryCodesCopied(true);
+    toast.success("Recovery codes copied to clipboard");
+    setTimeout(() => setRecoveryCodesCopied(false), 2000);
+  };
+
+  const handleDownloadRecoveryCodes = () => {
+    const codesText = [
+      "Apprentice Log - MFA Recovery Codes",
+      "Generated: " + new Date().toLocaleString(),
+      "",
+      "Keep these codes in a safe place. Each code can only be used once.",
+      "",
+      ...recoveryCodes.map((code, i) => `${i + 1}. ${code}`),
+      "",
+      "If you lose access to your authenticator app, use one of these codes to sign in.",
+    ].join("\n");
+
+    const blob = new Blob([codesText], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "apprentice-log-recovery-codes.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success("Recovery codes downloaded");
   };
 
   return (
@@ -331,6 +381,91 @@ export function MFASetup({ open, onOpenChange, onSuccess }: MFASetupProps) {
             </motion.div>
           )}
 
+          {step === "recovery" && (
+            <motion.div
+              key="recovery"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <DialogHeader className="text-center pb-4">
+                <div className="mx-auto mb-4">
+                  <div className="h-14 w-14 rounded-full bg-amber-100 flex items-center justify-center">
+                    <Key className="h-7 w-7 text-amber-600" />
+                  </div>
+                </div>
+                <DialogTitle className="text-lg font-bold">
+                  Save Your Recovery Codes
+                </DialogTitle>
+                <DialogDescription className="text-sm">
+                  Use these codes if you lose access to your authenticator app
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                    <p className="text-sm text-amber-800">
+                      Save these codes somewhere safe. Each code can only be used once. You won&apos;t be able to see them again!
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <div className="grid grid-cols-2 gap-2">
+                    {recoveryCodes.map((recoveryCode, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.03 }}
+                        className="font-mono text-sm bg-white border border-gray-200 rounded px-3 py-2 text-center"
+                      >
+                        {recoveryCode}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleCopyRecoveryCodes}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    {recoveryCodesCopied ? (
+                      <>
+                        <Check className="h-4 w-4 mr-2 text-green-500" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={handleDownloadRecoveryCodes}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
+                </div>
+
+                <Button
+                  onClick={() => setStep("success")}
+                  className="w-full h-12 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg shadow-orange-500/25"
+                >
+                  I&apos;ve Saved My Codes
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
           {step === "success" && (
             <motion.div
               key="success"
@@ -358,13 +493,13 @@ export function MFASetup({ open, onOpenChange, onSuccess }: MFASetupProps) {
                 Your account is now protected with two-factor authentication
               </p>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+              <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
                 <div className="flex items-start gap-2">
-                  <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
                   <div className="text-left">
-                    <p className="text-sm font-medium text-amber-800">Important</p>
-                    <p className="text-xs text-amber-700">
-                      Make sure you have access to your authenticator app. You'll need it to sign in.
+                    <p className="text-sm font-medium text-green-800">All Set!</p>
+                    <p className="text-xs text-green-700">
+                      Your recovery codes have been saved. Keep them in a safe place.
                     </p>
                   </div>
                 </div>

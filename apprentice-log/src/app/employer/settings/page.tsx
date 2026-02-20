@@ -107,9 +107,13 @@ export default function SettingsPage() {
               <Label className="text-gray-700 font-medium">Plan</Label>
               <div className="flex items-center justify-between p-4 rounded-xl border border-orange-200 bg-orange-50/30">
                 <div>
-                  <p className="font-semibold text-gray-900 capitalize">{organization?.plan || "Starter"}</p>
+                  <p className="font-semibold text-gray-900 capitalize">
+                    {organization?.plan === "pro" || organization?.plan === "paid" ? "Pro" : "Free"}
+                  </p>
                   <p className="text-sm text-muted-foreground">
-                    {organization?.max_seats || 5} seats included
+                    {organization?.plan === "pro" || organization?.plan === "paid"
+                      ? "Unlimited apprentices"
+                      : "Up to 2 apprentices"}
                   </p>
                 </div>
                 <Link href="/employer/billing">

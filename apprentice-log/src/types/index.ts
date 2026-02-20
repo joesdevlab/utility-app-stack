@@ -7,7 +7,9 @@ export interface ApiResponse<T> {
 
 // Organization Types (B2B Employer Portal)
 export type OrganizationRole = 'owner' | 'admin' | 'supervisor' | 'apprentice';
-export type OrganizationPlan = 'starter' | 'professional' | 'enterprise';
+// B2B model: free (2 apprentices) or pro (unlimited)
+// Legacy values kept for backwards compatibility: starter, professional, enterprise, paid
+export type OrganizationPlan = 'free' | 'pro' | 'starter' | 'professional' | 'enterprise' | 'paid';
 export type OrganizationStatus = 'active' | 'canceled' | 'past_due' | 'trialing' | 'incomplete';
 export type MemberStatus = 'pending' | 'active' | 'removed';
 
@@ -103,6 +105,8 @@ export interface LogbookEntry {
   siteName?: string;
   supervisor?: string;
   createdAt?: string;
+  // Photos - array of Supabase Storage paths
+  photos?: string[];
   // Legacy fields for backwards compatibility
   totalHours?: number;
   notes?: string;
@@ -128,6 +132,7 @@ export type Database = {
           supervisor: string | null;
           notes: string | null;
           safety_observations: string | null;
+          photos: string[] | null;
           is_deleted: boolean;
           created_at: string;
           updated_at: string;
@@ -145,6 +150,7 @@ export type Database = {
           supervisor?: string | null;
           notes?: string | null;
           safety_observations?: string | null;
+          photos?: string[] | null;
           is_deleted?: boolean;
         };
         Update: Partial<Database["public"]["Tables"]["apprentice_entries"]["Insert"]>;

@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, Square, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { RecordingWaveform } from "@/components/audio-waveform";
 
 interface VoiceRecorderProps {
   onRecordingComplete: (audioBlob: Blob) => void;
@@ -249,6 +250,20 @@ export function VoiceRecorder({
           </AnimatePresence>
         </motion.button>
       </div>
+
+      {/* Audio waveform visualization */}
+      <AnimatePresence>
+        {isRecording && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="w-full flex justify-center"
+          >
+            <RecordingWaveform audioLevel={audioLevel} isRecording={isRecording} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Status text */}
       <AnimatePresence mode="wait">

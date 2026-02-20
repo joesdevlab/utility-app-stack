@@ -102,7 +102,7 @@ AppLog Developer
 
 ### Email
 ```
-support@apprenticelog.app
+support@apprenticelog.nz
 ```
 
 ### Website

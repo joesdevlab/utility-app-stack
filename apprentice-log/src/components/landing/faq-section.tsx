@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { ChevronDown, HelpCircle } from "lucide-react";
+import Link from "next/link";
 
 const faqs = [
   {
@@ -90,7 +91,7 @@ export function FAQSection() {
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full bg-white border border-gray-200 rounded-xl p-5 text-left hover:border-orange-200 hover:shadow-sm transition-all duration-200"
+                className="w-full bg-white border border-gray-200 rounded-xl p-5 text-left hover:border-orange-200 hover:shadow-sm transition-all duration-200 cursor-pointer"
               >
                 <div className="flex items-center justify-between gap-4">
                   <h3 className="font-semibold text-gray-900 text-lg">{faq.question}</h3>
@@ -128,12 +129,12 @@ export function FAQSection() {
           className="mt-12 text-center"
         >
           <p className="text-gray-600 mb-2">Have additional questions?</p>
-          <a
-            href="mailto:support@apprenticelog.app"
+          <Link
+            href="/contact"
             className="text-orange-600 hover:text-orange-700 font-semibold transition-colors"
           >
             Contact our support team →
-          </a>
+          </Link>
         </motion.div>
       </div>
     </section>

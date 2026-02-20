@@ -69,3 +69,5 @@ ios/App/build/
 
 
 
+.env.local.vercel
+.env.vercel

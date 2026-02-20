@@ -3,15 +3,21 @@ import { updateSession } from "@/lib/supabase/middleware";
 
 // Routes that require authentication
 const protectedRoutes = [
-  "/",
-  "/history",
-  "/settings",
+  "/app",
   "/employer",
+  "/admin",
+];
+
+// Admin emails that can access /admin routes
+const ADMIN_EMAILS = [
+  "joe@apprenticelog.nz",
+  "joe@laikadynamics.co.nz",
+  "joseph.doidge@gmail.com",
 ];
 
 // Routes that are always public
 const publicRoutes = [
-  "/landing",
+  "/",
   "/pricing",
   "/employer-landing",
   "/privacy",
@@ -20,6 +26,9 @@ const publicRoutes = [
   "/auth",
   "/trades",
 ];
+
+// Route where unverified users can go to verify
+const verificationRoute = "/auth/verify-email";
 
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
@@ -52,9 +61,31 @@ export async function middleware(request: NextRequest) {
 
   // Redirect unauthenticated users from protected routes to landing
   if (isProtectedRoute && !user) {
-    const redirectUrl = new URL("/landing", request.url);
+    const redirectUrl = new URL("/", request.url);
     redirectUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(redirectUrl);
+  }
+
+  // Check if user's email is verified (for protected routes)
+  if (isProtectedRoute && user && !user.email_confirmed_at) {
+    // Allow if already on verification page
+    if (pathname === verificationRoute) {
+      return supabaseResponse;
+    }
+    // Redirect to email verification page
+    const verifyUrl = new URL(verificationRoute, request.url);
+    verifyUrl.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(verifyUrl);
+  }
+
+  // Check admin access for /admin routes
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+  if (isAdminRoute && user) {
+    const userEmail = user.email || "";
+    if (!ADMIN_EMAILS.includes(userEmail)) {
+      // Non-admin users get redirected to home
+      return NextResponse.redirect(new URL("/", request.url));
+    }
   }
 
   return supabaseResponse;
