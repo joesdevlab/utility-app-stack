@@ -4,7 +4,6 @@ import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { BottomNav } from "./bottom-nav";
-import { HardHat } from "lucide-react";
 
 interface AppShellProps {
   children: ReactNode;
@@ -33,8 +32,8 @@ export function AppShell({ children }: AppShellProps) {
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-lg border-b border-orange-100/50 safe-area-top">
         <div className="flex items-center justify-between h-14 px-4 max-w-lg mx-auto">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/25">
-              <HardHat className="h-5 w-5 text-white" />
+            <div className="w-9 h-9 rounded-xl overflow-hidden shadow-lg shadow-orange-500/25">
+              <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
               <h1 className="text-base font-bold text-gray-900 leading-tight">

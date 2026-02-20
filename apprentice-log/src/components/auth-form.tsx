@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { HardHat, Loader2, Mail, Lock, User, CheckCircle2, RefreshCw } from "lucide-react";
+import { Loader2, Mail, Lock, User, CheckCircle2, RefreshCw } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { MFAVerify } from "@/components/mfa-verify";
 import { toast } from "sonner";
@@ -154,8 +154,8 @@ export function AuthForm() {
       >
         <Card>
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-orange-500/10 flex items-center justify-center">
-              <HardHat className="h-6 w-6 text-orange-500" />
+            <div className="mx-auto mb-4 h-12 w-12 rounded-full overflow-hidden">
+              <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="w-full h-full object-cover" />
             </div>
             <CardTitle>Apprentice Log</CardTitle>
             <CardDescription>

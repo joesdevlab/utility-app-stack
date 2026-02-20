@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { Star, Quote, ChevronLeft, ChevronRight, Building2, HardHat } from "lucide-react";
+import { Star, Quote, ChevronLeft, ChevronRight, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const testimonials = [
@@ -248,7 +248,7 @@ export function TestimonialsSection() {
             <div>
               <div className="flex justify-center gap-2 mb-1">
                 <Building2 className="h-6 w-6 text-orange-500" />
-                <HardHat className="h-6 w-6 text-orange-500" />
+                <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="h-6 w-6 rounded" />
               </div>
               <div className="text-sm text-gray-500">NZ Trade Industry</div>
             </div>

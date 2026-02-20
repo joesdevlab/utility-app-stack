@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
-  Mic, ArrowRight, CheckCircle, HardHat, Clock, FileText,
+  Mic, ArrowRight, CheckCircle, Clock, FileText,
   Shield, Droplets, Flame, Wrench
 } from "lucide-react";
 import Link from "next/link";
@@ -221,7 +221,7 @@ export default function PlumbingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-gray-500">
-              <HardHat className="h-5 w-5 text-orange-500" />
+              <img src="/Logo-v1-128-128.png" alt="Apprentice Log" className="h-5 w-5 rounded" />
               <span>Apprentice Log — Made in New Zealand</span>
             </div>
             <div className="flex gap-6 text-sm text-gray-500">
