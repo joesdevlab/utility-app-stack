@@ -10,9 +10,10 @@ function AuthContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Get mode from URL params (e.g., /auth?mode=signup)
+  // Get mode and invite params from URL (e.g., /auth?mode=signup&email=test@example.com)
   const modeParam = searchParams.get("mode");
   const defaultMode = modeParam === "signup" ? "signup" : "signin";
+  const defaultEmail = searchParams.get("email") || "";
 
   useEffect(() => {
     // If user is already logged in, redirect to main app
@@ -31,7 +32,7 @@ function AuthContent() {
     );
   }
 
-  return <AuthForm defaultMode={defaultMode} />;
+  return <AuthForm defaultMode={defaultMode} defaultEmail={defaultEmail} />;
 }
 
 export default function AuthPage() {

@@ -16,11 +16,12 @@ type AuthMode = "signin" | "signup" | "forgot" | "verify" | "mfa";
 
 interface AuthFormProps {
   defaultMode?: AuthMode;
+  defaultEmail?: string;
 }
 
-export function AuthForm({ defaultMode = "signin" }: AuthFormProps) {
+export function AuthForm({ defaultMode = "signin", defaultEmail = "" }: AuthFormProps) {
   const [mode, setMode] = useState<AuthMode>(defaultMode);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(defaultEmail);
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
