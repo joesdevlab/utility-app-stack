@@ -16,9 +16,15 @@ function AuthContent() {
   const defaultEmail = searchParams.get("email") || "";
 
   useEffect(() => {
-    // If user is already logged in, redirect to main app
+    // If user is already logged in, redirect appropriately
     if (!isLoading && user) {
-      router.replace("/app");
+      // If email is not verified, send to verification page
+      // to avoid redirect loop (middleware bounces unverified users from /app)
+      if (!user.email_confirmed_at) {
+        router.replace("/auth/verify-email");
+      } else {
+        router.replace("/app");
+      }
     }
   }, [user, isLoading, router]);
 

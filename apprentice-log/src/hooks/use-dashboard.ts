@@ -96,6 +96,18 @@ export function clearDashboardCache(): void {
   }
 }
 
+// Invalidate the cache and trigger a fresh refetch (for member changes, billing updates, etc.)
+export function invalidateDashboardCache(): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    mutate(DASHBOARD_CACHE_KEY);
+  } catch {
+    // Ignore errors
+  }
+}
+
 // Prefetch dashboard data (call this on employer layout mount or link hover)
 export function prefetchDashboard(): void {
   preload(DASHBOARD_CACHE_KEY, fetcher);

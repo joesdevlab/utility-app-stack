@@ -145,10 +145,11 @@ export function MFASetup({ open, onOpenChange, onSuccess }: MFASetupProps) {
             setRecoveryCodes(data.codes);
             setStep("recovery");
           } else {
+            toast.error("Failed to generate recovery codes. Please generate them from your security settings.");
             setStep("success");
           }
         } catch {
-          // Continue to success even if recovery codes fail
+          toast.error("Failed to generate recovery codes. Please generate them from your security settings.");
           setStep("success");
         }
         onSuccess?.();
@@ -493,17 +494,31 @@ export function MFASetup({ open, onOpenChange, onSuccess }: MFASetupProps) {
                 Your account is now protected with two-factor authentication
               </p>
 
-              <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-green-800">All Set!</p>
-                    <p className="text-xs text-green-700">
-                      Your recovery codes have been saved. Keep them in a safe place.
-                    </p>
+              {recoveryCodes.length > 0 ? (
+                <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-green-800">All Set!</p>
+                      <p className="text-xs text-green-700">
+                        Your recovery codes have been saved. Keep them in a safe place.
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-amber-800">Recovery codes not generated</p>
+                      <p className="text-xs text-amber-700">
+                        Please go to your security settings to generate recovery codes. Without them, you could be locked out if you lose your authenticator app.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <Button
                 onClick={() => onOpenChange(false)}

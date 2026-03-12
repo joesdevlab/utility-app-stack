@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAuth } from "@/components/auth-provider";
 import { useOrganization } from "@/hooks/use-organization";
@@ -9,7 +10,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2, Save, ExternalLink, AlertTriangle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Building2, Save, ExternalLink, AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -18,6 +27,39 @@ export default function SettingsPage() {
   const { updateOrganization, isLoading } = useOrganization();
   const [name, setName] = useState(organization?.name || "");
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    if (!organization) return;
+    if (deleteConfirmation !== organization.name) {
+      toast.error("Organization name does not match");
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/organizations/${organization.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Failed to delete organization");
+      }
+
+      toast.success("Organization deleted successfully");
+      await refreshOrganization();
+      router.replace("/");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete organization");
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!name.trim() || name.trim().length < 2) {
@@ -165,13 +207,77 @@ export default function SettingsPage() {
                   Permanently delete your organization and all associated data
                 </p>
               </div>
-              <Button variant="destructive" disabled>
+              <Button
+                variant="destructive"
+                onClick={() => setIsDeleteModalOpen(true)}
+              >
                 Delete
               </Button>
             </div>
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-red-600">Delete Organization</DialogTitle>
+            <DialogDescription>
+              This action is permanent and cannot be undone. All members will be removed and any active subscription will be canceled.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="p-4 rounded-lg bg-red-50 border border-red-100">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-red-700">This will permanently delete:</p>
+                  <ul className="mt-1 text-red-600 list-disc list-inside space-y-1">
+                    <li>All member records and invites</li>
+                    <li>Organization settings and data</li>
+                    <li>Active Stripe subscription (if any)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="delete-confirm" className="text-gray-700">
+                Type <span className="font-semibold">{organization?.name}</span> to confirm
+              </Label>
+              <Input
+                id="delete-confirm"
+                value={deleteConfirmation}
+                onChange={(e) => setDeleteConfirmation(e.target.value)}
+                placeholder="Organization name"
+                className="border-red-200 focus:border-red-400 focus:ring-red-200"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setIsDeleteModalOpen(false);
+              setDeleteConfirmation("");
+            }}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting || deleteConfirmation !== organization?.name}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Organization"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

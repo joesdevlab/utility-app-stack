@@ -111,6 +111,13 @@ export async function POST(request: NextRequest) {
 
         // Only handle organization subscriptions (B2B model)
         if (subscription.metadata?.type === "organization") {
+          // Find the org first so we can handle excess members
+          const { data: org } = await supabase
+            .from("organizations")
+            .select("id")
+            .eq("stripe_customer_id", customerId)
+            .single();
+
           // Downgrade to free plan (2 apprentice limit)
           await supabase
             .from("organizations")
@@ -121,6 +128,25 @@ export async function POST(request: NextRequest) {
               stripe_subscription_id: null,
             })
             .eq("stripe_customer_id", customerId);
+
+          // Suspend excess apprentices beyond the free limit (keep the 2 most recently joined)
+          if (org) {
+            const { data: apprentices } = await supabase
+              .from("organization_members")
+              .select("id")
+              .eq("organization_id", org.id)
+              .eq("role", "apprentice")
+              .eq("status", "active")
+              .order("joined_at", { ascending: false });
+
+            if (apprentices && apprentices.length > 2) {
+              const excessIds = apprentices.slice(2).map((a: { id: string }) => a.id);
+              await supabase
+                .from("organization_members")
+                .update({ status: "suspended" })
+                .in("id", excessIds);
+            }
+          }
         }
         break;
       }

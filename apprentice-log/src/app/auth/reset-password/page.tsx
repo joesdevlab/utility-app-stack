@@ -7,17 +7,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ClipboardList, Loader2, Lock, Check } from "lucide-react";
+import { ClipboardList, Loader2, Lock, Check, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { updatePassword, user } = useAuth();
+  const [isValidSession, setIsValidSession] = useState<boolean | null>(null);
+  const { updatePassword, user, isLoading: authLoading } = useAuth();
   const router = useRouter();
+
+  // Verify that the user arrived via a valid recovery flow
+  useEffect(() => {
+    if (authLoading) return;
+
+    // Check if there's a hash fragment (Supabase recovery tokens come as hash params)
+    const hash = window.location.hash;
+    const hasRecoveryToken = hash.includes("type=recovery") || hash.includes("type=magiclink");
+
+    if (user) {
+      // User has a valid session (set by Supabase after token exchange)
+      setIsValidSession(true);
+    } else if (hasRecoveryToken) {
+      // Supabase is still processing the token — wait for auth state change
+      const timeout = setTimeout(() => setIsValidSession(false), 10000);
+      return () => clearTimeout(timeout);
+    } else {
+      // No user session and no recovery token — invalid direct access
+      setIsValidSession(false);
+    }
+  }, [user, authLoading]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -57,6 +80,48 @@ export default function ResetPasswordPage() {
       setIsLoading(false);
     }
   };
+
+  // Invalid session — no recovery token and no user
+  if (isValidSession === false) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-sm"
+        >
+          <Card>
+            <CardContent className="pt-6 text-center">
+              <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center">
+                <AlertTriangle className="h-6 w-6 text-amber-500" />
+              </div>
+              <h2 className="text-lg font-semibold mb-2">Invalid or Expired Link</h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                This password reset link is invalid or has expired. Please request a new one.
+              </p>
+              <Link href="/auth">
+                <Button className="w-full bg-orange-500 hover:bg-orange-600">
+                  Back to Sign In
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Still loading / waiting for Supabase to process token
+  if (isValidSession === null || authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+          <p className="text-sm text-muted-foreground">Verifying your reset link...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (isSuccess) {
     return (

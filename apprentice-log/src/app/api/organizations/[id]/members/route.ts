@@ -72,15 +72,29 @@ export async function GET(
       );
     }
 
+    // Auto-expire pending invites older than 30 days
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const expiredInvites = members.filter(
+      (m) => m.status === "pending" && m.invited_at && m.invited_at < thirtyDaysAgo
+    );
+    if (expiredInvites.length > 0) {
+      await supabase
+        .from("organization_members")
+        .update({ status: "expired" })
+        .in("id", expiredInvites.map((m) => m.id));
+    }
+
     // Map members to include user info from stored data (no N+1 Auth API calls)
-    const membersWithUsers = members.map((member) => ({
-      ...member,
-      user: member.user_id ? {
-        id: member.user_id,
-        email: member.email,
-        full_name: null, // Could be stored in members table if needed
-      } : null,
-    }));
+    const membersWithUsers = members
+      .filter((m) => !expiredInvites.some((e) => e.id === m.id))
+      .map((member) => ({
+        ...member,
+        user: member.user_id ? {
+          id: member.user_id,
+          email: member.email,
+          full_name: null,
+        } : null,
+      }));
 
     return NextResponse.json({ members: membersWithUsers });
   } catch (error) {
@@ -130,7 +144,7 @@ export async function POST(
     // Check if user is owner or admin
     const { data: organization } = await supabase
       .from("organizations")
-      .select("owner_id, plan, stripe_subscription_id, name")
+      .select("owner_id, plan, status, stripe_subscription_id, name")
       .eq("id", id)
       .single();
 
@@ -158,6 +172,27 @@ export async function POST(
       return NextResponse.json(
         { error: "Only owners and admins can invite members" },
         { status: 403 }
+      );
+    }
+
+    // Block invites if subscription is past_due or canceled
+    if (organization.status === "past_due") {
+      return NextResponse.json(
+        {
+          error: "Your subscription payment is overdue. Please update your billing to invite new members.",
+          code: "SUBSCRIPTION_PAST_DUE"
+        },
+        { status: 402 }
+      );
+    }
+
+    if (organization.status === "canceled") {
+      return NextResponse.json(
+        {
+          error: "Your subscription has been canceled. Please resubscribe to invite new members.",
+          code: "SUBSCRIPTION_CANCELED"
+        },
+        { status: 402 }
       );
     }
 
@@ -189,7 +224,7 @@ export async function POST(
     // Check if email is already a member
     const { data: existingMember } = await supabase
       .from("organization_members")
-      .select("id, status")
+      .select("id, status, invited_at")
       .eq("organization_id", id)
       .eq("email", email.toLowerCase())
       .single();
@@ -201,7 +236,7 @@ export async function POST(
           { status: 400 }
         );
       }
-      // Reactivate removed member or resend pending invite
+      // Reactivate removed/expired member or resend pending invite
       const { error: updateError } = await supabase
         .from("organization_members")
         .update({

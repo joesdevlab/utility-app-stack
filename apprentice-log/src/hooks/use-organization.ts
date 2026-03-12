@@ -9,6 +9,7 @@ import type {
   OrganizationRole,
   OrganizationPlan,
 } from "@/types";
+import { invalidateDashboardCache } from "@/hooks/use-dashboard";
 
 export interface UseOrganizationReturn {
   organization: OrganizationWithRole | null;
@@ -223,6 +224,7 @@ export function useOrgMembers(organizationId: string | undefined): UseOrgMembers
     }
 
     await fetchMembers();
+    invalidateDashboardCache();
   }, [organizationId, fetchMembers]);
 
   const resendInvite = useCallback(async (memberId: string) => {
@@ -260,6 +262,7 @@ export function useOrgMembers(organizationId: string | undefined): UseOrgMembers
     }
 
     await fetchMembers();
+    invalidateDashboardCache();
   }, [organizationId, fetchMembers]);
 
   const updateMemberRole = useCallback(async (memberId: string, role: OrganizationRole) => {
@@ -292,6 +295,7 @@ export function useOrgMembers(organizationId: string | undefined): UseOrgMembers
     }
 
     await fetchMembers();
+    invalidateDashboardCache();
   }, [organizationId, fetchMembers]);
 
   return {

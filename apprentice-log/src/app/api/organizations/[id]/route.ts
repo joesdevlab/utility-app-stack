@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getStripe } from "@/lib/employer-stripe";
 
 // GET - Get organization by ID
 export async function GET(
@@ -169,6 +170,81 @@ export async function PATCH(
     console.error("Update organization error:", error);
     return NextResponse.json(
       { error: "Failed to update organization" },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE - Delete organization (owner only)
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    // Only the owner can delete the organization
+    const { data: organization } = await supabase
+      .from("organizations")
+      .select("id, owner_id, stripe_subscription_id, stripe_customer_id, name")
+      .eq("id", id)
+      .eq("owner_id", user.id)
+      .single();
+
+    if (!organization) {
+      return NextResponse.json(
+        { error: "Organization not found or you are not the owner" },
+        { status: 403 }
+      );
+    }
+
+    // Cancel active Stripe subscription if one exists
+    if (organization.stripe_subscription_id) {
+      try {
+        const stripe = getStripe();
+        await stripe.subscriptions.cancel(organization.stripe_subscription_id);
+      } catch (stripeError) {
+        console.error("Failed to cancel Stripe subscription:", stripeError);
+        // Continue with deletion even if Stripe cancellation fails
+      }
+    }
+
+    // Remove all members
+    await supabase
+      .from("organization_members")
+      .update({ status: "removed" })
+      .eq("organization_id", id);
+
+    // Delete the organization
+    const { error: deleteError } = await supabase
+      .from("organizations")
+      .delete()
+      .eq("id", id);
+
+    if (deleteError) {
+      console.error("Delete organization error:", deleteError);
+      return NextResponse.json(
+        { error: "Failed to delete organization" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      message: `Organization "${organization.name}" has been deleted`,
+    });
+  } catch (error) {
+    console.error("Delete organization error:", error);
+    return NextResponse.json(
+      { error: "Failed to delete organization" },
       { status: 500 }
     );
   }
