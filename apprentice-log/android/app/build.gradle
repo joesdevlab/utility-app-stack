@@ -19,7 +19,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile file('../../apprentice-log-2025.keystore')
+            storeFile file('../../apprentice-log.keystore')
             storePassword 'ApprenticeLog2025'
             keyAlias 'apprentice-log-key'
             keyPassword 'ApprenticeLog2025'

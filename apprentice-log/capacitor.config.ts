@@ -13,7 +13,8 @@ const config: CapacitorConfig = {
     backgroundColor: '#ffffff',
     allowMixedContent: false,
     captureInput: true,
-    webContentsDebuggingEnabled: true,
+    // Only enable WebView debugging for dev — disable for store builds
+    webContentsDebuggingEnabled: process.env.NODE_ENV !== 'production',
   },
   plugins: {
     SplashScreen: {

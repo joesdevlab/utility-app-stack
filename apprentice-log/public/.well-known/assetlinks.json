@@ -3,10 +3,19 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
+      "package_name": "nz.apprenticelog.app",
+      "sha256_cert_fingerprints": [
+        "TODO_UPLOAD_KEY_FINGERPRINT"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
       "package_name": "app.apprenticelog.twa",
       "sha256_cert_fingerprints": [
-        "PLACEHOLDER_UPLOAD_KEY_FINGERPRINT",
-        "PLACEHOLDER_PLAY_SIGNING_FINGERPRINT"
+        "TODO_UPLOAD_KEY_FINGERPRINT"
       ]
     }
   }
