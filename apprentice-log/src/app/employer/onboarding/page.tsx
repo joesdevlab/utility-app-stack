@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth-provider";
 import { useOrganization } from "@/hooks/use-organization";
@@ -41,11 +41,18 @@ const features = [
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { refreshOrganization } = useAuth();
+  const { refreshOrganization, organization, orgLoading } = useAuth();
   const { createOrganization } = useOrganization();
   const [step, setStep] = useState(1);
   const [orgName, setOrgName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect to dashboard if user already has an organization
+  useEffect(() => {
+    if (!orgLoading && organization) {
+      router.replace("/employer/dashboard");
+    }
+  }, [organization, orgLoading, router]);
 
   const handleCreateOrganization = async () => {
     if (!orgName.trim() || orgName.trim().length < 2) {
