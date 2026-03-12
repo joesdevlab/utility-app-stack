@@ -8,8 +8,18 @@ import {
   removePendingEntry,
   updatePendingEntry,
   savePendingEntry,
+  savePendingAudio,
+  getPendingAudioCount,
+  getPendingAudio,
+  removePendingAudio,
+  updatePendingAudio,
   type PendingEntry,
+  type PendingAudio,
 } from "@/lib/offline-storage";
+import {
+  registerBackgroundSync,
+  SYNC_AUDIO_TAG,
+} from "@/lib/background-sync";
 import type { LogbookEntry } from "@/types";
 
 const MAX_RETRY_ATTEMPTS = 5;
@@ -18,6 +28,7 @@ const SYNC_INTERVAL = 30000; // 30 seconds
 interface UseOfflineSyncOptions {
   onSyncSuccess?: (entry: LogbookEntry) => void;
   onSyncError?: (error: string, pendingEntry: PendingEntry) => void;
+  onAudioProcessed?: (entry: LogbookEntry) => void;
   submitEntry: (
     entry: Omit<LogbookEntry, "id" | "createdAt">
   ) => Promise<LogbookEntry>;
@@ -26,10 +37,12 @@ interface UseOfflineSyncOptions {
 export function useOfflineSync({
   onSyncSuccess,
   onSyncError,
+  onAudioProcessed,
   submitEntry,
 }: UseOfflineSyncOptions) {
   const isOnline = useOnlineStatus();
   const [pendingCount, setPendingCount] = useState(0);
+  const [pendingAudioCount, setPendingAudioCount] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
   const [pendingEntries, setPendingEntries] = useState<PendingEntry[]>([]);
   const syncingRef = useRef(false);
@@ -44,6 +57,16 @@ export function useOfflineSync({
     }
   }, []);
 
+  // Load pending audio count
+  const refreshPendingAudioCount = useCallback(async () => {
+    try {
+      const count = await getPendingAudioCount();
+      setPendingAudioCount(count);
+    } catch (error) {
+      console.error("Failed to get pending audio count:", error);
+    }
+  }, []);
+
   // Load all pending entries
   const refreshPendingEntries = useCallback(async () => {
     try {
@@ -54,6 +77,11 @@ export function useOfflineSync({
       console.error("Failed to get pending entries:", error);
     }
   }, []);
+
+  // Refresh all counts
+  const refreshAll = useCallback(async () => {
+    await Promise.all([refreshPendingEntries(), refreshPendingAudioCount()]);
+  }, [refreshPendingEntries, refreshPendingAudioCount]);
 
   // Save entry for offline sync
   const saveOffline = useCallback(
@@ -68,6 +96,25 @@ export function useOfflineSync({
       }
     },
     [refreshPendingCount]
+  );
+
+  // Save audio blob for offline processing
+  const saveOfflineAudio = useCallback(
+    async (audioBlob: Blob, userId?: string) => {
+      try {
+        const id = await savePendingAudio(audioBlob, userId);
+        await refreshPendingAudioCount();
+
+        // Register background sync to process when online
+        await registerBackgroundSync(SYNC_AUDIO_TAG);
+
+        return id;
+      } catch (error) {
+        console.error("Failed to save offline audio:", error);
+        throw error;
+      }
+    },
+    [refreshPendingAudioCount]
   );
 
   // Sync a single pending entry
@@ -110,7 +157,57 @@ export function useOfflineSync({
     [submitEntry, onSyncSuccess, onSyncError]
   );
 
-  // Sync all pending entries
+  // Process a single pending audio entry (client-side fallback)
+  const processAudioEntry = useCallback(
+    async (audioEntry: PendingAudio): Promise<boolean> => {
+      try {
+        await updatePendingAudio(audioEntry.id, {
+          attempts: audioEntry.attempts + 1,
+          lastAttempt: new Date().toISOString(),
+        });
+
+        // Transcribe
+        const formData = new FormData();
+        formData.append("audio", audioEntry.audioBlob, "recording.webm");
+
+        const transcribeRes = await fetch("/api/transcribe", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
+
+        if (!transcribeRes.ok) throw new Error(`Transcription failed: ${transcribeRes.status}`);
+        const { text } = await transcribeRes.json();
+
+        // Format
+        const formatRes = await fetch("/api/format-entry", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ transcript: text }),
+          credentials: "include",
+        });
+
+        if (!formatRes.ok) throw new Error(`Format failed: ${formatRes.status}`);
+        const logbookEntry = await formatRes.json();
+        logbookEntry.rawTranscript = text;
+        if (!logbookEntry.formattedEntry) logbookEntry.formattedEntry = "";
+
+        // Submit to Supabase
+        const savedEntry = await submitEntry(logbookEntry);
+        await removePendingAudio(audioEntry.id);
+        onAudioProcessed?.(savedEntry);
+        return true;
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : "Unknown error";
+        console.error("Audio processing failed:", msg);
+        await updatePendingAudio(audioEntry.id, { error: msg });
+        return false;
+      }
+    },
+    [submitEntry, onAudioProcessed]
+  );
+
+  // Sync all pending entries and audio
   const syncAll = useCallback(async () => {
     if (syncingRef.current || !isOnline) return;
 
@@ -118,25 +215,29 @@ export function useOfflineSync({
     setIsSyncing(true);
 
     try {
+      // Sync text entries
       const entries = await getPendingEntries();
-
       for (const entry of entries) {
-        // Skip if max attempts reached
         if (entry.attempts >= MAX_RETRY_ATTEMPTS) continue;
-
-        // Check if still online before each sync
         if (!navigator.onLine) break;
-
         await syncEntry(entry);
+      }
+
+      // Sync audio entries (client-side fallback if SW background sync didn't run)
+      const audioEntries = await getPendingAudio();
+      for (const audioEntry of audioEntries) {
+        if (audioEntry.attempts >= MAX_RETRY_ATTEMPTS) continue;
+        if (!navigator.onLine) break;
+        await processAudioEntry(audioEntry);
       }
     } catch (error) {
       console.error("Sync all failed:", error);
     } finally {
       syncingRef.current = false;
       setIsSyncing(false);
-      await refreshPendingEntries();
+      await refreshAll();
     }
-  }, [isOnline, syncEntry, refreshPendingEntries]);
+  }, [isOnline, syncEntry, processAudioEntry, refreshAll]);
 
   // Remove a failed entry manually
   const removePending = useCallback(
@@ -173,39 +274,44 @@ export function useOfflineSync({
 
   // Initial load
   useEffect(() => {
-    refreshPendingEntries();
-  }, [refreshPendingEntries]);
+    refreshAll();
+  }, [refreshAll]);
 
   // Auto-sync when coming back online
   useEffect(() => {
-    if (isOnline && pendingCount > 0) {
+    if (isOnline && (pendingCount > 0 || pendingAudioCount > 0)) {
       // Small delay to ensure connection is stable
       const timeout = setTimeout(() => {
         syncAll();
       }, 2000);
       return () => clearTimeout(timeout);
     }
-  }, [isOnline, pendingCount, syncAll]);
+  }, [isOnline, pendingCount, pendingAudioCount, syncAll]);
 
   // Periodic sync check
   useEffect(() => {
     if (!isOnline) return;
 
     const interval = setInterval(() => {
-      if (pendingCount > 0) {
+      if (pendingCount > 0 || pendingAudioCount > 0) {
         syncAll();
       }
     }, SYNC_INTERVAL);
 
     return () => clearInterval(interval);
-  }, [isOnline, pendingCount, syncAll]);
+  }, [isOnline, pendingCount, pendingAudioCount, syncAll]);
+
+  const totalPendingCount = pendingCount + pendingAudioCount;
 
   return {
     isOnline,
     pendingCount,
+    pendingAudioCount,
+    totalPendingCount,
     pendingEntries,
     isSyncing,
     saveOffline,
+    saveOfflineAudio,
     syncAll,
     removePending,
     retryEntry,

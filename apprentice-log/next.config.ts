@@ -13,6 +13,8 @@ const withPWA = withPWAInit({
   },
   workboxOptions: {
     disableDevLogs: true,
+    // Import custom service worker for background sync
+    importScripts: ["/sw-custom.js"],
     // Cache versioning - caches are automatically versioned by workbox
     // Runtime caching strategies
     runtimeCaching: [
@@ -59,6 +61,31 @@ const withPWA = withPWAInit({
 const nextConfig: NextConfig = {
   // Use Turbopack config (empty is fine - silences the webpack warning)
   turbopack: {},
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 // Sentry configuration options

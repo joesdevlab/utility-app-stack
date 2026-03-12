@@ -1,9 +1,12 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { BottomNav } from "./bottom-nav";
+import { useAuth } from "./auth-provider";
+import { LogOut, Building2, ChevronDown } from "lucide-react";
+import Link from "next/link";
 
 interface AppShellProps {
   children: ReactNode;
@@ -11,6 +14,9 @@ interface AppShellProps {
 
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, signOut, isEmployer } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Get page title based on pathname
   const getPageTitle = () => {
@@ -45,10 +51,44 @@ export function AppShell({ children }: AppShellProps) {
             </div>
           </div>
 
-          {/* NZ Badge */}
-          <div className="flex items-center gap-1 bg-blue-50 border border-blue-100 rounded-full px-2 py-0.5">
-            <span className="text-xs">🇳🇿</span>
-            <span className="text-[10px] font-medium text-blue-700">NZ Made</span>
+          {/* User Menu */}
+          <div className="relative">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="flex items-center gap-1.5 bg-orange-50 border border-orange-100 rounded-full pl-2.5 pr-2 py-1 hover:bg-orange-100 transition-colors"
+            >
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-[10px] font-bold text-white">
+                {user?.email?.[0]?.toUpperCase() || "?"}
+              </div>
+              <ChevronDown className="h-3 w-3 text-orange-600" />
+            </button>
+            {menuOpen && (
+              <>
+                <div className="fixed inset-0 z-50" onClick={() => setMenuOpen(false)} />
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+                  <div className="px-3 py-2 border-b border-gray-100">
+                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                  </div>
+                  {isEmployer && (
+                    <Link
+                      href="/employer/dashboard"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 transition-colors"
+                    >
+                      <Building2 className="h-4 w-4" />
+                      Employer Portal
+                    </Link>
+                  )}
+                  <button
+                    onClick={async () => { setMenuOpen(false); await signOut(); router.push("/"); }}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </header>

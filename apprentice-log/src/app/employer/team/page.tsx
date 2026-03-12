@@ -19,6 +19,8 @@ import {
   Crown,
   User,
   Eye,
+  RefreshCw,
+  X,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -46,8 +48,8 @@ const roleLabels: Record<OrganizationRole, string> = {
 };
 
 export default function TeamPage() {
-  const { organization } = useAuth();
-  const { members, isLoading, inviteMember, updateMemberRole, removeMember } =
+  const { organization, user } = useAuth();
+  const { members, isLoading, inviteMember, resendInvite, cancelInvite, updateMemberRole, removeMember } =
     useOrgMembers(organization?.id);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
 
@@ -68,6 +70,26 @@ export default function TeamPage() {
       toast.success("Member removed");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to remove member");
+    }
+  };
+
+  const handleResendInvite = async (memberId: string) => {
+    try {
+      await resendInvite(memberId);
+      toast.success("Invitation resent");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to resend invitation");
+    }
+  };
+
+  const handleCancelInvite = async (memberId: string) => {
+    if (!confirm("Are you sure you want to cancel this invitation?")) return;
+
+    try {
+      await cancelInvite(memberId);
+      toast.success("Invitation cancelled");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to cancel invitation");
     }
   };
 
@@ -208,7 +230,26 @@ export default function TeamPage() {
                       </p>
                     </div>
                   </div>
-                  <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-200">Pending</Badge>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleResendInvite(member.id)}
+                      className="text-amber-700 hover:text-amber-800 hover:bg-amber-100"
+                    >
+                      <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                      Resend
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleCancelInvite(member.id)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <X className="h-3.5 w-3.5 mr-1" />
+                      Cancel
+                    </Button>
+                  </div>
                 </motion.div>
               ))}
             </CardContent>
@@ -260,7 +301,7 @@ export default function TeamPage() {
                     {roleIcons[member.role as OrganizationRole]}
                     {roleLabels[member.role as OrganizationRole]}
                   </Badge>
-                  {member.role !== "owner" && (
+                  {member.role !== "owner" && member.user_id !== user?.id && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="hover:bg-orange-50">
@@ -295,6 +336,9 @@ export default function TeamPage() {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
+                  )}
+                  {member.user_id === user?.id && member.role !== "owner" && (
+                    <Badge variant="outline" className="text-muted-foreground">You</Badge>
                   )}
                 </div>
               </motion.div>

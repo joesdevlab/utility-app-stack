@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Cloud, CloudOff, Loader2, RefreshCw, Trash2, ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
+import { Cloud, CloudOff, Loader2, RefreshCw, Trash2, ChevronDown, ChevronUp, AlertTriangle, Mic } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import type { PendingEntry } from "@/lib/offline-storage";
 
 interface PendingEntriesBannerProps {
   pendingCount: number;
+  pendingAudioCount?: number;
   pendingEntries: PendingEntry[];
   isSyncing: boolean;
   isOnline: boolean;
@@ -19,6 +20,7 @@ interface PendingEntriesBannerProps {
 
 export function PendingEntriesBanner({
   pendingCount,
+  pendingAudioCount = 0,
   pendingEntries,
   isSyncing,
   isOnline,
@@ -85,6 +87,8 @@ export function PendingEntriesBanner({
                   ? "Will sync when you're back online"
                   : isSyncing
                   ? "Please wait..."
+                  : pendingAudioCount > 0
+                  ? `Includes ${pendingAudioCount} voice ${pendingAudioCount === 1 ? "recording" : "recordings"} to process`
                   : "Tap to view details"}
               </p>
             </div>
@@ -122,7 +126,22 @@ export function PendingEntriesBanner({
               transition={{ duration: 0.2 }}
             >
               <CardContent className="pt-0 pb-3 px-4 space-y-2 max-h-60 overflow-y-auto">
-                {pendingEntries.map((entry) => (
+                {pendingAudioCount > 0 && (
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-orange-100/50 border border-orange-200">
+                  <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                    <Mic className="h-4 w-4 text-orange-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-800">
+                      {pendingAudioCount} voice {pendingAudioCount === 1 ? "recording" : "recordings"}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Will be transcribed and formatted when online
+                    </p>
+                  </div>
+                </div>
+              )}
+              {pendingEntries.map((entry) => (
                   <div
                     key={entry.id}
                     className={`flex items-center justify-between p-3 rounded-xl ${

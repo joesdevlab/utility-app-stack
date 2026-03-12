@@ -53,9 +53,12 @@ export default function Home() {
   const {
     isOnline,
     pendingCount,
+    pendingAudioCount,
+    totalPendingCount,
     pendingEntries,
     isSyncing,
     saveOffline,
+    saveOfflineAudio,
     syncAll,
     removePending,
     retryEntry,
@@ -64,8 +67,11 @@ export default function Home() {
     onSyncSuccess: (syncedEntry) => {
       toast.success(`Entry synced: ${syncedEntry.tasks[0]?.description?.slice(0, 30) || "Untitled"}...`);
     },
-    onSyncError: (error, pendingEntry) => {
+    onSyncError: (error) => {
       toast.error(`Failed to sync entry: ${error}`);
+    },
+    onAudioProcessed: (processedEntry) => {
+      toast.success(`Voice entry processed: ${processedEntry.tasks[0]?.description?.slice(0, 30) || "Untitled"}...`);
     },
   });
 
@@ -100,6 +106,20 @@ export default function Home() {
   }
 
   const handleRecordingComplete = async (audioBlob: Blob) => {
+    // If offline, save audio blob for later processing
+    if (!isOnline) {
+      try {
+        await saveOfflineAudio(audioBlob, user.id);
+        setState("saved");
+        toast.success("Voice recording saved offline — will process when you're back online", {
+          icon: <CloudOff className="h-4 w-4" />,
+        });
+      } catch {
+        toast.error("Failed to save recording offline");
+      }
+      return;
+    }
+
     setState("processing");
     setProcessingPhase("transcribing");
 
@@ -271,10 +291,11 @@ export default function Home() {
         <PendingInvitations />
 
         {/* Pending offline entries banner */}
-        {pendingCount > 0 && (
+        {totalPendingCount > 0 && (
           <div className="mb-4">
             <PendingEntriesBanner
-              pendingCount={pendingCount}
+              pendingCount={totalPendingCount}
+              pendingAudioCount={pendingAudioCount}
               pendingEntries={pendingEntries}
               isSyncing={isSyncing}
               isOnline={isOnline}

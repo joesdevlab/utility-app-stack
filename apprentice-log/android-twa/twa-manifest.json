@@ -1,10 +1,10 @@
 {
   "packageId": "app.apprenticelog.twa",
-  "host": "apprentice-log.vercel.app",
+  "host": "apprenticelog.nz",
   "name": "Apprentice Log",
   "launcherName": "AppLog",
   "display": "standalone",
-  "themeColor": "#3b82f6",
+  "themeColor": "#f97316",
   "navigationColor": "#0a0a0a",
   "navigationColorDark": "#0a0a0a",
   "navigationDividerColor": "#1f2937",
@@ -12,8 +12,8 @@
   "backgroundColor": "#0a0a0a",
   "enableNotifications": true,
   "startUrl": "/",
-  "iconUrl": "https://apprentice-log.vercel.app/icons/icon-512x512.png",
-  "maskableIconUrl": "https://apprentice-log.vercel.app/icons/maskable-512x512.png",
+  "iconUrl": "https://apprenticelog.nz/icons/icon-512x512.png",
+  "maskableIconUrl": "https://apprenticelog.nz/icons/maskable-512x512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "./android.keystore",
@@ -26,17 +26,17 @@
       "name": "New Voice Entry",
       "shortName": "Record",
       "url": "/?mode=voice",
-      "iconUrl": "https://apprentice-log.vercel.app/icons/icon-96x96.png"
+      "iconUrl": "https://apprenticelog.nz/icons/icon-96x96.png"
     },
     {
       "name": "View History",
       "shortName": "History",
       "url": "/history",
-      "iconUrl": "https://apprentice-log.vercel.app/icons/icon-96x96.png"
+      "iconUrl": "https://apprenticelog.nz/icons/icon-96x96.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://apprentice-log.vercel.app/manifest.json",
+  "webManifestUrl": "https://apprenticelog.nz/manifest.json",
   "fallbackType": "customtabs",
   "features": {
     "locationDelegation": {

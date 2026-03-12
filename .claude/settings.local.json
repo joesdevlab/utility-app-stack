@@ -78,7 +78,8 @@
       "Bash(npx supabase login --help:*)",
       "Bash(git status:*)",
       "Bash(git reset:*)",
-      "Bash(npx vercel:*)"
+      "Bash(npx vercel:*)",
+      "Bash(npm run test:run:*)"
     ]
   }
 }

@@ -10,12 +10,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { motion } from "framer-motion";
-import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Building2, Shield, ShieldCheck, ShieldOff, Trash2, Gift, Settings2, ChevronRight } from "lucide-react";
+import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Building2, Shield, ShieldCheck, ShieldOff, Trash2, Gift, Settings2, ChevronRight, FileText } from "lucide-react";
 import { LogoSpinner } from "@/components/animated-logo";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { ShareReferral } from "@/components/share-referral";
+import { downloadBCITOPdf } from "@/lib/pdf-export";
+import { useDailyReminder } from "@/hooks/use-daily-reminder";
+import type { LogbookEntry, LogbookTask } from "@/types";
 
 interface SettingItem {
   icon: LucideIcon;
@@ -39,6 +42,7 @@ export default function SettingsPage() {
   const [mfaSetupOpen, setMfaSetupOpen] = useState(false);
   const [isDisablingMFA, setIsDisablingMFA] = useState(false);
   const supabase = createClient();
+  const { isEnabled: reminderEnabled, reminderTimeFormatted, isLoading: reminderLoading, toggleReminder, setReminderTime, hour: reminderHour, minute: reminderMinute } = useDailyReminder();
 
   if (authLoading) {
     return (
@@ -52,25 +56,62 @@ export default function SettingsPage() {
     return <AuthForm />;
   }
 
-  const handleExport = async () => {
+  const fetchEntries = async () => {
+    const { data, error } = await supabase
+      .from("apprentice_entries")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("is_deleted", false)
+      .order("date", { ascending: false });
+    if (error) throw error;
+    return data || [];
+  };
+
+  const handleExportCSV = async () => {
     try {
-      const { data, error } = await supabase
-        .from("apprentice_entries")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("date", { ascending: false });
-
-      if (error) throw error;
-
-      if (data && data.length > 0) {
+      const data = await fetchEntries();
+      if (data.length > 0) {
         const csv = convertToCSV(data);
         downloadCSV(csv, "apprentice-log-export.csv");
-        toast.success("Export downloaded!");
+        toast.success("CSV exported!");
       } else {
         toast.info("No entries to export");
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to export entries");
+    }
+  };
+
+  const handleExportPDF = async () => {
+    try {
+      const data = await fetchEntries();
+      if (data.length === 0) {
+        toast.info("No entries to export");
+        return;
+      }
+      const entries: LogbookEntry[] = data.map((row) => ({
+        id: row.id,
+        date: row.date,
+        rawTranscript: row.raw_transcript,
+        formattedEntry: row.formatted_entry,
+        tasks: (row.tasks as LogbookTask[]) || [],
+        hours: row.hours,
+        weather: row.weather,
+        siteName: row.site_name,
+        supervisor: row.supervisor,
+        createdAt: row.created_at,
+        totalHours: row.total_hours,
+        notes: row.notes,
+        safetyObservations: row.safety_observations,
+      }));
+      const dates = entries.map((e) => e.date).sort();
+      downloadBCITOPdf(entries, {
+        apprenticeName: user.email?.split("@")[0] || "Apprentice",
+        dateRange: { start: dates[0], end: dates[dates.length - 1] },
+      });
+      toast.success("PDF exported!");
+    } catch {
+      toast.error("Failed to export PDF");
     }
   };
 
@@ -149,9 +190,19 @@ export default function SettingsPage() {
         {
           icon: Bell,
           label: "Daily Reminder",
-          description: "Get reminded at 3:30 PM to log your day",
-          badge: "Coming Soon",
-          disabled: true,
+          description: reminderEnabled
+            ? `Reminder set for ${reminderTimeFormatted}`
+            : "Get reminded to log your day",
+          badge: reminderEnabled ? "On" : undefined,
+          onClick: async () => {
+            const result = await toggleReminder();
+            if (result.success) {
+              toast.success(result.enabled ? "Daily reminder enabled!" : "Daily reminder disabled");
+            } else if (result.error === "Permission denied") {
+              toast.error("Please allow notifications in your device settings");
+            }
+          },
+          disabled: reminderLoading,
         },
       ],
     },
@@ -159,10 +210,16 @@ export default function SettingsPage() {
       title: "Data",
       items: [
         {
+          icon: FileText,
+          label: "Export PDF",
+          description: "Download BCITO-formatted PDF report",
+          onClick: handleExportPDF,
+        },
+        {
           icon: Download,
-          label: "Export Entries",
-          description: "Download all entries as CSV",
-          onClick: handleExport,
+          label: "Export CSV",
+          description: "Download all entries as spreadsheet",
+          onClick: handleExportCSV,
         },
       ],
     },

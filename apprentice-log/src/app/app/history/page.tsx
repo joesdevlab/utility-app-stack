@@ -31,11 +31,13 @@ import {
   Flame,
   Plus,
   Sparkles,
+  Download,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import Link from "next/link";
 import type { LogbookEntry } from "@/types";
+import { downloadBCITOPdf } from "@/lib/pdf-export";
 
 export default function HistoryPage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -390,6 +392,26 @@ export default function HistoryPage() {
           </div>
           <div className="flex items-center gap-2">
             <ViewModeToggle viewMode={viewMode} onViewModeChange={handleViewModeChange} />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 text-gray-400 hover:text-orange-600 hover:bg-orange-50"
+              onClick={() => {
+                if (filteredEntries.length === 0) {
+                  toast.info("No entries to export");
+                  return;
+                }
+                const dates = filteredEntries.map((e) => e.date).sort();
+                downloadBCITOPdf(filteredEntries, {
+                  apprenticeName: user.email?.split("@")[0] || "Apprentice",
+                  dateRange: { start: dates[0], end: dates[dates.length - 1] },
+                });
+                toast.success("PDF downloaded!");
+              }}
+              aria-label="Export entries as PDF"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
             <Button
               variant="ghost"
               size="icon"

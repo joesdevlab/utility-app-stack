@@ -46,6 +46,15 @@ const navItems = [
   },
 ];
 
+// Mobile nav: swap Reports for Billing (billing is more critical on mobile, reports accessible via Settings)
+const mobileNavItems = [
+  navItems[0], // Dashboard
+  navItems[1], // Team
+  navItems[2], // Apprentices
+  navItems[5], // Billing
+  navItems[4], // Settings
+];
+
 export function EmployerNav() {
   const pathname = usePathname();
 
@@ -83,9 +92,9 @@ export function EmployerMobileNav() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 border-t bg-background/95 backdrop-blur-lg z-50 safe-area-bottom">
+    <div className="fixed bottom-0 left-0 right-0 border-t bg-background/95 backdrop-blur-lg z-50 safe-area-bottom md:hidden">
       <nav className="flex justify-around py-2 max-w-md mx-auto">
-        {navItems.slice(0, 5).map((item) => {
+        {mobileNavItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
 

@@ -165,6 +165,8 @@ export interface UseOrgMembersReturn {
   error: string | null;
   refetch: () => Promise<void>;
   inviteMember: (email: string, role: OrganizationRole) => Promise<void>;
+  resendInvite: (memberId: string) => Promise<void>;
+  cancelInvite: (memberId: string) => Promise<void>;
   updateMemberRole: (memberId: string, role: OrganizationRole) => Promise<void>;
   removeMember: (memberId: string) => Promise<void>;
 }
@@ -223,6 +225,43 @@ export function useOrgMembers(organizationId: string | undefined): UseOrgMembers
     await fetchMembers();
   }, [organizationId, fetchMembers]);
 
+  const resendInvite = useCallback(async (memberId: string) => {
+    if (!organizationId) throw new Error("No organization");
+
+    // Find the pending member to get their email and role
+    const member = members.find((m) => m.id === memberId);
+    if (!member) throw new Error("Member not found");
+
+    // Re-invite by posting the same email/role — backend handles resend
+    const response = await fetch(`/api/organizations/${organizationId}/members`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: member.email, role: member.role }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to resend invitation");
+    }
+
+    await fetchMembers();
+  }, [organizationId, members, fetchMembers]);
+
+  const cancelInvite = useCallback(async (memberId: string) => {
+    if (!organizationId) throw new Error("No organization");
+
+    const response = await fetch(`/api/organizations/${organizationId}/members/${memberId}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to cancel invitation");
+    }
+
+    await fetchMembers();
+  }, [organizationId, fetchMembers]);
+
   const updateMemberRole = useCallback(async (memberId: string, role: OrganizationRole) => {
     if (!organizationId) throw new Error("No organization");
 
@@ -261,6 +300,8 @@ export function useOrgMembers(organizationId: string | undefined): UseOrgMembers
     error,
     refetch: fetchMembers,
     inviteMember,
+    resendInvite,
+    cancelInvite,
     updateMemberRole,
     removeMember,
   };

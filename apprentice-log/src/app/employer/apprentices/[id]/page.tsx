@@ -127,6 +127,36 @@ export default function ApprenticeDetailPage() {
     safetyObservations: entry.safety_observations || undefined,
   });
 
+  const handleExport = () => {
+    if (!data?.entries.length) return;
+
+    const headers = ["Date", "Hours", "Site", "Supervisor", "Tasks", "Weather", "Safety Observations", "Notes"];
+    const rows = data.entries.map((entry) => [
+      entry.date,
+      entry.hours ?? "",
+      entry.site_name ?? "",
+      entry.supervisor ?? "",
+      entry.tasks?.map((t) => t.description).join("; ") ?? "",
+      entry.weather ?? "",
+      entry.safety_observations ?? "",
+      entry.notes ?? "",
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    const name = data.apprentice.full_name || data.apprentice.email;
+    link.download = `${name.replace(/\s+/g, "_")}_logbook_${startDate}_${endDate}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   if (isLoading && !data) {
     return (
       <div className="space-y-6">
@@ -267,11 +297,12 @@ export default function ApprenticeDetailPage() {
           <Button
             variant="outline"
             size="sm"
-            disabled
+            disabled={!data?.entries.length}
+            onClick={handleExport}
             className="border-orange-200 hover:bg-orange-50 hover:text-orange-600"
           >
             <Download className="h-4 w-4 mr-2" />
-            Export
+            Export CSV
           </Button>
         </div>
 

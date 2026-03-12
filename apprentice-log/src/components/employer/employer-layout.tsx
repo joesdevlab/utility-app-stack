@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { useAuth } from "@/components/auth-provider";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { EmployerNav, EmployerMobileNav } from "./employer-nav";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LogOut } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { prefetchDashboard } from "@/hooks/use-dashboard";
@@ -14,7 +14,8 @@ interface EmployerLayoutProps {
 }
 
 export function EmployerLayout({ children }: EmployerLayoutProps) {
-  const { user, isLoading, organization } = useAuth();
+  const { user, isLoading, organization, signOut } = useAuth();
+  const router = useRouter();
 
   // Prefetch dashboard data immediately when employer section is accessed
   useEffect(() => {
@@ -74,7 +75,7 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
             <EmployerNav />
           </div>
 
-          <div className="p-4 border-t">
+          <div className="p-4 border-t space-y-2">
             <Link
               href="/app"
               className="flex items-center gap-2 text-sm text-muted-foreground hover:text-orange-600 transition-colors"
@@ -82,6 +83,13 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
               <ArrowLeft className="h-4 w-4" />
               Back to App
             </Link>
+            <button
+              onClick={async () => { await signOut(); router.push("/"); }}
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-red-600 transition-colors w-full"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign Out
+            </button>
           </div>
         </div>
       </div>
@@ -100,6 +108,13 @@ export function EmployerLayout({ children }: EmployerLayoutProps) {
               </p>
             )}
           </div>
+          <button
+            onClick={async () => { await signOut(); router.push("/"); }}
+            className="p-2 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors"
+            aria-label="Sign out"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
