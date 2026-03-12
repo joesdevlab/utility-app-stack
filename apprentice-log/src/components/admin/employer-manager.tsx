@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
@@ -43,6 +49,7 @@ import {
   Calendar,
   CreditCard,
   ExternalLink,
+  Loader2,
 } from "lucide-react";
 
 interface Employer {
@@ -120,6 +127,7 @@ export function EmployerManager() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedEmployer, setSelectedEmployer] = useState<EmployerDetail | null>(null);
   const [expandedEmployerId, setExpandedEmployerId] = useState<string | null>(null);
+  const [loadingDetailId, setLoadingDetailId] = useState<string | null>(null);
 
   // Modal states
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -159,7 +167,8 @@ export function EmployerManager() {
     }
   };
 
-  const fetchEmployerDetail = async (id: string) => {
+  const fetchEmployerDetail = useCallback(async (id: string): Promise<EmployerDetail | null> => {
+    setLoadingDetailId(id);
     try {
       const response = await fetch(`/api/admin/employers/${id}`);
       if (!response.ok) {
@@ -168,11 +177,14 @@ export function EmployerManager() {
       }
       const result = await response.json();
       setSelectedEmployer(result.employer);
-      setExpandedEmployerId(id);
+      return result.employer;
     } catch (err) {
       console.error("Failed to fetch employer detail:", err);
+      return null;
+    } finally {
+      setLoadingDetailId(null);
     }
-  };
+  }, []);
 
   const handleCreate = async () => {
     setIsSaving(true);
@@ -473,60 +485,95 @@ export function EmployerManager() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          if (expandedEmployerId === employer.id) {
-                            setExpandedEmployerId(null);
-                            setSelectedEmployer(null);
-                          } else {
-                            fetchEmployerDetail(employer.id);
-                          }
-                        }}
-                      >
-                        {expandedEmployerId === employer.id ? (
-                          <ChevronUp className="h-4 w-4" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          fetchEmployerDetail(employer.id).then(() => {
-                            setFormData({
-                              name: employer.name,
-                              ownerEmail: employer.owner.email,
-                              plan: employer.plan,
-                              maxSeats: employer.maxSeats,
-                            });
-                            setIsEditModalOpen(true);
-                          });
-                        }}
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
-                        onClick={() => {
-                          fetchEmployerDetail(employer.id).then(() => {
-                            setIsDeleteModalOpen(true);
-                          });
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    <TooltipProvider delayDuration={300}>
+                      <div className="flex items-center gap-1">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 transition-colors"
+                              onClick={() => {
+                                if (expandedEmployerId === employer.id) {
+                                  setExpandedEmployerId(null);
+                                  setSelectedEmployer(null);
+                                } else {
+                                  setExpandedEmployerId(employer.id);
+                                  setSelectedEmployer(null);
+                                  fetchEmployerDetail(employer.id);
+                                }
+                              }}
+                            >
+                              {loadingDetailId === employer.id && expandedEmployerId === employer.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : expandedEmployerId === employer.id ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom">
+                            <p>{expandedEmployerId === employer.id ? "Collapse" : "Expand details"}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                              onClick={() => {
+                                setFormData({
+                                  name: employer.name,
+                                  ownerEmail: employer.owner.email,
+                                  plan: employer.plan,
+                                  maxSeats: employer.maxSeats,
+                                });
+                                setSelectedEmployer(null);
+                                fetchEmployerDetail(employer.id);
+                                setIsEditModalOpen(true);
+                              }}
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom">
+                            <p>Edit employer</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50 transition-colors"
+                              onClick={() => {
+                                setFormData({
+                                  name: employer.name,
+                                  ownerEmail: employer.owner.email,
+                                  plan: employer.plan,
+                                  maxSeats: employer.maxSeats,
+                                });
+                                setSelectedEmployer(null);
+                                fetchEmployerDetail(employer.id);
+                                setIsDeleteModalOpen(true);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom">
+                            <p>Delete employer</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </TooltipProvider>
                   </div>
 
                   {/* Expanded Details */}
                   <AnimatePresence>
-                    {expandedEmployerId === employer.id && selectedEmployer && (
+                    {expandedEmployerId === employer.id && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
@@ -535,124 +582,146 @@ export function EmployerManager() {
                         className="overflow-hidden"
                       >
                         <div className="mt-4 pt-4 border-t space-y-4">
-                          {/* Info Grid */}
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                            <div>
-                              <p className="text-muted-foreground">Slug</p>
-                              <p className="font-medium">{selectedEmployer.slug}</p>
-                            </div>
-                            <div>
-                              <p className="text-muted-foreground">Owner</p>
-                              <p className="font-medium">{selectedEmployer.owner?.name || "Unknown"}</p>
-                            </div>
-                            <div>
-                              <p className="text-muted-foreground">Max Seats</p>
-                              <p className="font-medium">{selectedEmployer.maxSeats}</p>
-                            </div>
-                            <div>
-                              <p className="text-muted-foreground">Created</p>
-                              <p className="font-medium">
-                                {new Date(selectedEmployer.createdAt).toLocaleDateString()}
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Stripe Info */}
-                          {selectedEmployer.stripeCustomerId && (
-                            <div className="p-3 rounded-lg bg-violet-50 border border-violet-100">
-                              <div className="flex items-center gap-2 mb-2">
-                                <CreditCard className="h-4 w-4 text-violet-600" />
-                                <span className="text-sm font-medium text-violet-700">Stripe</span>
+                          {!selectedEmployer ? (
+                            /* Loading skeleton while detail is being fetched */
+                            <div className="space-y-4 animate-in fade-in duration-200">
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {[...Array(4)].map((_, i) => (
+                                  <div key={i}>
+                                    <Skeleton className="h-3 w-16 mb-2" />
+                                    <Skeleton className="h-5 w-24" />
+                                  </div>
+                                ))}
                               </div>
-                              <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div className="space-y-2">
+                                <Skeleton className="h-5 w-32" />
+                                {[...Array(2)].map((_, i) => (
+                                  <Skeleton key={i} className="h-12 w-full rounded-lg" />
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              {/* Info Grid */}
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                 <div>
-                                  <p className="text-violet-600">Customer ID</p>
-                                  <p className="font-mono text-xs">{selectedEmployer.stripeCustomerId}</p>
+                                  <p className="text-muted-foreground">Slug</p>
+                                  <p className="font-medium">{selectedEmployer.slug}</p>
                                 </div>
-                                {selectedEmployer.currentPeriodEnd && (
-                                  <div>
-                                    <p className="text-violet-600">Period Ends</p>
-                                    <p className="font-medium">
-                                      {new Date(selectedEmployer.currentPeriodEnd).toLocaleDateString()}
-                                    </p>
-                                  </div>
-                                )}
+                                <div>
+                                  <p className="text-muted-foreground">Owner</p>
+                                  <p className="font-medium">{selectedEmployer.owner?.name || "Unknown"}</p>
+                                </div>
+                                <div>
+                                  <p className="text-muted-foreground">Max Seats</p>
+                                  <p className="font-medium">{selectedEmployer.maxSeats}</p>
+                                </div>
+                                <div>
+                                  <p className="text-muted-foreground">Created</p>
+                                  <p className="font-medium">
+                                    {new Date(selectedEmployer.createdAt).toLocaleDateString()}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          )}
 
-                          {/* Members */}
-                          <div>
-                            <div className="flex items-center justify-between mb-3">
-                              <h4 className="font-medium text-gray-900">
-                                Members ({selectedEmployer.members?.length || 0})
-                              </h4>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setIsAddMemberModalOpen(true)}
-                              >
-                                <UserPlus className="h-4 w-4 mr-1" />
-                                Add Member
-                              </Button>
-                            </div>
-                            <div className="space-y-2">
-                              {selectedEmployer.members?.map((member) => (
-                                <div
-                                  key={member.id}
-                                  className="flex items-center justify-between p-2 rounded-lg bg-gray-50"
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                      <Users className="h-4 w-4 text-gray-500" />
-                                    </div>
-                                    <div>
-                                      <p className="text-sm font-medium">
-                                        {member.name || member.email}
-                                      </p>
-                                      {member.name && (
-                                        <p className="text-xs text-muted-foreground">{member.email}</p>
-                                      )}
-                                    </div>
+                              {/* Stripe Info */}
+                              {selectedEmployer.stripeCustomerId && (
+                                <div className="p-3 rounded-lg bg-violet-50 border border-violet-100">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <CreditCard className="h-4 w-4 text-violet-600" />
+                                    <span className="text-sm font-medium text-violet-700">Stripe</span>
                                   </div>
-                                  <div className="flex items-center gap-2">
-                                    <Badge
-                                      variant="outline"
-                                      className={
-                                        member.role === "owner"
-                                          ? "border-orange-200 text-orange-700"
-                                          : member.role === "admin"
-                                          ? "border-violet-200 text-violet-700"
-                                          : "border-gray-200"
-                                      }
-                                    >
-                                      {member.role}
-                                    </Badge>
-                                    <Badge
-                                      variant="outline"
-                                      className={
-                                        member.status === "active"
-                                          ? "border-emerald-200 text-emerald-700"
-                                          : "border-amber-200 text-amber-700"
-                                      }
-                                    >
-                                      {member.status}
-                                    </Badge>
-                                    {member.role !== "owner" && (
-                                      <Button
-                                        size="icon"
-                                        variant="ghost"
-                                        className="h-7 w-7 text-rose-500 hover:text-rose-600"
-                                        onClick={() => handleRemoveMember(member.id)}
-                                      >
-                                        <X className="h-3.5 w-3.5" />
-                                      </Button>
+                                  <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                      <p className="text-violet-600">Customer ID</p>
+                                      <p className="font-mono text-xs">{selectedEmployer.stripeCustomerId}</p>
+                                    </div>
+                                    {selectedEmployer.currentPeriodEnd && (
+                                      <div>
+                                        <p className="text-violet-600">Period Ends</p>
+                                        <p className="font-medium">
+                                          {new Date(selectedEmployer.currentPeriodEnd).toLocaleDateString()}
+                                        </p>
+                                      </div>
                                     )}
                                   </div>
                                 </div>
-                              ))}
-                            </div>
-                          </div>
+                              )}
+
+                              {/* Members */}
+                              <div>
+                                <div className="flex items-center justify-between mb-3">
+                                  <h4 className="font-medium text-gray-900">
+                                    Members ({selectedEmployer.members?.length || 0})
+                                  </h4>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setIsAddMemberModalOpen(true)}
+                                  >
+                                    <UserPlus className="h-4 w-4 mr-1" />
+                                    Add Member
+                                  </Button>
+                                </div>
+                                <div className="space-y-2">
+                                  {selectedEmployer.members?.map((member) => (
+                                    <div
+                                      key={member.id}
+                                      className="flex items-center justify-between p-2 rounded-lg bg-gray-50"
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                          <Users className="h-4 w-4 text-gray-500" />
+                                        </div>
+                                        <div>
+                                          <p className="text-sm font-medium">
+                                            {member.name || member.email}
+                                          </p>
+                                          {member.name && (
+                                            <p className="text-xs text-muted-foreground">{member.email}</p>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <Badge
+                                          variant="outline"
+                                          className={
+                                            member.role === "owner"
+                                              ? "border-orange-200 text-orange-700"
+                                              : member.role === "admin"
+                                              ? "border-violet-200 text-violet-700"
+                                              : "border-gray-200"
+                                          }
+                                        >
+                                          {member.role}
+                                        </Badge>
+                                        <Badge
+                                          variant="outline"
+                                          className={
+                                            member.status === "active"
+                                              ? "border-emerald-200 text-emerald-700"
+                                              : "border-amber-200 text-amber-700"
+                                          }
+                                        >
+                                          {member.status}
+                                        </Badge>
+                                        {member.role !== "owner" && (
+                                          <Button
+                                            size="icon"
+                                            variant="ghost"
+                                            className="h-7 w-7 text-rose-500 hover:text-rose-600"
+                                            onClick={() => handleRemoveMember(member.id)}
+                                          >
+                                            <X className="h-3.5 w-3.5" />
+                                          </Button>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </>
+                          )}
                         </div>
                       </motion.div>
                     )}
@@ -818,7 +887,7 @@ export function EmployerManager() {
           <DialogHeader>
             <DialogTitle className="text-rose-600">Delete Employer</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{selectedEmployer?.name}&quot;?
+              Are you sure you want to delete &quot;{selectedEmployer?.name || formData.name}&quot;?
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
