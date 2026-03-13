@@ -180,7 +180,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   id="sidebar-demo"
                   checked={useDemoData}
                   onCheckedChange={setUseDemoData}
-                  className="data-[state=checked]:bg-orange-500 scale-75"
+                  className="data-[state=checked]:bg-orange-500"
                 />
               </div>
 
