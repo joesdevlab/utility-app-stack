@@ -122,7 +122,7 @@ export function StatCard({
     orange: "from-orange-500 to-orange-600 shadow-orange-500/25",
     green: "from-emerald-500 to-emerald-600 shadow-emerald-500/25",
     blue: "from-blue-500 to-blue-600 shadow-blue-500/25",
-    purple: "from-violet-500 to-violet-600 shadow-violet-500/25",
+    purple: "from-blue-500 to-blue-600 shadow-blue-500/25",
     red: "from-rose-500 to-rose-600 shadow-rose-500/25",
     yellow: "from-amber-500 to-amber-600 shadow-amber-500/25",
   };
@@ -131,7 +131,7 @@ export function StatCard({
     orange: "bg-orange-500/5",
     green: "bg-emerald-500/5",
     blue: "bg-blue-500/5",
-    purple: "bg-violet-500/5",
+    purple: "bg-blue-500/5",
     red: "bg-rose-500/5",
     yellow: "bg-amber-500/5",
   };

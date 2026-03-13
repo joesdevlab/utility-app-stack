@@ -120,7 +120,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               initial={{ opacity: 0, y: -40 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
-              className="bg-gradient-to-r from-violet-600 via-purple-600 to-violet-600 text-white py-2.5 px-4 text-center text-sm font-medium"
+              className="bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 text-white py-2.5 px-4 text-center text-sm font-medium"
             >
               <div className="flex items-center justify-center gap-2">
                 <FlaskConical className="h-4 w-4" />
@@ -171,8 +171,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               {/* Demo Toggle */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FlaskConical className={`h-3.5 w-3.5 ${useDemoData ? "text-violet-600" : "text-gray-400"}`} />
-                  <Label htmlFor="sidebar-demo" className={`text-xs cursor-pointer ${useDemoData ? "text-violet-700" : "text-muted-foreground"}`}>
+                  <FlaskConical className={`h-3.5 w-3.5 ${useDemoData ? "text-orange-600" : "text-gray-400"}`} />
+                  <Label htmlFor="sidebar-demo" className={`text-xs cursor-pointer ${useDemoData ? "text-orange-700" : "text-muted-foreground"}`}>
                     Demo Data
                   </Label>
                 </div>
@@ -180,7 +180,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   id="sidebar-demo"
                   checked={useDemoData}
                   onCheckedChange={setUseDemoData}
-                  className="data-[state=checked]:bg-violet-600 scale-75"
+                  className="data-[state=checked]:bg-orange-500 scale-75"
                 />
               </div>
 

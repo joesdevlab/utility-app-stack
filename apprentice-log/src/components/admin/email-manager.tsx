@@ -157,7 +157,7 @@ export function EmailManager() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-violet-600 shadow-lg shadow-violet-500/25 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25 flex items-center justify-center">
           <Mail className="h-5 w-5 text-white" />
         </div>
         <div>
@@ -182,22 +182,22 @@ export function EmailManager() {
                   onClick={() => setSelectedTemplate(template.id)}
                   className={`w-full text-left p-4 rounded-xl border transition-all duration-200 ${
                     selectedTemplate === template.id
-                      ? "bg-violet-50 border-violet-200 shadow-md"
-                      : "bg-white border-gray-200 hover:border-violet-200 hover:bg-violet-50/50"
+                      ? "bg-orange-50 border-orange-200 shadow-md"
+                      : "bg-white border-gray-200 hover:border-orange-200 hover:bg-orange-50/50"
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                         selectedTemplate === template.id
-                          ? "bg-violet-500 text-white"
+                          ? "bg-orange-500 text-white"
                           : "bg-gray-100 text-gray-500"
                       }`}>
                         <Mail className="h-4 w-4" />
                       </div>
                       <div>
                         <p className={`font-medium ${
-                          selectedTemplate === template.id ? "text-violet-700" : "text-gray-900"
+                          selectedTemplate === template.id ? "text-orange-700" : "text-gray-900"
                         }`}>
                           {template.name}
                         </p>
@@ -207,7 +207,7 @@ export function EmailManager() {
                       </div>
                     </div>
                     <ChevronRight className={`h-4 w-4 transition-transform ${
-                      selectedTemplate === template.id ? "text-violet-500 translate-x-1" : "text-gray-400"
+                      selectedTemplate === template.id ? "text-orange-500 translate-x-1" : "text-gray-400"
                     }`} />
                   </div>
                 </button>
@@ -243,7 +243,7 @@ export function EmailManager() {
                 exit={{ opacity: 0 }}
               >
                 <Card className="h-[600px] flex items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-violet-500" />
+                  <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
                 </Card>
               </motion.div>
             ) : preview ? (
@@ -255,7 +255,7 @@ export function EmailManager() {
                 className="space-y-4"
               >
                 {/* Controls */}
-                <Card className="border-violet-100 bg-gradient-to-r from-violet-50/50 to-purple-50/50">
+                <Card className="border-gray-200 bg-gradient-to-r from-gray-50/50 to-orange-50/50">
                   <CardContent className="py-4">
                     <div className="flex flex-wrap items-center gap-4">
                       {/* View mode toggle */}
@@ -264,7 +264,7 @@ export function EmailManager() {
                           onClick={() => setViewMode("desktop")}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
                             viewMode === "desktop"
-                              ? "bg-violet-500 text-white shadow-sm"
+                              ? "bg-orange-500 text-white shadow-sm"
                               : "text-gray-600 hover:bg-gray-100"
                           }`}
                         >
@@ -275,7 +275,7 @@ export function EmailManager() {
                           onClick={() => setViewMode("mobile")}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
                             viewMode === "mobile"
-                              ? "bg-violet-500 text-white shadow-sm"
+                              ? "bg-orange-500 text-white shadow-sm"
                               : "text-gray-600 hover:bg-gray-100"
                           }`}
                         >
@@ -304,7 +304,7 @@ export function EmailManager() {
                         <Button
                           onClick={sendTestEmail}
                           disabled={isSending}
-                          className="bg-violet-500 hover:bg-violet-600 text-white gap-2"
+                          className="bg-orange-500 hover:bg-orange-600 text-white gap-2"
                         >
                           {isSending ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -323,7 +323,7 @@ export function EmailManager() {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="mt-3 pt-3 border-t border-violet-100"
+                          className="mt-3 pt-3 border-t border-gray-200"
                         >
                           <div className={`flex items-center gap-2 text-sm ${
                             sendResult.success ? "text-emerald-600" : "text-rose-600"
@@ -349,7 +349,7 @@ export function EmailManager() {
 
                 {/* Template info */}
                 <div className="flex items-center gap-3">
-                  <Badge className="bg-violet-100 text-violet-700 hover:bg-violet-100">
+                  <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100">
                     <Sparkles className="h-3 w-3 mr-1" />
                     {preview.name}
                   </Badge>

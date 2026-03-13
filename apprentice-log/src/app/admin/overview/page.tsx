@@ -187,7 +187,7 @@ export default function AdminOverviewPage() {
           <Card className="hover:shadow-lg transition-shadow h-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
                   <PieChart className="h-4 w-4 text-white" />
                 </div>
                 Customer Mix

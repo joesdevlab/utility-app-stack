@@ -423,8 +423,8 @@ export function EmployerManager() {
         <Card>
           <CardContent className="pt-4 pb-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-100 to-violet-50 flex items-center justify-center">
-                <FileText className="h-5 w-5 text-violet-600" />
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center">
+                <FileText className="h-5 w-5 text-blue-600" />
               </div>
               <div>
                 <p className="text-2xl font-bold">
@@ -626,19 +626,19 @@ export function EmployerManager() {
 
                               {/* Stripe Info */}
                               {selectedEmployer.stripeCustomerId && (
-                                <div className="p-3 rounded-lg bg-violet-50 border border-violet-100">
+                                <div className="p-3 rounded-lg bg-blue-50 border border-blue-100">
                                   <div className="flex items-center gap-2 mb-2">
-                                    <CreditCard className="h-4 w-4 text-violet-600" />
-                                    <span className="text-sm font-medium text-violet-700">Stripe</span>
+                                    <CreditCard className="h-4 w-4 text-blue-600" />
+                                    <span className="text-sm font-medium text-blue-700">Stripe</span>
                                   </div>
                                   <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div>
-                                      <p className="text-violet-600">Customer ID</p>
+                                      <p className="text-blue-600">Customer ID</p>
                                       <p className="font-mono text-xs">{selectedEmployer.stripeCustomerId}</p>
                                     </div>
                                     {selectedEmployer.currentPeriodEnd && (
                                       <div>
-                                        <p className="text-violet-600">Period Ends</p>
+                                        <p className="text-blue-600">Period Ends</p>
                                         <p className="font-medium">
                                           {new Date(selectedEmployer.currentPeriodEnd).toLocaleDateString()}
                                         </p>
@@ -689,7 +689,7 @@ export function EmployerManager() {
                                             member.role === "owner"
                                               ? "border-orange-200 text-orange-700"
                                               : member.role === "admin"
-                                              ? "border-violet-200 text-violet-700"
+                                              ? "border-blue-200 text-blue-700"
                                               : "border-gray-200"
                                           }
                                         >
