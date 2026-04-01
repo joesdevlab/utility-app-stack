@@ -3,11 +3,12 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Mic, Clock, Settings } from "lucide-react";
+import { Mic, Clock, Settings, BarChart3 } from "lucide-react";
 
 const navItems = [
   { href: "/app/history", label: "History", icon: Clock },
   { href: "/app", label: "Record", icon: Mic, isMain: true },
+  { href: "/app/stats", label: "Stats", icon: BarChart3 },
   { href: "/app/settings", label: "Settings", icon: Settings },
 ];
 

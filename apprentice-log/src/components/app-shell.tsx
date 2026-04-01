@@ -25,6 +25,8 @@ export function AppShell({ children }: AppShellProps) {
         return "Record Entry";
       case "/app/history":
         return "Entry History";
+      case "/app/stats":
+        return "My Progress";
       case "/app/settings":
         return "Settings";
       default:
