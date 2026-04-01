@@ -22,6 +22,7 @@ import { PendingInvitations } from "@/components/pending-invitations";
 import { LogoSpinner } from "@/components/animated-logo";
 import { ProcessingStepper, type ProcessingPhase } from "@/components/processing-stepper";
 import { PendingEntriesBanner } from "@/components/pending-entries-banner";
+import { OnboardingWalkthrough } from "@/components/onboarding-walkthrough";
 import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analytics";
 
 type AppState = "idle" | "processing" | "result" | "saved";
@@ -288,6 +289,7 @@ export default function Home() {
 
   return (
     <AppShell>
+      <OnboardingWalkthrough />
       <div className="px-4 py-4 max-w-lg mx-auto">
         {/* Show pending employer invitations */}
         <PendingInvitations />
