@@ -2,9 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email/resend";
 import { VerificationEmail } from "@/emails";
 import { createClient } from "@/lib/supabase/server";
+import { checkTypedRateLimit, rateLimitResponse, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit by IP to prevent email spam
+    const clientIp = getClientIp(request.headers);
+    const rateLimitResult = checkTypedRateLimit(clientIp, "email");
+    if (!rateLimitResult.allowed) {
+      return rateLimitResponse(rateLimitResult);
+    }
+
     const { email, token } = await request.json();
 
     if (!email) {

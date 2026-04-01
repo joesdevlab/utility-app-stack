@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email/resend";
 import { PasswordResetEmail } from "@/emails";
+import { checkTypedRateLimit, rateLimitResponse, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit by IP to prevent email spam / brute force
+    const clientIp = getClientIp(request.headers);
+    const rateLimitResult = checkTypedRateLimit(clientIp, "password-reset");
+    if (!rateLimitResult.allowed) {
+      return rateLimitResponse(rateLimitResult);
+    }
+
     const { email, token } = await request.json();
 
     if (!email || !token) {

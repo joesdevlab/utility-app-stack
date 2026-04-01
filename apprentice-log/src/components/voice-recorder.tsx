@@ -74,11 +74,6 @@ export function VoiceRecorder({
 
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
-        console.log("Recording complete:", {
-          size: audioBlob.size,
-          type: audioBlob.type,
-          chunks: chunksRef.current.length,
-        });
         onRecordingComplete(audioBlob);
 
         // Cleanup

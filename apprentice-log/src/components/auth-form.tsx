@@ -79,6 +79,10 @@ export function AuthForm({ defaultMode = "signin", defaultEmail = "" }: AuthForm
           toast.success("Welcome back!");
         }
       } else if (mode === "signup") {
+        if (password.length < 8) {
+          toast.error("Password must be at least 8 characters");
+          return;
+        }
         const { error } = await signUp(email, password, fullName);
         if (error) {
           toast.error(error.message);

@@ -52,11 +52,18 @@ export async function GET(
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
-    // Parse query params
+    // Parse and validate query params
     const url = new URL(request.url);
     const format = url.searchParams.get("format") || "csv";
+    if (!["csv", "pdf"].includes(format)) {
+      return NextResponse.json({ error: "Format must be 'csv' or 'pdf'" }, { status: 400 });
+    }
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     const startDate = url.searchParams.get("startDate");
     const endDate = url.searchParams.get("endDate");
+    if ((startDate && !dateRegex.test(startDate)) || (endDate && !dateRegex.test(endDate))) {
+      return NextResponse.json({ error: "Dates must be in YYYY-MM-DD format" }, { status: 400 });
+    }
     const apprenticeId = url.searchParams.get("apprenticeId");
 
     // Build entries query

@@ -68,10 +68,14 @@ export async function GET(
       );
     }
 
-    // Get query params for filtering
+    // Get and validate query params for filtering
     const url = new URL(request.url);
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     const startDate = url.searchParams.get("startDate");
     const endDate = url.searchParams.get("endDate");
+    if ((startDate && !dateRegex.test(startDate)) || (endDate && !dateRegex.test(endDate))) {
+      return NextResponse.json({ error: "Dates must be in YYYY-MM-DD format" }, { status: 400 });
+    }
     const limit = parseInt(url.searchParams.get("limit") || "50", 10);
     const offset = parseInt(url.searchParams.get("offset") || "0", 10);
 

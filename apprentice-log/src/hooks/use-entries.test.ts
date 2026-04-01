@@ -78,13 +78,6 @@ describe("useEntries - Debug Timelog Save Flow", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      // DEBUG: Log what was called
-      console.log("=== DEBUG: loadEntries ===");
-      console.log("from() called with:", mockSupabase.from.mock.calls);
-      console.log("select() called with:", mockSupabase.select.mock.calls);
-      console.log("eq() called with:", mockSupabase.eq.mock.calls);
-      console.log("order() called with:", mockSupabase.order.mock.calls);
-      console.log("Entries loaded:", result.current.entries);
 
       expect(mockSupabase.from).toHaveBeenCalledWith("apprentice_entries");
       expect(result.current.entries).toHaveLength(1);
@@ -103,9 +96,6 @@ describe("useEntries - Debug Timelog Save Flow", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      console.log("=== DEBUG: loadEntries Error ===");
-      console.log("Error received:", mockError);
-      console.log("Console.error calls:", consoleSpy.mock.calls);
 
       expect(consoleSpy).toHaveBeenCalledWith("Failed to load entries:", mockError);
       expect(result.current.entries).toHaveLength(0);
@@ -120,8 +110,6 @@ describe("useEntries - Debug Timelog Save Flow", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      console.log("=== DEBUG: No userId ===");
-      console.log("from() call count:", mockSupabase.from.mock.calls.length);
 
       // Should not call Supabase at all
       expect(mockSupabase.from).not.toHaveBeenCalled();
@@ -182,14 +170,7 @@ describe("useEntries - Debug Timelog Save Flow", () => {
         addedEntry = await result.current.addEntry(newEntryData);
       });
 
-      // DEBUG: Log the full save flow
-      console.log("=== DEBUG: addEntry Save Flow ===");
-      console.log("from() calls:", mockSupabase.from.mock.calls);
-      console.log("insert() calls:", mockSupabase.insert.mock.calls);
-      console.log("select() calls:", mockSupabase.select.mock.calls);
       console.log("single() calls:", mockSupabase.single.mock.calls);
-      console.log("Returned entry:", addedEntry);
-      console.log("Entries in state:", result.current.entries);
 
       // Verify the insert was called with correct data
       expect(mockSupabase.insert).toHaveBeenCalledWith(
@@ -253,8 +234,6 @@ describe("useEntries - Debug Timelog Save Flow", () => {
         await result.current.addEntry(entryWithoutTotalHours);
       });
 
-      console.log("=== DEBUG: Hours Calculation ===");
-      console.log("Insert payload:", mockSupabase.insert.mock.calls[0]?.[0]);
 
       // Check that total_hours was calculated correctly
       expect(mockSupabase.insert).toHaveBeenCalledWith(
@@ -293,10 +272,6 @@ describe("useEntries - Debug Timelog Save Flow", () => {
         });
       });
 
-      console.log("=== DEBUG: addEntry Error ===");
-      console.log("Error received:", mockError);
-      console.log("Returned value:", addedEntry);
-      console.log("Console.error calls:", consoleSpy.mock.calls);
 
       expect(addedEntry).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith("Failed to add entry:", mockError);
@@ -321,9 +296,6 @@ describe("useEntries - Debug Timelog Save Flow", () => {
         });
       });
 
-      console.log("=== DEBUG: addEntry without userId ===");
-      console.log("insert() call count:", mockSupabase.insert.mock.calls.length);
-      console.log("Returned value:", addedEntry);
 
       expect(mockSupabase.insert).not.toHaveBeenCalled();
       expect(addedEntry).toBeNull();
@@ -394,10 +366,6 @@ describe("useEntries - Debug Timelog Save Flow", () => {
         });
       });
 
-      console.log("=== DEBUG: updateEntry ===");
-      console.log("update() calls:", mockSupabase.update.mock.calls);
-      console.log("eq() calls:", mockSupabase.eq.mock.calls);
-      console.log("Updated entry:", updatedEntry);
 
       expect(mockSupabase.update).toHaveBeenCalled();
       expect(updatedEntry?.formattedEntry).toBe("Updated entry content");
@@ -448,9 +416,6 @@ describe("useEntries - Debug Timelog Save Flow", () => {
         await result.current.removeEntry(existingEntry.id);
       });
 
-      console.log("=== DEBUG: removeEntry (soft delete) ===");
-      console.log("update() calls:", mockSupabase.update.mock.calls);
-      console.log("Entries after delete:", result.current.entries);
 
       expect(mockSupabase.update).toHaveBeenCalledWith({ is_deleted: true });
       expect(result.current.entries).toHaveLength(0);
@@ -506,9 +471,7 @@ describe("useEntries - Debug Timelog Save Flow", () => {
         await result.current.addEntry(camelCaseEntry);
       });
 
-      console.log("=== DEBUG: Field Mapping camelCase -> snake_case ===");
       const insertPayload = mockSupabase.insert.mock.calls[0]?.[0];
-      console.log("Insert payload:", JSON.stringify(insertPayload, null, 2));
 
       // Verify snake_case fields in insert
       expect(insertPayload).toEqual(

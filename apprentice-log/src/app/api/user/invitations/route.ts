@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 // GET - Get pending invitations for the current user
 export async function GET(request: NextRequest) {
@@ -94,9 +95,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Use admin client for the update to bypass RLS, since the invited user
+    // is not yet an active org member and the RLS policy would block the update.
+    // Safety: we've already verified the invitation belongs to this user's email above.
+    const adminClient = createAdminClient();
+
     if (action === "accept") {
       // Accept the invitation - link user and activate membership
-      const { error: updateError } = await supabase
+      const { error: updateError } = await adminClient
         .from("organization_members")
         .update({
           user_id: user.id,
@@ -119,7 +125,7 @@ export async function POST(request: NextRequest) {
       });
     } else {
       // Decline the invitation - mark as removed
-      const { error: updateError } = await supabase
+      const { error: updateError } = await adminClient
         .from("organization_members")
         .update({
           status: "removed",
