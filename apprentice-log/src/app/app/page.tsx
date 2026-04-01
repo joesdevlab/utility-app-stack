@@ -22,6 +22,7 @@ import { PendingInvitations } from "@/components/pending-invitations";
 import { LogoSpinner } from "@/components/animated-logo";
 import { ProcessingStepper, type ProcessingPhase } from "@/components/processing-stepper";
 import { PendingEntriesBanner } from "@/components/pending-entries-banner";
+import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analytics";
 
 type AppState = "idle" | "processing" | "result" | "saved";
 type EntryMode = "voice" | "manual";
@@ -142,6 +143,7 @@ export default function Home() {
 
       const { text } = await transcribeResponse.json();
       setTranscript(text);
+      trackEvent(ANALYTICS_EVENTS.VOICE_RECORDED);
 
       // Step 2: Format the entry
       setProcessingPhase("formatting");

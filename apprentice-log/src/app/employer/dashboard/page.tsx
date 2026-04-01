@@ -10,11 +10,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Users, Clock, FileText, AlertCircle, Plus, ArrowRight, RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useEffect } from "react";
+import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analytics";
 
 export default function EmployerDashboardPage() {
   const router = useRouter();
   // SWR-powered hook with localStorage caching for instant loads
   const { stats, apprentices, isLoading, isValidating } = useDashboard();
+
+  useEffect(() => {
+    trackEvent(ANALYTICS_EVENTS.EMPLOYER_PORTAL_ACCESSED);
+  }, []);
 
   // Filter apprentices needing attention (no entry in 7+ days)
   const apprenticesNeedingAttention = apprentices.filter((a) => {

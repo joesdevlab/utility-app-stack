@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/auth-provider";
 import { useOrganization } from "@/hooks/use-organization";
+import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analytics";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -61,6 +62,7 @@ export default function BillingPage() {
   // Handle checkout success/cancel
   useEffect(() => {
     if (searchParams.get("success") === "true") {
+      trackEvent(ANALYTICS_EVENTS.CHECKOUT_COMPLETED, { plan: "pro" });
       toast.success("Subscription activated successfully!");
       refreshOrganization();
     } else if (searchParams.get("canceled") === "true") {
@@ -70,6 +72,7 @@ export default function BillingPage() {
 
   const handleSubscribe = async () => {
     setProcessingPlan("pro");
+    trackEvent(ANALYTICS_EVENTS.CHECKOUT_STARTED, { plan: "pro" });
     try {
       await createCheckout("pro");
     } catch (error) {

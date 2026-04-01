@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { LogbookEntry } from "@/types";
+import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analytics";
 
 export function useEntries(userId: string | undefined) {
   const [entries, setEntries] = useState<LogbookEntry[]>([]);
@@ -109,7 +110,19 @@ export function useEntries(userId: string | undefined) {
           safetyObservations: data.safety_observations,
         };
 
-        setEntries((prev) => [newEntry, ...prev]);
+        setEntries((prev) => {
+          const isFirst = prev.length === 0;
+          if (isFirst) {
+            trackEvent(ANALYTICS_EVENTS.FIRST_ENTRY_CREATED);
+          }
+          return [newEntry, ...prev];
+        });
+        trackEvent(ANALYTICS_EVENTS.ENTRY_CREATED, {
+          hasVoice: !!entry.rawTranscript,
+          hasPhotos: (entry.photos?.length || 0) > 0,
+          taskCount: entry.tasks?.length || 0,
+          hours: totalHours,
+        });
         return newEntry;
       } catch (error) {
         console.error("Failed to add entry:", error);

@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import type { LogbookEntry } from "@/types";
 import { downloadBCITOPdf } from "@/lib/pdf-export";
+import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analytics";
 
 export default function HistoryPage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -405,6 +406,10 @@ export default function HistoryPage() {
                 downloadBCITOPdf(filteredEntries, {
                   apprenticeName: user.email?.split("@")[0] || "Apprentice",
                   dateRange: { start: dates[0], end: dates[dates.length - 1] },
+                });
+                trackEvent(ANALYTICS_EVENTS.EXPORT_DOWNLOADED, {
+                  format: "pdf",
+                  entryCount: filteredEntries.length,
                 });
                 toast.success("PDF downloaded!");
               }}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { trackEvent, ANALYTICS_EVENTS } from "@/lib/analytics";
 import type {
   OrganizationWithRole,
   OrganizationStats,
@@ -223,6 +224,7 @@ export function useOrgMembers(organizationId: string | undefined): UseOrgMembers
       throw new Error(error.error || "Failed to invite member");
     }
 
+    trackEvent(ANALYTICS_EVENTS.APPRENTICE_INVITED, { role });
     await fetchMembers();
     invalidateDashboardCache();
   }, [organizationId, fetchMembers]);
