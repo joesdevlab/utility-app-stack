@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { motion } from "framer-motion";
-import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Building2, Shield, ShieldCheck, ShieldOff, Trash2, Gift, Settings2, ChevronRight, FileText } from "lucide-react";
+import { User, Bell, Download, HelpCircle, ExternalLink, LogOut, LucideIcon, Loader2, Building2, Shield, ShieldCheck, ShieldOff, Trash2, Gift, Settings2, ChevronRight, FileText, Clock } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LogoSpinner } from "@/components/animated-logo";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
@@ -30,6 +31,7 @@ interface SettingItem {
   external?: string;
   href?: string;  // For internal navigation
   destructive?: boolean;
+  customContent?: React.ReactNode;
 }
 
 interface SettingsGroup {
@@ -204,6 +206,52 @@ export default function SettingsPage() {
           },
           disabled: reminderLoading,
         },
+        ...(reminderEnabled ? [{
+          icon: Clock,
+          label: "Reminder Time",
+          description: "Choose when to be reminded",
+          customContent: (
+            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+              <Select
+                value={String(reminderHour)}
+                onValueChange={(val) => {
+                  setReminderTime(parseInt(val), reminderMinute);
+                  toast.success(`Reminder updated to ${parseInt(val).toString().padStart(2, "0")}:${reminderMinute.toString().padStart(2, "0")}`);
+                }}
+              >
+                <SelectTrigger className="w-[70px] h-8 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <SelectItem key={i} value={String(i)}>
+                      {i.toString().padStart(2, "0")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="text-gray-400 font-medium">:</span>
+              <Select
+                value={String(reminderMinute)}
+                onValueChange={(val) => {
+                  setReminderTime(reminderHour, parseInt(val));
+                  toast.success(`Reminder updated to ${reminderHour.toString().padStart(2, "0")}:${parseInt(val).toString().padStart(2, "0")}`);
+                }}
+              >
+                <SelectTrigger className="w-[70px] h-8 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[0, 15, 30, 45].map((m) => (
+                    <SelectItem key={m} value={String(m)}>
+                      {m.toString().padStart(2, "0")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ),
+        }] as SettingItem[] : []),
       ],
     },
     {
@@ -408,9 +456,11 @@ export default function SettingsPage() {
                             {item.description}
                           </p>
                         </div>
-                        {(item.href || item.onClick) && !item.destructive && (
+                        {item.customContent ? (
+                          item.customContent
+                        ) : (item.href || item.onClick) && !item.destructive ? (
                           <ChevronRight className="h-4 w-4 text-gray-300 group-hover:text-gray-500 group-hover:translate-x-0.5 transition-all shrink-0" />
-                        )}
+                        ) : null}
                       </>
                     );
 
