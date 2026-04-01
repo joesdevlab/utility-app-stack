@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
     switch (email_data.email_action_type) {
       case "signup": {
         // Email verification for new signups
-        const verificationUrl = `${baseUrl}/auth/confirm?token_hash=${email_data.token_hash}&type=signup&redirect_to=${encodeURIComponent(email_data.redirect_to || "/app")}`;
+        const verificationUrl = `${baseUrl}/auth/confirm?token_hash=${encodeURIComponent(email_data.token_hash)}&type=signup&redirect_to=${encodeURIComponent(email_data.redirect_to || "/app")}`;
 
         await sendEmail({
           to: user.email,
@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
 
       case "recovery": {
         // Password reset
-        const resetUrl = `${baseUrl}/auth/reset-password?token_hash=${email_data.token_hash}&type=recovery`;
+        const resetUrl = `${baseUrl}/auth/reset-password?token_hash=${encodeURIComponent(email_data.token_hash)}&type=recovery`;
 
         await sendEmail({
           to: user.email,
@@ -179,7 +179,7 @@ export async function POST(request: NextRequest) {
 
       case "invite": {
         // Team invite (for employer portal)
-        const inviteUrl = `${baseUrl}/auth/confirm?token_hash=${email_data.token_hash}&type=invite&redirect_to=${encodeURIComponent(email_data.redirect_to || "/app")}`;
+        const inviteUrl = `${baseUrl}/auth/confirm?token_hash=${encodeURIComponent(email_data.token_hash)}&type=invite&redirect_to=${encodeURIComponent(email_data.redirect_to || "/app")}`;
 
         await sendEmail({
           to: user.email,
@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
 
       case "magiclink": {
         // Magic link login
-        const magicLinkUrl = `${baseUrl}/auth/confirm?token_hash=${email_data.token_hash}&type=magiclink&redirect_to=${encodeURIComponent(email_data.redirect_to || "/app")}`;
+        const magicLinkUrl = `${baseUrl}/auth/confirm?token_hash=${encodeURIComponent(email_data.token_hash)}&type=magiclink&redirect_to=${encodeURIComponent(email_data.redirect_to || "/app")}`;
 
         await sendEmail({
           to: user.email,
@@ -214,7 +214,7 @@ export async function POST(request: NextRequest) {
       case "email_change": {
         // Email change verification
         // Note: token_hash is for NEW email, token_hash_new is for CURRENT email
-        const confirmUrl = `${baseUrl}/auth/confirm?token_hash=${email_data.token_hash}&type=email_change&redirect_to=${encodeURIComponent(email_data.redirect_to || "/app")}`;
+        const confirmUrl = `${baseUrl}/auth/confirm?token_hash=${encodeURIComponent(email_data.token_hash)}&type=email_change&redirect_to=${encodeURIComponent(email_data.redirect_to || "/app")}`;
 
         await sendEmail({
           to: email_data.new_email || user.email,
