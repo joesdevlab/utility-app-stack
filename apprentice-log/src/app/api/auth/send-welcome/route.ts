@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email/resend";
 import { WelcomeEmail } from "@/emails";
 import { createClient } from "@/lib/supabase/server";
+import { emitHubEvent } from "@/lib/hub";
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,6 +43,12 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Emit Hub event — fire-and-forget
+    void emitHubEvent("apprenticelog.apprentice.registered", {
+      apprentice_id: user.id,
+      apprentice_name: userName || "Unknown",
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { emitHubEvent } from "@/lib/hub";
 
 // GET - Get user's organization(s)
 export async function GET() {
@@ -198,6 +199,13 @@ export async function POST(request: NextRequest) {
         status: "active",
         joined_at: new Date().toISOString(),
       });
+
+    // Emit Hub event — fire-and-forget
+    void emitHubEvent("apprenticelog.employer.registered", {
+      employer_id: organization.id,
+      employer_name: organization.name,
+      industry: "trades",
+    });
 
     return NextResponse.json({
       organization: {

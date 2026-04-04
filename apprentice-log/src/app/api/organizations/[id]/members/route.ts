@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { EMPLOYER_PLANS } from "@/lib/employer-stripe";
 import { sendEmail } from "@/lib/email/resend";
 import { EmployerInvitationEmail } from "@/emails";
+import { emitHubEvent } from "@/lib/hub";
 
 // GET - Get organization members
 export async function GET(
@@ -328,6 +329,15 @@ export async function POST(
         // Don't fail the request if email fails - invite is still created
       }
     }
+
+    // Emit Hub event — fire-and-forget
+    void emitHubEvent("apprenticelog.member.invited", {
+      organization_id: id,
+      organization_name: organization.name,
+      member_email: email.toLowerCase(),
+      role,
+      status: existingUser ? "active" : "pending",
+    });
 
     return NextResponse.json({
       message: existingUser ? "Member added" : "Invitation sent",

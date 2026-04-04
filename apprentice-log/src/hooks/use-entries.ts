@@ -123,6 +123,20 @@ export function useEntries(userId: string | undefined) {
           taskCount: entry.tasks?.length || 0,
           hours: totalHours,
         });
+
+        // Emit Hub event — fire-and-forget
+        fetch("/api/hub/event", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event_type: "apprenticelog.logbook.entry_submitted",
+            payload: {
+              entry_type: entry.rawTranscript ? "voice" : "manual",
+              hours: totalHours,
+            },
+          }),
+        }).catch(() => {});
+
         return newEntry;
       } catch (error) {
         console.error("Failed to add entry:", error);

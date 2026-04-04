@@ -85,7 +85,22 @@
       "Bash(npm run android:build:release:*)",
       "Bash(gradlew.bat assembleRelease:*)",
       "Bash(cmd.exe:*)",
-      "Bash(powershell -Command:*)"
+      "Bash(powershell -Command:*)",
+      "Read(//Users/joesealey/.claude/**)",
+      "mcp__the-khanban__get_board",
+      "mcp__the-khanban__list_cards",
+      "mcp__the-khanban__create_column",
+      "mcp__the-khanban__update_column",
+      "mcp__the-khanban__update_card",
+      "mcp__the-khanban__move_card",
+      "mcp__the-khanban__create_card",
+      "mcp__the-khanban__delete_card",
+      "Bash(npx tsc:*)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(sudo npm:*)",
+      "WebFetch(domain:apprenticelog.nz)",
+      "mcp__the-khanban__add_subtask"
     ]
   }
 }

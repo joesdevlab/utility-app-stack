@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/lib/employer-stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { emitHubEvent } from "@/lib/hub";
 import Stripe from "stripe";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -57,6 +58,18 @@ export async function POST(request: NextRequest) {
                 current_period_end: new Date(subscriptionData.current_period_end * 1000).toISOString(),
               })
               .eq("id", organizationId);
+
+            // Emit Hub event — fire-and-forget
+            void emitHubEvent("apprenticelog.subscription.changed", {
+              stripe_subscription_id: subscriptionData.id,
+              status: "active",
+              plan: "pro",
+              customer_email: session.customer_email || "",
+              amount_cents: 2900,
+              gst_cents: Math.round(2900 * 3 / 23),
+              net_cents: 2900 - Math.round(2900 * 3 / 23),
+              currency: "nzd",
+            });
           }
         }
         break;
@@ -97,6 +110,13 @@ export async function POST(request: NextRequest) {
                 current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
               })
               .eq("stripe_customer_id", customerId);
+
+            // Emit Hub event — fire-and-forget
+            void emitHubEvent("apprenticelog.subscription.changed", {
+              stripe_subscription_id: subscription.id,
+              status: subscription.status,
+              plan: isActive ? "pro" : "free",
+            });
           }
         }
         break;
@@ -128,6 +148,12 @@ export async function POST(request: NextRequest) {
               stripe_subscription_id: null,
             })
             .eq("stripe_customer_id", customerId);
+
+          // Emit Hub event — fire-and-forget
+          void emitHubEvent("apprenticelog.subscription.changed", {
+            status: "canceled",
+            plan: "free",
+          });
 
           // Suspend excess apprentices beyond the free limit (keep the 2 most recently joined)
           if (org) {
@@ -169,6 +195,12 @@ export async function POST(request: NextRequest) {
               status: "past_due",
             })
             .eq("stripe_customer_id", customerId);
+
+          // Emit Hub event — fire-and-forget
+          void emitHubEvent("apprenticelog.subscription.changed", {
+            status: "past_due",
+            plan: "pro",
+          });
         }
         break;
       }
