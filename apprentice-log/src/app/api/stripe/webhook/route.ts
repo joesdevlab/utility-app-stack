@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
               .eq("id", organizationId);
 
             // Emit Hub event — fire-and-forget
-            void emitHubEvent("apprenticelog.subscription.changed", {
+            emitHubEvent("apprenticelog.subscription.changed", {
               stripe_subscription_id: subscriptionData.id,
               status: "active",
               plan: "pro",
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
               .eq("stripe_customer_id", customerId);
 
             // Emit Hub event — fire-and-forget
-            void emitHubEvent("apprenticelog.subscription.changed", {
+            emitHubEvent("apprenticelog.subscription.changed", {
               stripe_subscription_id: subscription.id,
               status: subscription.status,
               plan: isActive ? "pro" : "free",
@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
             .eq("stripe_customer_id", customerId);
 
           // Emit Hub event — fire-and-forget
-          void emitHubEvent("apprenticelog.subscription.changed", {
+          emitHubEvent("apprenticelog.subscription.changed", {
             status: "canceled",
             plan: "free",
           });
@@ -197,7 +197,7 @@ export async function POST(request: NextRequest) {
             .eq("stripe_customer_id", customerId);
 
           // Emit Hub event — fire-and-forget
-          void emitHubEvent("apprenticelog.subscription.changed", {
+          emitHubEvent("apprenticelog.subscription.changed", {
             status: "past_due",
             plan: "pro",
           });

@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Emit Hub event — fire-and-forget
-    void emitHubEvent("apprenticelog.apprentice.registered", {
+    emitHubEvent("apprenticelog.apprentice.registered", {
       apprentice_id: user.id,
       apprentice_name: userName || "Unknown",
     });

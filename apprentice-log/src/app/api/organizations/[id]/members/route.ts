@@ -331,7 +331,7 @@ export async function POST(
     }
 
     // Emit Hub event — fire-and-forget
-    void emitHubEvent("apprenticelog.member.invited", {
+    emitHubEvent("apprenticelog.member.invited", {
       organization_id: id,
       organization_name: organization.name,
       member_email: email.toLowerCase(),

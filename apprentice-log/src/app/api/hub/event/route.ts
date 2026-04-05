@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Fire-and-forget — don't await
-    void emitHubEvent(event_type, { ...payload, user_id: user.id });
+    emitHubEvent(event_type, { ...payload, user_id: user.id });
 
     return NextResponse.json({ ok: true });
   } catch {

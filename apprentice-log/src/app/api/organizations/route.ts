@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
       });
 
     // Emit Hub event — fire-and-forget
-    void emitHubEvent("apprenticelog.employer.registered", {
+    emitHubEvent("apprenticelog.employer.registered", {
       employer_id: organization.id,
       employer_name: organization.name,
       industry: "trades",

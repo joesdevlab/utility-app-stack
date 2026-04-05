@@ -4,14 +4,20 @@
  * Fire-and-forget event emission to the Laika Dynamics Hub.
  * Gated behind HUB_API_URL — if unset, all calls are no-ops.
  * Never blocks or breaks ApprenticeLogNZ if the Hub is down.
+ *
+ * Uses Next.js `after()` to ensure the fetch completes after the
+ * response is sent — without this, Vercel serverless functions can
+ * terminate before the fire-and-forget fetch finishes.
  */
 
-export async function emitHubEvent(eventType: string, payload: Record<string, unknown>) {
+import { after } from "next/server";
+
+async function sendHubEvent(eventType: string, payload: Record<string, unknown>) {
   const hubUrl = process.env.HUB_API_URL;
   if (!hubUrl) return;
 
   try {
-    await fetch(`${hubUrl}/events`, {
+    const res = await fetch(`${hubUrl}/events`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -23,7 +29,15 @@ export async function emitHubEvent(eventType: string, payload: Record<string, un
         payload,
       }),
     });
-  } catch {
-    // Fire-and-forget — never break ApprenticeLogNZ if Hub is down
+    console.log(`[Hub] Emitted ${eventType} — ${res.status}`);
+  } catch (err) {
+    console.error(`[Hub] Failed to emit ${eventType}:`, err);
   }
+}
+
+export function emitHubEvent(eventType: string, payload: Record<string, unknown>) {
+  const hubUrl = process.env.HUB_API_URL;
+  if (!hubUrl) return;
+
+  after(() => sendHubEvent(eventType, payload));
 }
