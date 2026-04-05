@@ -2,14 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
-  // Block debug endpoint in production to prevent information disclosure
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ status: "ok" });
-  }
-
   try {
     const supabase = await createClient();
     const { data: { user }, error } = await supabase.auth.getUser();
+
+    // In production, only return auth status — no debug info
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.json({
+        status: "ok",
+        authenticated: !!user,
+      });
+    }
 
     // Check cookies
     const cookies = request.cookies.getAll();
