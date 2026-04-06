@@ -78,6 +78,34 @@ describe("GET /api/hub/metrics", () => {
     expect(response.status).toBe(401);
   });
 
+  // --- Real key test ---
+
+  it("authenticates with the real Hub API key", async () => {
+    const REAL_KEY = "hub_apprenticelog_a6dc352195098030f3be1e4545bfcbb4";
+    vi.stubEnv("HUB_API_KEY", REAL_KEY);
+
+    fromResults = [
+      { data: null, count: 5, error: null },
+      { data: null, count: 2, error: null },
+      { data: null, count: 15, error: null },
+      { data: null, count: 1, error: null },
+      { data: null, count: 0, error: null },
+      { data: [{ user_id: "u1", hours: 36 }], count: null, error: null },
+    ];
+
+    const response = await GET(makeRequest(REAL_KEY));
+    expect(response.status).toBe(200);
+
+    const data = await response.json();
+    expect(data.health.active_apprentices).toBe(5);
+    expect(data.health.active_employers).toBe(2);
+    expect(data.health.logbook_entries_7d).toBe(15);
+    expect(data.health.avg_hours_per_week).toBe(36);
+    expect(data.subscriptions.total).toBe(1);
+    expect(data.revenue.mrr_cents).toBe(2900);
+    expect(data.revenue.cancelled_30d).toBe(0);
+  });
+
   // --- Success tests ---
 
   it("returns 200 with correct structure when authenticated", async () => {
